@@ -27,16 +27,28 @@ NORMAL_SEARCH_TERMS = [
     "nature documentary", "technology documentary"
 ]
 
-KIDS_WHITELIST = [
-    "cartoon", "storybook", "bedtime", "learning", "alphabet",
-    "animals for kids", "nursery", "nature for children",
-    "educational for children", "children's film", "public domain cartoon"
+# Expanded to catch weapons, news footage, and high-stim "scary" content
+BLACKLIST = [
+    # Explicit/Adult
+    "adult", "sexy", "nude", "erotic", "nsfw", "porn", "bikini",
+    # Violence/Weapons
+    "gun", "shooting", "weapon", "war", "combat", "soldier", "military", 
+    "blood", "gore", "murder", "death", "killed", "execution", "suicide",
+    "police", "crime", "terrorism", "explosion", "bomb",
+    # Horror/Spooky
+    "horror", "scary", "creepy", "spooky", "monster", "ghost", "demon", 
+    "thriller", "slasher", "jumpscare", "darkness", "skeleton", "zombie",
+    "analog horror", "backrooms", "creepypasta", "clown",
+    # Medical/Disturbing
+    "surgery", "medical", "injury", "accident", "crash", "disaster"
 ]
 
-# Strict blacklist to keep adult/horror content out
-BLACKLIST = [
-    "adult", "horror", "sexy", "gore", "violence", "nude", "blood", 
-    "thriller", "slasher", "nsfw", "erotic", "scary", "murder"
+# Stricter Whitelist - only things that are virtually guaranteed to be safe
+KIDS_WHITELIST = [
+    "classic cartoon", "silly symphony", "popeye public domain", 
+    "color rhapsody", "nature timelapse", "underwater world", 
+    "outer space for kids", "how it's made", "letter sounds", 
+    "counting songs", "animal sounds", "zoo animals", "butterfly life cycle"
 ]
 
 PUBLIC_DOMAIN_SOURCES = ["archive.org", "wikimedia", "nasa"]
