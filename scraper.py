@@ -22,9 +22,33 @@ VIDEO_FILE_KIDS = "kids_videos.json"
 # =========================
 
 NORMAL_SEARCH_TERMS = [
-    "space documentary", "wildlife documentary", "ocean life",
-    "science film", "rocket launch", "astronomy",
-    "nature documentary", "technology documentary"
+    # Space & Astronomy
+    "space documentary", "rocket launch", "astronomy", "planets", "solar system",
+    "moon landing", "mars mission", "satellite footage", "space exploration", "cosmos",
+    
+    # Wildlife & Nature
+    "wildlife documentary", "nature documentary", "forest wildlife", "jungle animals",
+    "savannah animals", "ocean life", "underwater documentary", "marine biology",
+    "birds documentary", "insects documentary", "animal behavior",
+    
+    # Science & Technology
+    "science film", "technology documentary", "engineering documentary", "physics documentary",
+    "chemistry documentary", "biology documentary", "robotics documentary", "futuristic technology",
+    
+    # Calm & Relaxing
+    "calm", "relaxing scenery", "peaceful nature", "ambient forest", "ocean waves",
+    "mountain scenery", "sunset timelapse", "river flowing", "meditation video",
+    
+    # Historical / Educational
+    "history documentary", "ancient civilizations", "world history", "educational film",
+    "geography documentary", "cultural documentary", "human body documentary",
+    
+    # Vehicles & Machines
+    "train documentary", "airplane documentary", "boat documentary", "industrial machines",
+    
+    # Misc / Exploration
+    "adventure documentary", "expedition film", "travel documentary", "exploration film",
+    "spacewalk", "science experiments"
 ]
 
 # Expanded to catch weapons, news footage, and high-stim "scary" content
@@ -48,7 +72,7 @@ KIDS_WHITELIST = [
     "classic cartoon", "silly symphony", "popeye public domain", 
     "color rhapsody", "nature timelapse", "underwater world", 
     "outer space for kids", "how it's made", "letter sounds", 
-    "counting songs", "animal sounds", "zoo animals", "butterfly life cycle","essay", "parody", "all my children", "soap opera", "jordan peterson", "funny or die"
+    "counting songs", "animal sounds", "zoo animals", "butterfly life cycle", "childrens", "children"
 ]
 
 PUBLIC_DOMAIN_SOURCES = ["archive.org", "wikimedia", "nasa"]
@@ -99,6 +123,8 @@ def fetch_archive(query, kids_only=False):
     page = random.randint(1, MAX_PAGE)
     print(f"\nSearching Archive.org: '{query}' | page {page} | kids_only={kids_only}")
 
+    results = []  # <-- MUST be here, outside try/for loops
+
     try:
         r = requests.get(
             "https://archive.org/advancedsearch.php",
@@ -119,13 +145,24 @@ def fetch_archive(query, kids_only=False):
     docs = r.json().get("response", {}).get("docs", [])
     random.shuffle(docs)
 
-    results = []
     for doc in docs:
         identifier = doc.get("identifier")
         title = doc.get("title", "Untitled")
         description = doc.get("description", "")
 
-        # Strict filter before even fetching metadata
+        # Normalize title
+        if isinstance(title, list):
+            title = " ".join(title)
+        elif not isinstance(title, str):
+            title = str(title)
+
+        # Normalize description
+        if isinstance(description, list):
+            description = " ".join(description)
+        elif not isinstance(description, str):
+            description = str(description)
+
+        # Filters
         if not is_clean(title + " " + description):
             continue
         if kids_only and not is_safe_kids(title, description):
@@ -270,7 +307,7 @@ def expand_pool(filename, kids_only=False):
     save_videos(filename, existing)
     print(f"Added {added} new videos. Total: {len(existing)}")
 
-def expand_pool_persistent(filename, kids_only=True, cycles=5):
+def expand_pool_persistent(filename, kids_only=True, cycles=10000):
     """Runs the scraper N times, ensuring it finds content."""
     existing = load_existing(filename)
     existing_ids = {v["id"] for v in existing}
@@ -280,7 +317,7 @@ def expand_pool_persistent(filename, kids_only=True, cycles=5):
         found_new_in_this_cycle = False
         
         # Try up to 3 different random search terms if the first one fails
-        for attempt in range(3):
+        for attempt in range(20):
             new_videos = random_fetch(kids_only=kids_only)
             
             if not new_videos:
@@ -311,6 +348,6 @@ def expand_pool_persistent(filename, kids_only=True, cycles=5):
 
 if __name__ == "__main__":
     # Example: Run 10 times to bulk up the library
-    expand_pool_persistent(VIDEO_FILE_NORMAL, kids_only=False, cycles=10)
-    #expand_pool_persistent(VIDEO_FILE_KIDS, kids_only=True, cycles=10)
+    expand_pool_persistent(VIDEO_FILE_NORMAL, kids_only=False, cycles=10000)
+    expand_pool_persistent(VIDEO_FILE_KIDS, kids_only=True, cycles=10000)
     print("\n[FINISH] Library updated.")
