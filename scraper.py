@@ -48,7 +48,7 @@ KIDS_WHITELIST = [
     "classic cartoon", "silly symphony", "popeye public domain", 
     "color rhapsody", "nature timelapse", "underwater world", 
     "outer space for kids", "how it's made", "letter sounds", 
-    "counting songs", "animal sounds", "zoo animals", "butterfly life cycle"
+    "counting songs", "animal sounds", "zoo animals", "butterfly life cycle","essay", "parody", "all my children", "soap opera", "jordan peterson", "funny or die"
 ]
 
 PUBLIC_DOMAIN_SOURCES = ["archive.org", "wikimedia", "nasa"]
@@ -312,5 +312,5 @@ def expand_pool_persistent(filename, kids_only=True, cycles=5):
 if __name__ == "__main__":
     # Example: Run 10 times to bulk up the library
     expand_pool_persistent(VIDEO_FILE_NORMAL, kids_only=False, cycles=10)
-    expand_pool_persistent(VIDEO_FILE_KIDS, kids_only=True, cycles=10)
+    #expand_pool_persistent(VIDEO_FILE_KIDS, kids_only=True, cycles=10)
     print("\n[FINISH] Library updated.")
