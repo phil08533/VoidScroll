@@ -254,137 +254,128 @@ PUBLIC_DOMAIN_SOURCES = ["archive.org", "wikimedia", "nasa"]
 # =========================
 def categorize_kids(title, description=""):
     t = (title + " " + description).lower()
+
     if any(w in t for w in ["cartoon", "animation", "animated", "looney", "mickey", "felix", "silly symphony", "merrie"]):
         return "cartoons"
+
     if any(w in t for w in ["song", "music", "nursery", "lullaby", "singing", "choir", "rhyme", "dance"]):
         return "music"
+
     if any(w in t for w in ["alphabet", "letter", "number", "count", "shape", "color", "phonics", "learn", "spell", "quiz", "abc"]):
         return "learning"
+
     if any(w in t for w in ["sleep", "calm", "relax", "lullaby", "sooth", "gentle", "soft", "peaceful"]):
         return "sleep"
+
     if any(w in t for w in ["space", "rocket", "planet", "star", "moon", "cosmos", "astronaut"]):
         return "space"
+
     if any(w in t for w in ["animal", "wildlife", "zoo", "farm", "ocean", "bird", "insect", "fish", "pet", "puppy", "kitten"]):
         return "animals"
+
     if any(w in t for w in ["nature", "forest", "flower", "tree", "garden", "butterfly", "river", "mountain"]):
         return "nature"
-    return "learning"  # safe fallback for kids
+
+    return "learning"
+
+def categorize_normal(title):
     t = title.lower()
 
-    # Space / Astronomy
+    # Space
     if any(w in t for w in [
-        "space", "rocket", "astronomy", "astronaut", "nasa", "orbit", "satellite",
-        "planet", "solar system", "cosmos", "nebula", "galaxy", "comet", "asteroid",
-        "telescope", "moon", "mars", "exoplanet", "spacewalk", "stellar", "cosmic",
-        "interstellar", "astrophysics", "observatory", "star cluster", "black hole",
+        "space","rocket","astronomy","astronaut","nasa","orbit","satellite",
+        "planet","solar system","cosmos","nebula","galaxy","comet","asteroid",
+        "telescope","moon","mars","exoplanet","spacewalk","stellar","cosmic",
+        "interstellar","astrophysics","observatory","black hole"
     ]):
         return "space"
 
-    # Animals / Wildlife
+    # Animals
     if any(w in t for w in [
-        "wildlife", "animal", "ocean", "marine", "underwater", "coral reef",
-        "deep sea", "shark", "whale", "dolphin", "elephant", "lion", "tiger",
-        "bird", "insect", "reptile", "amphibian", "penguin", "primate", "predator",
-        "savannah", "jungle animals", "forest animals", "zoo",
+        "wildlife","animal","ocean","marine","underwater","coral reef",
+        "shark","whale","dolphin","elephant","lion","tiger",
+        "bird","insect","reptile","amphibian","penguin","primate"
     ]):
         return "animals"
 
-    # Nature (landscapes, plants, ecosystems — not animals)
+    # Nature
     if any(w in t for w in [
-        "nature", "forest", "mountain", "landscape", "botanical", "tree",
-        "river", "waterfall", "rainforest", "arctic", "desert ecosystem",
-        "natural wonder", "ecosystem", "volcano", "wilderness",
+        "nature","forest","mountain","landscape","botanical","tree",
+        "river","waterfall","rainforest","arctic","desert","volcano"
     ]):
         return "nature"
 
-    # Sleep / Calm / Relaxing
+    # Sleep
     if any(w in t for w in [
-        "sleep", "relax", "calm", "peaceful", "meditation", "ambient", "soothing",
-        "tranquil", "zen", "asmr", "fireplace", "rain sound", "lo-fi", "lullaby",
-        "slow motion", "serene", "gentle", "fog", "soft piano",
+        "sleep","relax","calm","peaceful","meditation","ambient",
+        "soothing","tranquil","zen","asmr","fireplace","rain sound"
     ]):
         return "sleep"
 
     # Technology
     if any(w in t for w in [
-        "technology", "tech", "computer", "software", "ai ", "artificial intelligence",
-        "machine learning", "robotics", "coding", "programming", "cybersecurity",
-        "electronics", "nanotechnology", "3d printing", "autonomous", "digital",
-        "internet", "semiconductor", "circuit",
+        "technology","tech","computer","software","ai","robotics",
+        "coding","programming","cybersecurity","electronics"
     ]):
         return "technology"
 
     # Engineering
     if any(w in t for w in [
-        "engineering", "civil engineer", "structural", "bridge", "architecture",
-        "construction", "aerospace", "mechanical engineer", "materials science",
+        "engineering","bridge","architecture","construction","aerospace"
     ]):
         return "engineering"
 
-    # Vehicles & Machines
+    # Vehicles
     if any(w in t for w in [
-        "vehicle", "car", "train", "airplane", "aircraft", "boat", "ship",
-        "submarine", "truck", "motorcycle", "heavy machinery", "drone", "helicopter",
-        "electric vehicle", "railway", "locomotive", "transport", "automobile",
-        "plane", "tractor", "excavator",
+        "vehicle","car","train","airplane","boat","ship","truck",
+        "motorcycle","drone","helicopter","railway","tractor"
     ]):
         return "vehicles"
 
-    # Environment & Climate
+    # Environment
     if any(w in t for w in [
-        "environment", "climate", "eco", "sustainable", "green energy", "solar energy",
-        "wind energy", "renewable", "conservation", "pollution", "carbon", "recycle",
-        "global warming", "deforestation", "ocean conservation",
+        "environment","climate","eco","sustainable","renewable",
+        "conservation","pollution","carbon"
     ]):
         return "environment"
 
     # History
     if any(w in t for w in [
-        "history", "ancient", "medieval", "historical", "archaeology", "civilization",
-        "empire", "renaissance", "revolution", "war history", "biography",
-        "civil rights", "exploration history", "heritage",
+        "history","ancient","medieval","archaeology","civilization",
+        "empire","renaissance","revolution"
     ]):
         return "history"
 
-    # Travel & Geography
+    # Travel
     if any(w in t for w in [
-        "travel", "geography", "city tour", "landmark", "cultural", "festival",
-        "adventure", "hiking", "expedition", "vlog", "tourism", "backpack",
-        "country", "world tour", "glacier",
+        "travel","geography","tour","landmark","festival",
+        "expedition","hiking","vlog"
     ]):
         return "travel"
 
-    # Math & Brain
+    # Math
     if any(w in t for w in [
-        "math", "puzzle", "logic", "brain", "riddle", "chess", "sudoku", "rubik",
-        "cognitive", "iq test", "memory game", "reasoning", "arithmetic",
-        "problem solving", "mental math",
+        "math","puzzle","logic","brain","riddle","chess","sudoku","rubik"
     ]):
         return "math"
 
     # Gaming
     if any(w in t for w in [
-        "gaming", "esports", "gameplay", "video game", "speedrun", "game review",
-        "lets play", "retro game", "indie game", "game lore", "board game",
-        "strategy game",
+        "gaming","gameplay","video game","speedrun","lets play","retro game"
     ]):
         return "gaming"
 
-    # Documentary (generic long-form)
-    if any(w in t for w in [
-        "documentary", "full film", "award winning", "investigative", "doc series",
-    ]):
-        return "documentary"
-
     # DIY
     if any(w in t for w in [
-        "diy", "craft", "woodwork", "home improvement", "gardening", "upcycling",
-        "sewing", "painting tutorial", "life hack", "home renovation", "decor",
-        "handmade", "how to make",
+        "diy","craft","woodwork","gardening","painting tutorial",
+        "home improvement","sewing","life hack"
     ]):
         return "diy"
 
-    # Science (fallback for anything left)
+    # Documentary fallback
+    if "documentary" in t:
+        return "documentary"
+
     return "science"
 
 # =========================
@@ -536,6 +527,7 @@ def fetch_wikimedia(query, kids_only=False):
         })
     return results
 
+    
 
 def fetch_nasa(term, kids_only=False):
     print(f"\nSearching NASA: '{term}'")
@@ -656,9 +648,9 @@ def expand_pool_persistent(filename, kids_only=False, cycles=10000):
 
 if __name__ == "__main__":
     # Normal videos (all categories)
-    expand_pool_persistent(VIDEO_FILE_NORMAL, kids_only=False, cycles=10000)
+    # expand_pool_persistent(VIDEO_FILE_NORMAL, kids_only=False, cycles=10000)
 
     # Uncomment to run kids scraper instead:
-    # expand_pool_persistent(VIDEO_FILE_KIDS, kids_only=True, cycles=10000)
+    expand_pool_persistent(VIDEO_FILE_KIDS, kids_only=True, cycles=10000)
 
     print("\n[FINISH] Library updated.")

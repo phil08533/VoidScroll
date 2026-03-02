@@ -180,5 +180,33 @@
     "url": "https://archive.org/download/Cartoontheater1930sAnd1950s1/OldMacdonaldHadAFarm1946.mp4",
     "category": "kids",
     "source": "archive"
+  },
+  {
+    "id": "8d0b64314acfabd95f2ba14d1fba95ff",
+    "title": "Children's Promo",
+    "url": "https://archive.org/download/gmtvct-Children_s_Promo/Children_s_Promo.mp4",
+    "category": "learning",
+    "source": "archive"
+  },
+  {
+    "id": "ebc385b267ac96d0b3c3afd6f49cc3e7",
+    "title": "Bugs Bunny's Christmas Carol (Merrie Melodies)",
+    "url": "https://archive.org/download/1979.11.27-merrie-melodies-bugs-bunnys-christmas-carol/(1979.11.27) Merrie Melodies - Bugs Bunny's Christmas Carol.mp4",
+    "category": "cartoons",
+    "source": "archive"
+  },
+  {
+    "id": "1357b6f6d5c4236ca147496556a03cba",
+    "title": "Felix the Cat in April Maze",
+    "url": "https://archive.org/download/Felix_AprilMaze_NoAudio/Felix_AprilMaze_NoAudio_512kb.mp4",
+    "category": "cartoons",
+    "source": "archive"
+  },
+  {
+    "id": "00e732d4ded0e6176ba05edc58b73900",
+    "title": "Learn Watercolor Painting",
+    "url": "https://archive.org/download/LearnWatercolorPainting/Learn Watercolor Painting.mp4",
+    "category": "music",
+    "source": "archive"
   }
 ]
