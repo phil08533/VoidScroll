@@ -3,13 +3,15 @@ import json
 import os
 import random
 from hashlib import md5
+import time
+import random
 
 # =========================
 # CONFIG
 # =========================
 
-MAX_RESULTS = 25
-MAX_DURATION_SECONDS = 900  # 15 min max
+MAX_RESULTS = 40
+MAX_DURATION_SECONDS = 999  # 15 min max
 MAX_PAGE = 20
 
 VIDEO_FILE_NORMAL = "videos.json"
@@ -200,7 +202,7 @@ def random_fetch(kids_only=False):
     if source == "archive.org":
         query = f'{term} AND mediatype:movies'
         if kids_only:
-            query += ' AND (subject:"children" OR subject:"cartoon" OR subject:"education")'
+            query += ' AND (subject:"children" OR subject:"cartoon")'
         return fetch_archive(query, kids_only=kids_only)
 
     if source == "wikimedia":
@@ -257,10 +259,27 @@ def expand_pool(filename, kids_only=False):
     print(f"Added {added} new videos. Total: {len(existing)}")
 
 if __name__ == "__main__":
-    print("Fetching NORMAL videos...")
-    expand_pool(VIDEO_FILE_NORMAL, kids_only=False)
+    # --- CONFIG ---
+    N = 10000  # Change this to however many times you want it to run
+    WAIT_MINUTES = 16 # How long to wait between each successful scrape
+    # --------------
 
-    print("\nFetching KIDS videos...")
-    expand_pool(VIDEO_FILE_KIDS, kids_only=True)
+    print(f"--- STARTING {N} SCRAPE CYCLES FOR KIDS CONTENT ---")
 
-    print("\nDone.")
+    for i in range(1, N + 1):
+        print(f"\n[Cycle {i} of {N}] Started at: {time.strftime('%H:%M:%S')}")
+        
+        try:
+            # Runs the specific kids scraping function
+            expand_pool(VIDEO_FILE_KIDS, kids_only=True)
+            print(f"Cycle {i} complete.")
+        except Exception as e:
+            print(f"Error in cycle {i}: {e}")
+
+        if i < N:
+            # Randomize the wait slightly so it looks more "human" to the servers
+            sleep_sec = (WAIT_MINUTES * 60) + random.randint(1, 15)
+            print(f"Waiting {WAIT_MINUTES} minutes before next run...")
+            time.sleep(sleep_sec)
+
+    print("\n--- ALL CYCLES FINISHED ---")
