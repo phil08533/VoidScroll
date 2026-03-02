@@ -1,5 +1,3 @@
-aper · PY
-Copy
 
 import requests
 import json
