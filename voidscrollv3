@@ -1,0 +1,238 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+<title>VOIDSCROLL</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Bebas+Neue&family=IBM+Plex+Mono:wght@400;700&family=Space+Grotesk:wght@400;700&display=swap" rel="stylesheet">
+<style>
+/* CSS VARIABLES & THEMES */
+[data-theme="dark"]{--bg:#0e0e0e;--tx:#f0f0f0;--tx2:rgba(240,240,240,0.5);--acc:#fff;--bdr:rgba(255,255,255,0.1);--tagbg:rgba(255,255,255,0.07);--tagbdr:rgba(255,255,255,0.13);--ob:linear-gradient(to top,rgba(14,14,14,0.78) 0%,rgba(14,14,14,0.18) 45%,transparent 68%);--ot:linear-gradient(to bottom,rgba(14,14,14,0.7) 0%,transparent 28%);--prog:#fff;--btnbg:rgba(14,14,14,0.6);--btnbdr:rgba(255,255,255,0.14);--fm:"IBM Plex Mono",monospace;--stbg:rgba(14,14,14,0.82);--vig:rgba(0,0,0,0.28)}
+[data-theme="light"]{--bg:#eeebe5;--tx:#111;--tx2:rgba(17,17,17,0.48);--acc:#111;--bdr:rgba(0,0,0,0.12);--tagbg:rgba(0,0,0,0.05);--tagbdr:rgba(0,0,0,0.1);--ob:linear-gradient(to top,rgba(238,235,229,0.82) 0%,rgba(238,235,229,0.14) 46%,transparent 68%);--ot:linear-gradient(to bottom,rgba(238,235,229,0.65) 0%,transparent 25%);--prog:#111;--btnbg:rgba(238,235,229,0.75);--btnbdr:rgba(0,0,0,0.1);--fm:"IBM Plex Mono",monospace;--stbg:rgba(238,235,229,0.9);--vig:rgba(0,0,0,0.07)}
+
+*,*::before,*::after{margin:0;padding:0;box-sizing:border-box}
+html,body{width:100%;height:100%;overflow:hidden;background:#000;color:var(--tx);font-family:"Space Grotesk",sans-serif;touch-action:none;user-select:none;-webkit-user-select:none}
+
+/* ── UI ──────────────────────────────────────────────── */
+#feed{position:fixed;inset:0;z-index:1}
+.card{position:absolute;inset:0;background:#000;will-change:transform;overflow:hidden}
+.card video{position:absolute;inset:0;width:100%;height:100%;object-fit:cover;opacity:0;transition:opacity .55s ease, object-fit 0.3s ease}
+.card video.vis{opacity:1}
+.card video.contain { object-fit: contain; } /* ZOOM OPTION */
+
+/* CONTROL STRIP (Touch Optimized) */
+.ctrl-strip { position: fixed; left: 12px; top: 50%; transform: translateY(-50%); z-index: 50; display: flex; flex-direction: column; gap: 14px; }
+.side-btn { width: 44px; height: 44px; border-radius: 50%; background: var(--btnbg); border: 1px solid var(--btnbdr); backdrop-filter: blur(12px); display: flex; align-items: center; justify-content: center; cursor: pointer; color: var(--tx2); transition: all .2s; font-size: 1.1rem; }
+.side-btn.active { color: var(--acc); border-color: var(--acc); }
+
+/* CATEGORY & HEADER */
+.hdr{position:fixed;top:0;left:0;right:0;z-index:100;padding:12px;background:var(--ot);backdrop-filter:blur(5px);transform:translateY(-110%);transition:transform .3s ease}
+.hdr.vis{transform:translateY(0)}
+.cat-grid{display:flex; overflow-x:auto; gap:8px; padding-bottom:10px; scrollbar-width: none;}
+.chip{padding:6px 14px; font-size:0.6rem; letter-spacing:0.1em; text-transform:uppercase; font-weight:700; border:1px solid var(--bdr); cursor:pointer; transition:all .2s; white-space:nowrap; font-family:var(--fm); color:var(--tx2); background:rgba(255,255,255,0.05); border-radius:100px;}
+.chip.on{background:var(--acc); color:var(--bg); border-color:var(--acc)}
+
+/* SHARE SHEET */
+.shr-bd{position:fixed;inset:0;z-index:200;background:rgba(0,0,0,.5);backdrop-filter:blur(4px);opacity:0;pointer-events:none;transition:opacity .22s}
+.shr-bd.open{opacity:1;pointer-events:all}
+.shr-sh{position:fixed;bottom:0;left:0;right:0;z-index:201;background:var(--bg);border-top:1px solid var(--bdr);padding:18px 16px 28px;transform:translateY(100%);transition:transform .28s cubic-bezier(.4,0,.2,1)}
+.shr-sh.open{transform:translateY(0)}
+
+/* ELEMENTS FROM ORIGINAL */
+.skel{position:absolute;inset:0;z-index:2;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:12px;background:#000}
+.prog{position:absolute;bottom:0;left:0;right:0;height:2px;z-index:10;background:rgba(255,255,255,0.06)}
+.prog-fill{height:100%;width:0%;background:var(--prog)}
+.card-info{position:absolute;bottom:0;left:0;right:60px;padding:15px 15px 35px;z-index:6; opacity:0; pointer-events:none; transition: opacity .3s}
+.card-info.vis{opacity:1; pointer-events:auto}
+.vid-ttl{font-weight:700; font-size:1rem; text-shadow:0 2px 10px #000}
+</style>
+</head>
+<body data-theme="dark">
+
+<div id="feed"></div>
+
+<div class="ctrl-strip">
+    <div class="side-btn" id="uiToggle" title="Toggle Info">☰</div>
+    <div class="side-btn" id="zoomToggle" title="Zoom Mode">⛶</div>
+    <div class="side-btn" id="muteBtn" title="Mute">🔊</div>
+</div>
+
+<header class="hdr" id="hdr">
+    <div style="font-family:'Bebas Neue'; font-size:1.5rem; margin-bottom:10px;">VOIDSCROLL</div>
+    <div class="cat-grid" id="catGrid">
+        <div class="chip on" data-q="all">ALL</div>
+        <div class="chip" data-q="animals">ANIMALS</div>
+        <div class="chip" data-q="space">SPACE</div>
+        <div class="chip" data-q="science">SCIENCE</div>
+        <div class="chip" data-q="movies">MOVIES/TV</div>
+    </div>
+</header>
+
+<div class="shr-bd" id="shrBd"></div>
+<div class="shr-sh" id="shrSh">
+  <div style="font-family:'Bebas Neue'; font-size:1.2rem; margin-bottom:10px;">SHARE VIDEO</div>
+  <div id="shrUrl" style="font-size:0.6rem; background:rgba(255,255,255,0.05); padding:10px; word-break:break-all; margin-bottom:15px;"></div>
+  <button id="shrCopy" style="width:100%; padding:12px; background:var(--acc); color:var(--bg); border:none; font-family:var(--fm); font-weight:700;">COPY LINK</button>
+  <button id="shrCancel" style="width:100%; padding:10px; background:transparent; border:1px solid var(--bdr); color:var(--tx2); margin-top:10px;">CANCEL</button>
+</div>
+
+<script>
+// ── STATE ─────────────────────────────────────────────────────────
+let playlist=[], curIdx=0, muted=true, zoomFill=true, infoVisible=false, transitioning=false;
+const seenUrls = new Set();
+let curCard = null;
+
+// ── ENTRPY ENGINE (Improved Loading & Randomness) ─────────────────
+const getRand = (max) => Math.floor(Math.random() * max) + 1;
+
+async function fetchNASA(q) {
+  try {
+    const page = getRand(10);
+    const r = await fetch(`https://images-api.nasa.gov/search?q=${q}&media_type=video&page=${page}`);
+    const d = await r.json();
+    return (d.collection.items || []).map(x => ({
+      href: x.href, // Need to resolve this to get the real video link
+      title: x.data[0].title,
+      source: "nasa",
+      thumb: x.links?.[0].href
+    }));
+  } catch(e) { return []; }
+}
+
+async function fetchArchive(q) {
+  try {
+    const start = getRand(100);
+    const r = await fetch(`https://archive.org/advancedsearch.php?q=${q}+AND+mediatype:movies&rows=15&start=${start}&output=json`);
+    const d = await r.json();
+    return (d.response.docs || []).map(x => ({
+      identifier: x.identifier,
+      title: x.title,
+      source: "archive",
+      thumb: `https://archive.org/services/img/${x.identifier}`
+    }));
+  } catch(e) { return []; }
+}
+
+// ── CORE LOGIC ────────────────────────────────────────────────────
+async function loadContent(query = "space") {
+  const sources = [fetchNASA(query), fetchArchive(query)];
+  const results = await Promise.all(sources);
+  playlist = results.flat().sort(() => Math.random() - 0.5);
+  renderCard(0, "up");
+}
+
+async function resolveVideo(item) {
+  // Fix for "Videos aren't loading" -> NASA requires a second fetch to get the MP4 URL
+  if (item.source === "nasa") {
+    const r = await fetch(item.href);
+    const d = await r.json();
+    return d.collection.items.find(i => i.href.includes("~mobile.mp4") || i.href.includes("~small.mp4") || i.href.endsWith(".mp4"))?.href;
+  }
+  return `https://archive.org/download/${item.identifier}/${item.identifier}_512kb.mp4`;
+}
+
+function renderCard(idx, dir) {
+  const item = playlist[idx];
+  if(!item) return;
+
+  const card = document.createElement('div');
+  card.className = 'card';
+  card.innerHTML = `
+    <div class="skel">LOADING</div>
+    <div class="prog"><div class="prog-fill"></div></div>
+    <div class="card-info ${infoVisible?'vis':''}">
+      <div class="vid-ttl">${item.title}</div>
+      <button onclick="openShare('${item.title}')" style="background:none; border:1px solid #fff; color:#fff; padding:5px 10px; font-size:0.5rem; margin-top:10px;">SHARE</button>
+    </div>
+  `;
+
+  const vid = document.createElement('video');
+  vid.loop = true; vid.muted = muted; vid.playsInline = true;
+  if(!zoomFill) vid.classList.add('contain');
+  
+  resolveVideo(item).then(url => {
+    if(!url) { advance("up"); return; } // Skip if video broken
+    vid.src = url;
+    vid.onloadeddata = () => {
+      card.querySelector('.skel').style.display = 'none';
+      vid.classList.add('vis');
+      vid.play();
+    };
+  });
+
+  card.appendChild(vid);
+  if(curCard) {
+    const old = curCard;
+    old.style.transition = 'transform 0.4s ease';
+    old.style.transform = dir === "up" ? 'translateY(-100%)' : 'translateY(100%)';
+    setTimeout(() => old.remove(), 400);
+  }
+  document.getElementById('feed').appendChild(card);
+  curCard = card;
+}
+
+function advance(dir) {
+  if(transitioning) return;
+  const next = dir === "up" ? curIdx + 1 : curIdx - 1;
+  if(next < 0 || next >= playlist.length) return;
+  transitioning = true; curIdx = next;
+  renderCard(curIdx, dir);
+  setTimeout(() => transitioning = false, 500);
+}
+
+// ── TOUCH LOGIC (Momentum) ────────────────────────────────────────
+let startY = 0, distY = 0;
+window.addEventListener('touchstart', e => { startY = e.touches[0].clientY; });
+window.addEventListener('touchmove', e => {
+  distY = e.touches[0].clientY - startY;
+  curCard.style.transform = `translateY(${distY}px)`;
+}, {passive: false});
+window.addEventListener('touchend', () => {
+  if(Math.abs(distY) > 80) advance(distY < 0 ? "up" : "down");
+  else curCard.style.transform = 'translateY(0)';
+  distY = 0;
+});
+
+// ── UI EVENTS ─────────────────────────────────────────────────────
+document.getElementById('catGrid').addEventListener('click', e => {
+  const chip = e.target.closest('.chip');
+  if(!chip) return;
+  document.querySelectorAll('.chip').forEach(c => c.classList.remove('on'));
+  chip.classList.add('on');
+  loadContent(chip.dataset.q);
+});
+
+document.getElementById('zoomToggle').addEventListener('click', () => {
+  zoomFill = !zoomFill;
+  document.getElementById('zoomToggle').classList.toggle('active', !zoomFill);
+  document.querySelectorAll('video').forEach(v => v.classList.toggle('contain', !zoomFill));
+});
+
+document.getElementById('muteBtn').addEventListener('click', () => {
+  muted = !muted;
+  document.getElementById('muteBtn').innerHTML = muted ? "🔇" : "🔊";
+  if(curCard) curCard.querySelector('video').muted = muted;
+});
+
+// Header toggle (top tap)
+window.addEventListener('click', e => {
+    if(e.clientY < 60) document.getElementById('hdr').classList.toggle('vis');
+});
+
+// Share Functions
+window.openShare = (title) => {
+    document.getElementById('shrUrl').textContent = window.location.href;
+    document.getElementById('shrBd').classList.add('open');
+    document.getElementById('shrSh').classList.add('open');
+};
+document.getElementById('shrCancel').onclick = () => {
+    document.getElementById('shrBd').classList.remove('open');
+    document.getElementById('shrSh').classList.remove('open');
+};
+
+loadContent();
+</script>
+</body>
+</html>
+
