@@ -170,13 +170,32 @@ async function init() {
 }
 
 async function loadData() {
+    // Decide which JSON file to fetch
     const file = isKidsMode ? 'kids_videos.json' : 'videos.json';
+    console.log("Loading file:", file); // Debug: make sure correct file is fetched
+
     try {
         const res = await fetch(file);
+        if (!res.ok) throw new Error(`HTTP error! status: ${res.status}`);
         allVideos = await res.json();
-    } catch(e) {
-        allVideos = [{ id: "dummy", title: "Run scraper to get videos", url: "https://www.w3schools.com/html/mov_bbb.mp4", category: "all" }];
+
+        // Ensure we have at least one video
+        if (!Array.isArray(allVideos) || allVideos.length === 0) {
+            throw new Error("JSON is empty or invalid format");
+        }
+
+    } catch (e) {
+        console.error("Failed to load JSON:", e);
+        // Fallback dummy video
+        allVideos = [{
+            id: "dummy",
+            title: "Run scraper to get videos",
+            url: "https://www.w3schools.com/html/mov_bbb.mp4",
+            category: "all"
+        }];
     }
+
+    // After loading, reset the playlist to "all"
     filterCategory('all');
 }
 
@@ -364,22 +383,39 @@ btnKids.onclick = () => { pinOverlay.classList.add('open'); pinInput.focus(); do
 
 pinInput.onkeydown = async (e) => {
     if (e.key === "Enter") {
-        const val = pinInput.value;
+        const val = pinInput.value.trim();
+        if (!val) return;
+
         if (!isKidsMode) {
-            savedPin = val; isKidsMode = true;
+            // Setting Kids Mode
+            savedPin = val;
+            isKidsMode = true;
             document.body.classList.add('kids-mode');
-            btnKids.classList.add('warn'); appTitle.textContent = "VOID KIDS";
+            btnKids.classList.add('warn');
+            appTitle.textContent = "VOID KIDS";
             document.getElementById('btnCatToggle').style.display = 'none';
-            await loadData();
+
+            console.log("Switching to Kids Mode");
+            await loadData(); // <-- Load kids_videos.json
+
         } else {
+            // Unlocking back to normal mode
             if (val === savedPin) {
-                isKidsMode = false; document.body.classList.remove('kids-mode');
-                btnKids.classList.remove('warn'); appTitle.textContent = "VOIDSCROLL";
+                isKidsMode = false;
+                document.body.classList.remove('kids-mode');
+                btnKids.classList.remove('warn');
+                appTitle.textContent = "VOIDSCROLL";
                 document.getElementById('btnCatToggle').style.display = 'block';
-                await loadData();
-            } else { alert("Incorrect PIN"); }
+
+                console.log("Switching to Normal Mode");
+                await loadData(); // <-- Load videos.json
+            } else {
+                alert("Incorrect PIN");
+            }
         }
-        pinOverlay.classList.remove('open'); pinInput.value = "";
+
+        pinOverlay.classList.remove('open');
+        pinInput.value = "";
     }
 };
 
