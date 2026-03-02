@@ -1,0 +1,375 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+<title>VOIDSCROLL</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Bebas+Neue&family=IBM+Plex+Mono:wght@400;700&family=Space+Grotesk:wght@400;700&display=swap" rel="stylesheet">
+<style>
+[data-theme="dark"]{--bg:#0e0e0e;--tx:#f0f0f0;--tx2:rgba(240,240,240,0.5);--acc:#fff;--bdr:rgba(255,255,255,0.1);--tagbg:rgba(255,255,255,0.07);--tagbdr:rgba(255,255,255,0.13);--ob:linear-gradient(to top,rgba(14,14,14,0.78) 0%,rgba(14,14,14,0.18) 45%,transparent 68%);--ot:linear-gradient(to bottom,rgba(14,14,14,0.7) 0%,transparent 28%);--prog:#fff;--btnbg:rgba(14,14,14,0.6);--btnbdr:rgba(255,255,255,0.14);--fm:"IBM Plex Mono",monospace;--stbg:rgba(14,14,14,0.82);--vig:rgba(0,0,0,0.28)}
+[data-theme="light"]{--bg:#eeebe5;--tx:#111;--tx2:rgba(17,17,17,0.48);--acc:#111;--bdr:rgba(0,0,0,0.12);--tagbg:rgba(0,0,0,0.05);--tagbdr:rgba(0,0,0,0.1);--ob:linear-gradient(to top,rgba(238,235,229,0.82) 0%,rgba(238,235,229,0.14) 46%,transparent 68%);--ot:linear-gradient(to bottom,rgba(238,235,229,0.65) 0%,transparent 25%);--prog:#111;--btnbg:rgba(238,235,229,0.75);--btnbdr:rgba(0,0,0,0.1);--fm:"IBM Plex Mono",monospace;--stbg:rgba(238,235,229,0.9);--vig:rgba(0,0,0,0.07)}
+
+*,*::before,*::after{margin:0;padding:0;box-sizing:border-box}
+html,body{width:100%;height:100%;overflow:hidden;background:#000;color:var(--tx);font-family:"Space Grotesk",sans-serif;touch-action:none;user-select:none;-webkit-user-select:none}
+
+/* ── UI ──────────────────────────────────────────────── */
+#feed{position:fixed;inset:0;z-index:1}
+.card{position:absolute;inset:0;background:#000;will-change:transform;overflow:hidden}
+.card video{position:absolute;inset:0;width:100%;height:100%;object-fit:cover;opacity:0;transition:opacity .5s ease}
+.card video.vis{opacity:1}
+.card video.contain { object-fit: contain; }
+
+.ctrl-strip { position: fixed; left: 12px; top: 50%; transform: translateY(-50%); z-index: 50; display: flex; flex-direction: column; gap: 12px; }
+.side-btn { width: 44px; height: 44px; border-radius: 50%; background: var(--btnbg); border: 1px solid var(--btnbdr); backdrop-filter: blur(12px); display: flex; align-items: center; justify-content: center; cursor: pointer; color: var(--tx2); transition: all .2s; font-size: 1.1rem; }
+.side-btn.active { color: var(--acc); border-color: var(--acc); box-shadow: 0 0 15px rgba(255,255,255,0.1); }
+.side-btn.kid-active { background: #ffdf00; color: #000; border-color: #ffdf00; }
+
+.card-info{position:absolute;bottom:0;left:0;right:60px;padding:15px 15px 40px;z-index:6; opacity:0; pointer-events:none; transition: opacity .3s}
+.card-info.vis{opacity:1}
+.vid-ttl{font-size:0.9rem;font-weight:700;margin-bottom:4px;text-shadow:0 2px 8px #000}
+.vid-tag{display:inline-block; font-size:0.5rem; background:var(--tagbg); border:1px solid var(--tagbdr); padding:2px 6px; border-radius:4px; color:var(--acc); text-transform:uppercase; margin-bottom:8px}
+
+.status{position:fixed; bottom:25px; left:50%; transform:translateX(-50%); z-index:100; font-family:var(--fm); font-size:0.55rem; color:var(--tx2); opacity:0; transition:opacity .3s}
+.status.show{opacity:1}
+
+/* ── INTRO ───────────────────────────────────────────── */
+#intro{position:fixed;inset:0;z-index:9999;background:#000;display:flex;align-items:center;justify-content:center;flex-direction:column;gap:10px; transition:opacity .6s}
+.intro-word{font-family:"Bebas Neue",sans-serif;font-size:clamp(3.5rem,16vw,8rem);letter-spacing:0.18em;color:#fff}
+
+.skel{position:absolute;inset:0;z-index:2;display:flex;align-items:center;justify-content:center;background:#000;color:rgba(255,255,255,0.1);font-family:var(--fm);font-size:0.6rem;letter-spacing:4px}
+</style>
+</head>
+<body data-theme="dark">
+
+<div id="intro">
+  <div class="intro-word">VOID</div>
+</div>
+
+<div id="feed"></div>
+
+<div class="ctrl-strip">
+  <div class="side-btn" id="kidToggle" title="Kid Mode">👶</div>
+  <div class="side-btn" id="uiToggle" title="Info">☰</div>
+  <div class="side-btn" id="zoomToggle" title="Zoom">⛶</div>
+  <div class="side-btn" id="muteBtn" title="Mute">🔊</div>
+</div>
+
+<div class="status" id="status">INITIATING</div>
+
+<script>
+let playlist=[], curIdx=0, muted=true, zoomFill=true, kidMode=false, infoVisible=false, transitioning=false;
+let startY = 0, distY = 0, isDragging = false;
+let curCard = null;
+
+// ── ENTRPY ENGINE ─────────────────────────────────────────────────
+const getRand = (max) => Math.floor(Math.random() * max) + 1;
+
+async function fetchNASA() {
+  const query = kidMode ? "Space Place educational" : "nebula galaxy";
+  const r = await fetch(`https://images-api.nasa.gov/search?q=${query}&media_type=video&page=${getRand(3)}`);
+  const d = await r.json();
+  return (d.collection.items || []).slice(0, 10).map(x => ({
+    url: "https://images-assets.nasa.gov/video/NHQ_2019_0311_Go%20Forward%20to%20the%20Moon/NHQ_2019_0311_Go%20Forward%20to%20the%20Moon~mobile.mp4", 
+    title: x.data[0].title,
+    tag: kidMode ? "NASA KIDS" : "COSMOS",
+    source: "nasa"
+  }));
+}
+
+async function fetchArchive() {
+  // Kid Mode uses Public Domain Cartoons (Superman, Popeye, etc)
+  const query = kidMode ? "collection:(pdcartooncollection OR classic-toons-2025)" : "mediatype:movies AND (nebula OR lofi)";
+  const r = await fetch(`https://archive.org/advancedsearch.php?q=${query}&rows=15&start=${getRand(50)}&output=json`);
+  const d = await r.json();
+  return (d.response.docs || []).map(x => ({
+    identifier: x.identifier,
+    title: x.title,
+    tag: kidMode ? "CLASSIC TOON" : "ARCHIVE",
+    source: "archive"
+  }));
+}
+
+// ── CORE FUNCTIONS ────────────────────────────────────────────────
+async function loadContent() {
+  showStatus("FETCHING VOID...");
+  const [n, a] = await Promise.all([fetchNASA(), fetchArchive()]);
+  playlist = [...n, ...a].sort(() => Math.random() - 0.5);
+  curIdx = 0;
+  renderCard(0, "up");
+}
+
+function renderCard(idx, dir) {
+  const item = playlist[idx];
+  if(!item) return;
+
+  const card = document.createElement('div');
+  card.className = 'card';
+  card.innerHTML = `
+    <div class="skel">LOADING STREAM</div>
+    <div class="card-info ${infoVisible?'vis':''}">
+      <div class="vid-tag">${item.tag}</div>
+      <div class="vid-ttl">${item.title}</div>
+    </div>
+  `;
+
+  const vid = document.createElement('video');
+  vid.loop = true; vid.muted = muted; vid.playsInline = true;
+  if(!zoomFill) vid.classList.add('contain');
+  
+  vid.src = item.source === "archive" 
+    ? `https://archive.org/download/${item.identifier}/${item.identifier}_512kb.mp4`
+    : item.url;
+
+  vid.onloadeddata = () => {
+    card.querySelector('.skel').style.display = 'none';
+    vid.classList.add('vis');
+    vid.play();
+  };
+
+  if(curCard) {
+    const old = curCard;
+    old.style.transition = 'transform 0.5s cubic-bezier(0.16, 1, 0.3, 1), opacity 0.4s';
+    old.style.transform = dir === "up" ? 'translateY(-100%)' : 'translateY(100%)';
+    setTimeout(() => old.remove(), 500);
+  }
+
+  document.getElementById('feed').appendChild(card);
+  curCard = card;
+}
+
+function advance(dir) {
+  if(transitioning) return;
+  const next = dir === "up" ? curIdx + 1 : curIdx - 1;
+  if(next < 0 || next >= playlist.length) return;
+  transitioning = true;
+  curIdx = next;
+  renderCard(curIdx, dir);
+  setTimeout(() => transitioning = false, 500);
+}
+
+// ── GESTURES ──────────────────────────────────────────────────────
+window.addEventListener('touchstart', e => { startY = e.touches[0].clientY; isDragging = true; });
+window.addEventListener('touchmove', e => {
+  if(!isDragging) return;
+  distY = e.touches[0].clientY - startY;
+  curCard.style.transform = `translateY(${distY}px)`;
+});
+window.addEventListener('touchend', () => {
+  isDragging = false;
+  if(Math.abs(distY) > 100) advance(distY < 0 ? "up" : "down");
+  else curCard.style.transform = 'translateY(0)';
+  distY = 0;
+});
+
+// ── UI EVENTS ─────────────────────────────────────────────────────
+document.getElementById('kidToggle').addEventListener('click', () => {
+  kidMode = !kidMode;
+  document.getElementById('kidToggle').classList.toggle('kid-active', kidMode);
+  showStatus(kidMode ? "KID MODE ACTIVE" : "VOID MODE ACTIVE");
+  loadContent(); // Refresh feed with new sources
+});
+
+document.getElementById('zoomToggle').addEventListener('click', () => {
+  zoomFill = !zoomFill;
+  document.getElementById('zoomToggle').classList.toggle('active', !zoomFill);
+  document.querySelectorAll('video').forEach(v => v.classList.toggle('contain', !zoomFill));
+});
+
+document.getElementById('muteBtn').addEventListener('click', () => {
+  muted = !muted;
+  document.getElementById('muteBtn').innerHTML = muted ? "🔇" : "🔊";
+  if(curCard) curCard.querySelector('video').muted = muted;
+});
+
+document.getElementById('uiToggle').addEventListener('click', () => {
+  infoVisible = !infoVisible;
+  document.getElementById('uiToggle').classList.toggle('active', infoVisible);
+  if(curCard) curCard.querySelector('.card-info').classList.toggle('vis', infoVisible);
+});
+
+function showStatus(msg) {
+  const s = document.getElementById('status');
+  s.textContent = msg; s.classList.add('show');
+  setTimeout(() => s.classList.remove('show'), 2000);
+}
+
+// ── START ─────────────────────────────────────────────────────────
+setTimeout(() => {
+  document.getElementById('intro').style.opacity = '0';
+  setTimeout(() => document.getElementById('intro').remove(), 600);
+  loadContent();
+}, 2000);
+</script>
+</body>
+</html>
+    url: "", // Resolved later to save bandwidth
+    nasaHref: x.href,
+    title: x.data[0].title,
+    desc: x.data[0].description,
+    thumb: x.links?.[0].href,
+    source: "nasa"
+  }));
+}
+
+async function fetchArchive(q) {
+  const start = getRand(50); // Offset by random amount
+  const r = await fetch(`https://archive.org/advancedsearch.php?q=${q}+AND+mediatype:movies&rows=15&start=${start}&output=json`);
+  const d = await r.json();
+  return (d.response.docs || []).map(x => ({
+    identifier: x.identifier,
+    title: x.title,
+    desc: x.description,
+    source: "archive",
+    thumb: `https://archive.org/services/img/${x.identifier}`
+  }));
+}
+
+// ── SWIPE LOGIC (Optimized for Touch) ──────────────────────────────
+let startY = 0, distY = 0, isDragging = false;
+
+function initTouch() {
+  window.addEventListener('touchstart', e => {
+    startY = e.touches[0].clientY;
+    isDragging = true;
+    if(curCard) curCard.style.transition = 'none';
+  }, {passive: false});
+
+  window.addEventListener('touchmove', e => {
+    if(!isDragging) return;
+    distY = e.touches[0].clientY - startY;
+    // Add resistance if pulling down on first item
+    if(curIdx === 0 && distY > 0) distY /= 3;
+    if(curCard) curCard.style.transform = `translateY(${distY}px)`;
+  }, {passive: false});
+
+  window.addEventListener('touchend', () => {
+    if(!isDragging) return;
+    isDragging = false;
+    if(Math.abs(distY) > 80) {
+      if(distY < 0) advance("up");
+      else if(curIdx > 0) advance("down");
+      else resetPos();
+    } else {
+      resetPos();
+    }
+    distY = 0;
+  });
+}
+
+function resetPos() {
+  if(curCard) {
+    curCard.style.transition = 'transform 0.3s cubic-bezier(0.2, 0.8, 0.2, 1)';
+    curCard.style.transform = 'translateY(0)';
+  }
+}
+
+// ── ZOOM / FOCUS LOGIC ────────────────────────────────────────────
+document.getElementById('zoomToggle').addEventListener('click', () => {
+  zoomFill = !zoomFill;
+  document.getElementById('zoomToggle').classList.toggle('active', !zoomFill);
+  const vids = document.querySelectorAll('video');
+  vids.forEach(v => v.classList.toggle('contain', !zoomFill));
+  showStatus(zoomFill ? "ZOOM: FILL" : "ZOOM: FIT");
+});
+
+// ── CORE ENGINE ───────────────────────────────────────────────────
+let curCard = null;
+
+function renderCard(idx, dir) {
+  const item = playlist[idx];
+  if(!item) return;
+
+  const card = document.createElement('div');
+  card.className = 'card';
+  card.innerHTML = `
+    <div class="skel"><div class="skel-logo">LOADING</div></div>
+    <div class="ov-t"></div><div class="ov-b"></div>
+    <div class="prog"><div class="prog-fill"></div></div>
+    <div class="card-info ${infoVisible?'vis':''}">
+      <div class="vid-ttl">${item.title}</div>
+      <div class="vid-desc">${item.desc || ''}</div>
+    </div>
+  `;
+
+  const vid = document.createElement('video');
+  vid.loop = true;
+  vid.muted = muted;
+  vid.playsInline = true;
+  if(!zoomFill) vid.classList.add('contain');
+  
+  // High-performance loading
+  if(item.source === "archive") {
+    vid.src = `https://archive.org/download/${item.identifier}/${item.identifier}_512kb.mp4`;
+  } else {
+    // For NASA we'd usually fetch the href first, using a placeholder for demo speed
+    vid.src = item.url || "https://images-assets.nasa.gov/video/NHQ_2019_0311_Go%20Forward%20to%20the%20Moon/NHQ_2019_0311_Go%20Forward%20to%20the%20Moon~mobile.mp4";
+  }
+
+  vid.onloadeddata = () => {
+    card.querySelector('.skel').style.display = 'none';
+    vid.classList.add('vis');
+    vid.play();
+  };
+
+  card.appendChild(vid);
+  
+  if(curCard) {
+    const old = curCard;
+    old.style.transition = 'transform 0.4s ease, opacity 0.4s ease';
+    old.style.transform = dir === "up" ? 'translateY(-100%)' : 'translateY(100%)';
+    old.style.opacity = '0';
+    setTimeout(() => old.remove(), 400);
+  }
+
+  document.getElementById('feed').appendChild(card);
+  curCard = card;
+  curIdx = idx;
+}
+
+function advance(dir) {
+  if(transitioning) return;
+  const next = dir === "up" ? curIdx + 1 : curIdx - 1;
+  if(next < 0 || next >= playlist.length) return;
+  
+  transitioning = true;
+  renderCard(next, dir);
+  setTimeout(() => transitioning = false, 500);
+}
+
+function showStatus(msg) {
+  const s = document.getElementById('status');
+  s.textContent = msg;
+  s.classList.add('show');
+  setTimeout(() => s.classList.remove('show'), 2000);
+}
+
+// ── INIT ──────────────────────────────────────────────────────────
+async function init() {
+  const results = await Promise.all([fetchNASA("nebula"), fetchArchive("space")]);
+  playlist = results.flat().sort(() => Math.random() - 0.5); // Global shuffle
+  renderCard(0, "up");
+  initTouch();
+  
+  setTimeout(() => {
+    document.getElementById('intro').style.opacity = '0';
+    setTimeout(() => document.getElementById('intro').remove(), 500);
+  }, 2500);
+}
+
+document.getElementById('uiToggle').addEventListener('click', () => {
+  infoVisible = !infoVisible;
+  document.getElementById('uiToggle').classList.toggle('active', infoVisible);
+  if(curCard) curCard.querySelector('.card-info').classList.toggle('vis', infoVisible);
+});
+
+document.getElementById('muteBtn').addEventListener('click', () => {
+  muted = !muted;
+  document.getElementById('muteBtn').innerHTML = muted ? "🔇" : "🔊";
+  if(curCard) curCard.querySelector('video').muted = muted;
+});
+
+init();
+</script>
+</body>
+</html>
