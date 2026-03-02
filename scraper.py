@@ -4,95 +4,263 @@ import os
 import random
 from hashlib import md5
 
-VIDEO_FILE = "videos.json"
-MAX_RESULTS = 40
+# =========================
+# CONFIG
+# =========================
 
-CATEGORY_MAP = {
-    "space": ["space", "mars", "jupiter", "satellite", "rocket", "nasa"],
-    "animals": ["animal", "wildlife", "ocean", "fish", "bird"],
-    "science": ["experiment", "physics", "biology", "chemistry"],
-    "movies": ["film", "movie", "television", "documentary"]
-}
+MAX_RESULTS = 25
+MAX_DURATION_SECONDS = 900  # 15 min max
+MAX_PAGE = 20
 
-SEARCH_TERMS = [
-    "space documentary",
-    "wildlife",
-    "ocean life",
-    "science film",
-    "rocket launch"
+VIDEO_FILE_NORMAL = "videos.json"
+VIDEO_FILE_KIDS = "kids_videos.json"
+
+# =========================
+# SEARCH TERMS & FILTERS
+# =========================
+
+NORMAL_SEARCH_TERMS = [
+    "space documentary", "wildlife documentary", "ocean life",
+    "science film", "rocket launch", "astronomy",
+    "nature documentary", "technology documentary"
 ]
 
-def load_existing():
-    if not os.path.exists(VIDEO_FILE):
-        return []
-    with open(VIDEO_FILE, "r", encoding="utf-8") as f:
-        return json.load(f)
+KIDS_WHITELIST = [
+    "cartoon", "storybook", "bedtime", "learning", "alphabet",
+    "animals for kids", "nursery", "nature for children",
+    "educational for children", "children's film", "public domain cartoon"
+]
 
-def save_videos(data):
-    with open(VIDEO_FILE, "w", encoding="utf-8") as f:
+# Strict blacklist to keep adult/horror content out
+BLACKLIST = [
+    "adult", "horror", "sexy", "gore", "violence", "nude", "blood", 
+    "thriller", "slasher", "nsfw", "erotic", "scary", "murder"
+]
+
+PUBLIC_DOMAIN_SOURCES = ["archive.org", "wikimedia", "nasa"]
+
+# =========================
+# HELPERS
+# =========================
+
+def load_existing(filename):
+    if not os.path.exists(filename):
+        return []
+    try:
+        with open(filename, "r", encoding="utf-8") as f:
+            return json.load(f)
+    except:
+        return []
+
+def save_videos(filename, data):
+    with open(filename, "w", encoding="utf-8") as f:
         json.dump(data, f, indent=2)
 
 def generate_id(url):
     return md5(url.encode()).hexdigest()
 
-def categorize(title):
+def is_clean(text):
+    t = text.lower()
+    return not any(bad_word in t for bad_word in BLACKLIST)
+
+def is_safe_kids(title, description=""):
+    text = (title + " " + description).lower()
+    if not is_clean(text):
+        return False
+    return any(word in text for word in KIDS_WHITELIST)
+
+def categorize_normal(title):
     t = title.lower()
-    for cat, words in CATEGORY_MAP.items():
-        if any(w in t for w in words):
-            return cat
+    if "space" in t or "rocket" in t or "astronomy" in t: return "space"
+    if "wildlife" in t or "animal" in t or "ocean" in t: return "animals"
+    if "technology" in t or "computer" in t: return "technology"
+    if "history" in t: return "history"
     return "science"
 
-def fetch_archive():
-    term = random.choice(SEARCH_TERMS)
-    r = requests.get(
-        "https://archive.org/advancedsearch.php",
-        params={
-            "q": f"{term} AND mediatype:movies",
-            "output": "json",
-            "rows": MAX_RESULTS
-        },
-        timeout=10
-    )
-    data = r.json()
-    results = []
+# =========================
+# FETCH FUNCTIONS
+# =========================
 
-    for doc in data.get("response", {}).get("docs", []):
+def fetch_archive(query, kids_only=False):
+    page = random.randint(1, MAX_PAGE)
+    print(f"\nSearching Archive.org: '{query}' | page {page} | kids_only={kids_only}")
+
+    try:
+        r = requests.get(
+            "https://archive.org/advancedsearch.php",
+            params={
+                "q": query,
+                "fl[]": ["identifier", "title", "description"],
+                "output": "json",
+                "rows": MAX_RESULTS,
+                "page": page
+            },
+            timeout=20
+        )
+        r.raise_for_status()
+    except Exception as e:
+        print("Search failed:", e)
+        return []
+
+    docs = r.json().get("response", {}).get("docs", [])
+    random.shuffle(docs)
+
+    results = []
+    for doc in docs:
         identifier = doc.get("identifier")
         title = doc.get("title", "Untitled")
+        description = doc.get("description", "")
 
-        meta = requests.get(f"https://archive.org/metadata/{identifier}", timeout=10).json()
+        # Strict filter before even fetching metadata
+        if not is_clean(title + " " + description):
+            continue
+        if kids_only and not is_safe_kids(title, description):
+            continue
+
+        try:
+            meta = requests.get(f"https://archive.org/metadata/{identifier}", timeout=10).json()
+        except:
+            continue
+
         files = meta.get("files", [])
-
-        mp4 = next((f for f in files if f["name"].endswith(".mp4")), None)
+        mp4 = next((f for f in files if f.get("name", "").endswith(".mp4")), None)
         if not mp4:
             continue
 
+        duration = mp4.get("length")
+        if duration:
+            try:
+                if float(duration) > MAX_DURATION_SECONDS:
+                    continue
+            except:
+                pass
+
+        category = "kids" if kids_only else categorize_normal(title)
         url = f"https://archive.org/download/{identifier}/{mp4['name']}"
+        print(f"Found: {title}")
         results.append({
             "id": generate_id(url),
             "title": title,
             "url": url,
-            "category": categorize(title),
+            "category": category,
             "source": "archive"
         })
 
     return results
 
-def expand():
-    existing = load_existing()
+def fetch_wikimedia(query, kids_only=False):
+    print(f"\nSearching Wikimedia Commons: '{query}' | kids_only={kids_only}")
+    url = "https://commons.wikimedia.org/w/api.php"
+    params = {
+        "action": "query",
+        "generator": "search",
+        "gsrsearch": query,
+        "gsrlimit": MAX_RESULTS,
+        "prop": "imageinfo",
+        "iiprop": "url",
+        "format": "json"
+    }
+
+    try:
+        r = requests.get(url, params=params, timeout=15)
+        r.raise_for_status()
+    except:
+        return []
+
+    pages = r.json().get("query", {}).get("pages", {})
+    results = []
+    for page in pages.values():
+        title = page.get("title", "Untitled")
+        if not is_clean(title): continue
+        if kids_only and not is_safe_kids(title): continue
+        
+        imageinfo = page.get("imageinfo", [])
+        if not imageinfo: continue
+        
+        url = imageinfo[0].get("url")
+        if not url: continue
+        
+        results.append({
+            "id": generate_id(url),
+            "title": title,
+            "url": url,
+            "category": "kids" if kids_only else "science",
+            "source": "wikimedia"
+        })
+    return results
+
+# =========================
+# RANDOM FETCHER
+# =========================
+
+def random_fetch(kids_only=False):
+    source = random.choice(PUBLIC_DOMAIN_SOURCES)
+    term = random.choice(KIDS_WHITELIST) if kids_only else random.choice(NORMAL_SEARCH_TERMS)
+
+    if source == "archive.org":
+        query = f'{term} AND mediatype:movies'
+        if kids_only:
+            query += ' AND (subject:"children" OR subject:"cartoon" OR subject:"education")'
+        return fetch_archive(query, kids_only=kids_only)
+
+    if source == "wikimedia":
+        return fetch_wikimedia(term, kids_only=kids_only)
+
+    if source == "nasa":
+        url = "https://images-api.nasa.gov/search"
+        params = {"q": term, "media_type": "video", "page": random.randint(1, MAX_PAGE)}
+        try:
+            r = requests.get(url, params=params, timeout=15).json()
+            items = r.get("collection", {}).get("items", [])
+            random.shuffle(items)
+            results = []
+            for item in items:
+                data = item.get("data", [{}])[0]
+                title = data.get("title", "Untitled")
+                
+                if not is_clean(title): continue
+                if kids_only and not is_safe_kids(title): continue
+
+                links = item.get("links", [])
+                video_link = next((l["href"] for l in links if l["render"]=="video"), None)
+                if not video_link: continue
+                
+                results.append({
+                    "id": generate_id(video_link),
+                    "title": title,
+                    "url": video_link,
+                    "category": "kids" if kids_only else "space",
+                    "source": "nasa"
+                })
+            return results
+        except:
+            return []
+
+# =========================
+# EXPAND POOL
+# =========================
+
+def expand_pool(filename, kids_only=False):
+    existing = load_existing(filename)
     existing_ids = {v["id"] for v in existing}
 
-    new = fetch_archive()
+    new_videos = random_fetch(kids_only=kids_only)
     added = 0
-
-    for vid in new:
+    
+    for vid in new_videos:
         if vid["id"] not in existing_ids:
             existing.append(vid)
             existing_ids.add(vid["id"])
             added += 1
 
-    save_videos(existing)
+    save_videos(filename, existing)
     print(f"Added {added} new videos. Total: {len(existing)}")
 
 if __name__ == "__main__":
-    expand()
+    print("Fetching NORMAL videos...")
+    expand_pool(VIDEO_FILE_NORMAL, kids_only=False)
+
+    print("\nFetching KIDS videos...")
+    expand_pool(VIDEO_FILE_KIDS, kids_only=True)
+
+    print("\nDone.")

@@ -4,384 +4,385 @@
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
 <title>VOIDSCROLL</title>
-<link rel="preconnect" href="https://fonts.googleapis.com">
-<link href="https://fonts.googleapis.com/css2?family=Bebas+Neue&family=IBM+Plex+Mono:wght@400;700&family=Space+Grotesk:wght@400;700&display=swap" rel="stylesheet">
+<link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@400;700&display=swap" rel="stylesheet">
 <style>
 /* --- THEMES & CORE --- */
-[data-theme="dark"]{--bg:#0e0e0e;--tx:#f0f0f0;--tx2:rgba(240,240,240,0.5);--acc:#fff;--bdr:rgba(255,255,255,0.1);--tagbg:rgba(255,255,255,0.07);--tagbdr:rgba(255,255,255,0.13);--ob:linear-gradient(to top,rgba(14,14,14,0.78) 0%,rgba(14,14,14,0.18) 45%,transparent 68%);--ot:linear-gradient(to bottom,rgba(14,14,14,0.7) 0%,transparent 28%);--prog:#fff;--btnbg:rgba(14,14,14,0.6);--btnbdr:rgba(255,255,255,0.14);--fm:"IBM Plex Mono",monospace;--stbg:rgba(14,14,14,0.82);--vig:rgba(0,0,0,0.28)}
+:root {
+    --bg: #050505;
+    --tx: #f0f0f0;
+    --ui-bg: rgba(20, 20, 20, 0.6);
+    --ui-border: rgba(255, 255, 255, 0.1);
+    --accent: #ffffff;
+    --radius: 16px;
+}
 
-*,*::before,*::after{margin:0;padding:0;box-sizing:border-box}
-html,body{width:100%;height:100%;overflow:hidden;background:#000;color:var(--tx);font-family:"Space Grotesk",sans-serif;touch-action:none;user-select:none;-webkit-user-select:none}
+body.kids-mode {
+    --bg: #d2b48c; /* Tan */
+    --tx: #050505; /* Black */
+    --ui-bg: rgba(210, 180, 140, 0.8);
+    --ui-border: rgba(5, 5, 5, 0.2);
+    --accent: #050505;
+}
 
-/* --- FEED & VIDEO --- */
-#feed{position:fixed;inset:0;z-index:1}
-.card{position:absolute;inset:0;background:#000;will-change:transform;overflow:hidden}
-.card video{position:absolute;inset:0;width:100%;height:100%;object-fit:cover;opacity:0;transition:opacity .55s ease, object-fit 0.3s ease}
-.card video.vis{opacity:1}
+*, *::before, *::after { margin: 0; padding: 0; box-sizing: border-box; }
+html, body { width: 100%; height: 100%; overflow: hidden; background: var(--bg); color: var(--tx); font-family: "Space Grotesk", sans-serif; touch-action: none; user-select: none; -webkit-user-select: none; transition: background 0.5s, color 0.5s; }
+
+/* --- CRT ANIMATION --- */
+.crt-overlay { position: fixed; inset: 0; background: #fff; z-index: 9999; pointer-events: none; animation: crtOff 0.8s cubic-bezier(0.23, 1, 0.32, 1) forwards; }
+@keyframes crtOff {
+    0% { opacity: 1; transform: scale(1, 1); }
+    20% { opacity: 1; transform: scale(1, 0.01); }
+    50% { opacity: 1; transform: scale(0, 0.01); }
+    100% { opacity: 0; transform: scale(0, 0); }
+}
+
+/* --- VIDEO FEED --- */
+#feed { position: fixed; inset: 8px; border-radius: var(--radius); overflow: hidden; background: var(--bg); }
+.card { position: absolute; inset: 0; will-change: transform; transition: filter 0.2s ease-out; }
+.card video { width: 100%; height: 100%; object-fit: cover; border-radius: var(--radius); transition: object-fit 0.3s; opacity: 0; }
+.card video.ready { opacity: 1; }
 .card video.contain { object-fit: contain; }
 
-/* --- UI CONTROLS --- */
-.ctrl-strip { position: fixed; left: 12px; top: 50%; transform: translateY(-50%); z-index: 50; display: flex; flex-direction: column; gap: 14px; }
-.side-btn { width: 44px; height: 44px; border-radius: 50%; background: var(--btnbg); border: 1px solid var(--btnbdr); backdrop-filter: blur(12px); display: flex; align-items: center; justify-content: center; cursor: pointer; color: var(--tx2); transition: all .2s; font-size: 1.1rem; }
-.side-btn.active { color: var(--acc); border-color: var(--acc); }
-.side-btn.kid-locked { background: #ffdf00; color: #000; border-color: #ffdf00; }
+/* --- UI LAYER (Fades out) --- */
+.ui-layer { position: fixed; inset: 0; z-index: 10; pointer-events: none; transition: opacity 0.5s; display: flex; flex-direction: column; justify-content: space-between; padding: 16px; }
+.ui-layer.faded { opacity: 0; }
+.ui-layer > * { pointer-events: auto; }
 
-.hdr{position:fixed;top:0;left:0;right:0;z-index:100;padding:12px;background:var(--ot);backdrop-filter:blur(5px);transform:translateY(-110%);transition:transform .3s ease}
-.hdr.vis{transform:translateY(0)}
-.cat-grid{display:flex; overflow-x:auto; gap:8px; padding-bottom:10px; scrollbar-width: none;}
-.chip{padding:6px 14px; font-size:0.6rem; letter-spacing:0.1em; text-transform:uppercase; font-weight:700; border:1px solid var(--bdr); cursor:pointer; transition:all .2s; white-space:nowrap; font-family:var(--fm); color:var(--tx2); background:rgba(255,255,255,0.05); border-radius:100px;}
-.chip.on{background:var(--acc); color:var(--bg); border-color:var(--acc)}
+/* --- HEADER & CATEGORIES --- */
+.header { display: flex; justify-content: space-between; align-items: flex-start; }
+.title { font-weight: 700; font-size: 1.2rem; letter-spacing: 2px; }
+.cat-container { display: flex; flex-direction: column; align-items: flex-end; gap: 8px; }
+.cat-list { display: flex; gap: 8px; flex-wrap: wrap; justify-content: flex-end; max-width: 70vw; opacity: 0; pointer-events: none; transition: opacity 0.3s; }
+.cat-list.open { opacity: 1; pointer-events: auto; }
 
-/* --- PIN OVERLAY --- */
-.pin-overlay { position: fixed; inset: 0; z-index: 300; background: rgba(0,0,0,0.9); backdrop-filter: blur(20px); display: none; align-items: center; justify-content: center; flex-direction: column; }
-.pin-overlay.open { display: flex; }
-.pin-input { background: transparent; border: none; border-bottom: 2px solid var(--acc); color: var(--acc); font-family: 'Bebas Neue'; font-size: 3rem; text-align: center; width: 150px; outline: none; margin: 20px 0; }
-.pin-label { font-family: var(--fm); font-size: 0.7rem; text-transform: uppercase; letter-spacing: 2px; }
+/* --- BUTTONS --- */
+button { background: var(--ui-bg); color: var(--tx); border: 1px solid var(--ui-border); padding: 8px 12px; border-radius: 8px; font-family: inherit; font-size: 0.75rem; font-weight: 700; cursor: pointer; backdrop-filter: blur(5px); text-transform: uppercase; transition: all 0.2s; }
+button:active { transform: scale(0.95); }
+button.active { background: var(--accent); color: var(--bg); }
+button.warn { border-color: #ff3333; color: #ff3333; }
 
-/* --- SHARE --- */
-.shr-bd{position:fixed;inset:0;z-index:200;background:rgba(0,0,0,.5);backdrop-filter:blur(4px);opacity:0;pointer-events:none;transition:opacity .22s}
-.shr-bd.open{opacity:1;pointer-events:all}
-.shr-sh{position:fixed;bottom:0;left:0;right:0;z-index:201;background:var(--bg);border-top:1px solid var(--bdr);padding:18px 16px 28px;transform:translateY(100%);transition:transform .28s cubic-bezier(.4,0,.2,1)}
-.shr-sh.open{transform:translateY(0)}
+/* --- CONTROLS --- */
+.controls-side { position: absolute; right: 16px; top: 50%; transform: translateY(-50%); display: flex; flex-direction: column; gap: 12px; }
+.controls-bottom { display: flex; align-items: center; justify-content: space-between; gap: 16px; margin-bottom: 8px; }
+.video-title { font-size: 0.9rem; font-weight: 700; max-width: 60%; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
 
-.skel{position:absolute;inset:0;z-index:2;display:flex;align-items:center;justify-content:center;background:#000;font-family:var(--fm);font-size:0.5rem;color:var(--tx2)}
-.card-info{position:absolute;bottom:0;left:0;right:60px;padding:15px 15px 35px;z-index:6; opacity:0; pointer-events:none; transition: opacity .3s}
-.card-info.vis{opacity:1; pointer-events:auto}
+/* --- SCRUBBER --- */
+.scrubber-wrap { position: absolute; bottom: 0; left: 16px; right: 16px; height: 12px; }
+input[type=range] { -webkit-appearance: none; width: 100%; background: transparent; }
+input[type=range]:focus { outline: none; }
+input[type=range]::-webkit-slider-runnable-track { width: 100%; height: 4px; cursor: pointer; background: var(--ui-border); border-radius: 2px; }
+input[type=range]::-webkit-slider-thumb { height: 12px; width: 12px; border-radius: 50%; background: var(--accent); cursor: pointer; -webkit-appearance: none; margin-top: -4px; }
+
+/* --- SEEK ZONES --- */
+.seek-zone { position: absolute; top: 20%; bottom: 20%; width: 30%; z-index: 5; pointer-events: auto; }
+.seek-left { left: 0; }
+.seek-right { right: 0; }
+.seek-indicator { position: absolute; top: 50%; left: 50%; transform: translate(-50%, -50%); font-weight: bold; background: rgba(0,0,0,0.5); color: #fff; padding: 10px 20px; border-radius: 20px; opacity: 0; transition: opacity 0.2s; pointer-events: none;}
+
+/* --- OVERLAYS --- */
+.overlay { position: fixed; inset: 0; background: rgba(0,0,0,0.9); z-index: 100; display: flex; flex-direction: column; align-items: center; justify-content: center; opacity: 0; pointer-events: none; transition: opacity 0.3s; color: #fff; }
+.overlay.open { opacity: 1; pointer-events: auto; }
+.pin-input { background: transparent; border: none; border-bottom: 2px solid #fff; color: #fff; font-family: inherit; font-size: 2rem; text-align: center; width: 150px; outline: none; margin: 20px 0; }
+.toast { position: fixed; top: 20px; left: 50%; transform: translateX(-50%); background: var(--accent); color: var(--bg); padding: 10px 20px; border-radius: 20px; font-weight: bold; z-index: 200; opacity: 0; transition: opacity 0.3s; pointer-events: none; }
 </style>
 </head>
-<body data-theme="dark">
+<body>
 
+<div class="crt-overlay"></div>
 <div id="feed"></div>
 
-<div class="ctrl-strip">
-    <div class="side-btn" id="kidToggle" title="Lock Kid Mode">👶</div>
-    <div class="side-btn" id="uiToggle" title="Toggle Info">☰</div>
-    <div class="side-btn" id="zoomToggle" title="Zoom Mode">⛶</div>
-    <div class="side-btn" id="muteBtn" title="Mute">🔊</div>
-</div>
+<div class="seek-zone seek-left" id="seekLeft"><div class="seek-indicator" id="indLeft">&laquo; REV</div></div>
+<div class="seek-zone seek-right" id="seekRight"><div class="seek-indicator" id="indRight">FWD &raquo;</div></div>
 
-<header class="hdr" id="hdr">
-    <div id="logo" style="font-family:'Bebas Neue'; font-size:1.5rem; margin-bottom:10px;">VOIDSCROLL</div>
-    <div class="cat-grid" id="catGrid">
-        <div class="chip on" data-q="all">ALL</div>
-        <div class="chip" data-q="animals">ANIMALS</div>
-        <div class="chip" data-q="space">SPACE</div>
-        <div class="chip" data-q="science">SCIENCE</div>
-        <div class="chip" data-q="movies">MOVIES/TV</div>
+<div class="ui-layer" id="uiLayer">
+    <div class="header">
+        <div class="title" id="appTitle">VOIDSCROLL</div>
+        <div class="cat-container">
+            <button id="btnCatToggle">[ CATEGORIES ]</button>
+            <div class="cat-list" id="catList">
+                <button class="cat-btn active" data-cat="all">ALL</button>
+                <button class="cat-btn" data-cat="space">SPACE</button>
+                <button class="cat-btn" data-cat="science">SCIENCE</button>
+                <button class="cat-btn" data-cat="animals">ANIMALS</button>
+            </div>
+        </div>
     </div>
-</header>
 
-<div class="pin-overlay" id="pinOverlay">
-    <div class="pin-label" id="pinText">ENTER CODE TO LOCK</div>
+    <div class="controls-side">
+        <button id="btnMute">[ MUTE ]</button>
+        <button id="btnFit">[ FIT ]</button>
+        <button id="btnLock">[ SCROLL ]</button>
+        <button id="btnKids">[ KIDS ]</button>
+    </div>
+
+    <div>
+        <div class="controls-bottom">
+            <div class="video-title" id="vidTitle">Loading...</div>
+            <button id="btnShare">[ SHARE ]</button>
+        </div>
+        <div class="scrubber-wrap">
+            <input type="range" id="scrubber" value="0" min="0" max="100">
+        </div>
+    </div>
+</div>
+
+<div class="overlay" id="pinOverlay">
+    <h2 id="pinText">ENTER PIN</h2>
     <input type="password" class="pin-input" id="pinInput" inputmode="numeric" maxlength="4">
-    <div class="pin-label" style="font-size:0.5rem; opacity:0.5;">PRESS ENTER TO CONFIRM</div>
+    <p style="font-size: 0.8rem; opacity: 0.7;">Press Enter to confirm</p>
 </div>
 
-<div class="shr-bd" id="shrBd"></div>
-<div class="shr-sh" id="shrSh">
-  <div style="font-family:'Bebas Neue'; font-size:1.2rem; margin-bottom:10px;">SHARE VIDEO</div>
-  <div id="shrUrl" style="font-size:0.6rem; background:rgba(255,255,255,0.05); padding:10px; word-break:break-all; margin-bottom:15px;"></div>
-  <button id="shrCopy" style="width:100%; padding:12px; background:var(--acc); color:var(--bg); border:none; font-family:var(--fm); font-weight:700;">COPY LINK</button>
-</div>
+<div class="toast" id="toast">Copied to clipboard!</div>
 
 <script>
-let playlist=[], curIdx=0, muted=true, zoomFill=true, infoVisible=false, transitioning=false;
-let kidMode=false, savedPin=null, curCard=null;
+// --- STATE ---
+let allVideos = [], currentPlaylist = [], currentIndex = 0;
+let isKidsMode = false, savedPin = null, scrollLocked = false, isMuted = true, isFit = false;
+let curCard = null, curVideo = null;
+let uiTimeout;
+let transitioning = false;
 
-const getRand = (max) => Math.floor(Math.random() * max) + 1;
+// Elements
+const feed = document.getElementById('feed');
+const uiLayer = document.getElementById('uiLayer');
+const scrubber = document.getElementById('scrubber');
+const vidTitle = document.getElementById('vidTitle');
+const appTitle = document.getElementById('appTitle');
 
-// --- DUAL MODE FETCHING ---
-async function fetchMedia(q) {
-    const page = getRand(10);
-    // If Kid Mode: strictly cartoons and educational space
-    const query = kidMode ? "collection:(pdcartooncollection OR classic-toons-2025) AND movies" : q;
+// --- INIT & FETCH ---
+async function init() {
+    await loadData();
     
-    const r = await fetch(`https://archive.org/advancedsearch.php?q=${query}&rows=15&start=${getRand(50)}&output=json`);
-    const d = await r.json();
-    return (d.response.docs || []).map(x => ({
-        id: x.identifier,
-        title: x.title,
-        source: "archive"
-    }));
+    // Check for shared video in URL
+    const params = new URLSearchParams(window.location.search);
+    const sharedId = params.get('vid');
+    if (sharedId) {
+        const idx = currentPlaylist.findIndex(v => v.id === sharedId);
+        if (idx !== -1) currentIndex = idx;
+    }
+    
+    renderCard(currentIndex, "up");
+    resetUiTimer();
 }
 
-async function resolveVideo(item) {
-    return `https://archive.org/download/${item.id}/${item.id}_512kb.mp4`;
+async function loadData() {
+    const file = isKidsMode ? 'kids_videos.json' : 'videos.json';
+    try {
+        const res = await fetch(file);
+        if (!res.ok) throw new Error("File not found");
+        allVideos = await res.json();
+    } catch(e) {
+        // Fallback dummy data if running locally without JSON
+        allVideos = [{ id: "dummy", title: "Run scraper to get videos", url: "https://www.w3schools.com/html/mov_bbb.mp4", category: "all" }];
+    }
+    
+    filterCategory('all');
 }
 
-async function loadContent(q = "space") {
-    playlist = (await fetchMedia(q)).sort(() => Math.random() - 0.5);
-    renderCard(0, "up");
+function filterCategory(cat) {
+    currentPlaylist = cat === 'all' ? [...allVideos] : allVideos.filter(v => v.category === cat);
+    // Shuffle playlist
+    currentPlaylist.sort(() => Math.random() - 0.5);
+    currentIndex = 0;
+    if (currentPlaylist.length > 0) renderCard(0, "up");
 }
 
+// --- RENDER & SWIPE ---
 function renderCard(idx, dir) {
-    const item = playlist[idx];
-    if(!item) return;
+    if (!currentPlaylist[idx]) return;
+    const item = currentPlaylist[idx];
+    vidTitle.textContent = item.title;
 
     const card = document.createElement('div');
     card.className = 'card';
-    card.innerHTML = `
-        <div class="skel">CALIBRATING...</div>
-        <div class="card-info ${infoVisible?'vis':''}">
-            <div style="font-size:0.5rem; opacity:0.6; margin-bottom:4px">${kidMode ? 'KIDS' : 'VOID'}</div>
-            <div class="vid-ttl" style="font-weight:700;">${item.title}</div>
-            ${!kidMode ? `<button onclick="openShare('${item.title}')" style="background:none; border:1px solid #fff; color:#fff; padding:5px 10px; font-size:0.5rem; margin-top:10px;">SHARE</button>` : ''}
-        </div>
-    `;
+    card.style.transform = dir === "up" ? 'translateY(100%)' : 'translateY(-100%)';
 
     const vid = document.createElement('video');
-    vid.loop = true; vid.muted = muted; vid.playsInline = true;
-    if(!zoomFill) vid.classList.add('contain');
+    vid.src = item.url;
+    vid.loop = true; vid.muted = isMuted; vid.playsInline = true;
+    if (isFit) vid.classList.add('contain');
     
-    resolveVideo(item).then(url => {
-        vid.src = url;
-        vid.onloadeddata = () => {
-            card.querySelector('.skel').style.display = 'none';
-            vid.classList.add('vis');
-            vid.play();
-        };
-    });
+    vid.onloadeddata = () => { vid.classList.add('ready'); vid.play(); };
+    vid.ontimeupdate = () => { if(vid.duration) scrubber.value = (vid.currentTime / vid.duration) * 100; };
+    vid.onerror = () => advance("up"); // skip broken videos
 
     card.appendChild(vid);
-    if(curCard) {
+    feed.appendChild(card);
+
+    // Animate in
+    setTimeout(() => { card.style.transition = 'transform 0.4s ease-out'; card.style.transform = 'translateY(0)'; }, 50);
+
+    // Remove old card
+    if (curCard) {
         const old = curCard;
-        old.style.transition = 'transform 0.4s cubic-bezier(0.16, 1, 0.3, 1)';
+        old.style.transition = 'transform 0.4s ease-out';
         old.style.transform = dir === "up" ? 'translateY(-100%)' : 'translateY(100%)';
         setTimeout(() => old.remove(), 400);
     }
-    document.getElementById('feed').appendChild(card);
-    curCard = card;
-}
-
-function advance(dir) {
-    if(transitioning) return;
-    const next = dir === "up" ? curIdx + 1 : curIdx - 1;
-    if(next < 0 || next >= playlist.length) return;
-    transitioning = true; curIdx = next;
-    renderCard(curIdx, dir);
-    setTimeout(() => transitioning = false, 500);
-}
-
-// --- PIN LOGIC ---
-const kidBtn = document.getElementById('kidToggle');
-const overlay = document.getElementById('pinOverlay');
-const pinInput = document.getElementById('pinInput');
-
-kidBtn.onclick = () => {
-    overlay.classList.add('open');
-    pinInput.focus();
-    document.getElementById('pinText').textContent = kidMode ? "ENTER CODE TO UNLOCK" : "SET CODE TO LOCK";
-};
-
-pinInput.onkeydown = (e) => {
-    if(e.key === "Enter") {
-        const val = pinInput.value;
-        if(!kidMode) {
-            // Locking
-            savedPin = val;
-            kidMode = true;
-            kidBtn.classList.add('kid-locked');
-            document.getElementById('catGrid').style.display = 'none';
-            document.getElementById('logo').textContent = "VOID KIDS";
-            loadContent();
-        } else {
-            // Unlocking
-            if(val === savedPin) {
-                kidMode = false;
-                kidBtn.classList.remove('kid-locked');
-                document.getElementById('catGrid').style.display = 'flex';
-                document.getElementById('logo').textContent = "VOIDSCROLL";
-                loadContent("space");
-            }
-        }
-        overlay.classList.remove('open');
-        pinInput.value = "";
-    }
-};
-
-// --- GESTURES & UI ---
-let startY = 0;
-window.addEventListener('touchstart', e => { startY = e.touches[0].clientY; });
-window.addEventListener('touchmove', e => {
-    let dy = e.touches[0].clientY - startY;
-    curCard.style.transform = `translateY(${dy}px)`;
-});
-window.addEventListener('touchend', e => {
-    let dy = e.touches[0].clientY - startY;
-    if(Math.abs(dy) > 80) advance(dy < 0 ? "up" : "down");
-    else curCard.style.transform = 'translateY(0)';
-});
-
-document.getElementById('zoomToggle').onclick = () => {
-    zoomFill = !zoomFill;
-    document.querySelectorAll('video').forEach(v => v.classList.toggle('contain', !zoomFill));
-};
-
-document.getElementById('uiToggle').onclick = () => {
-    infoVisible = !infoVisible;
-    if(curCard) curCard.querySelector('.card-info').classList.toggle('vis', infoVisible);
-};
-
-document.getElementById('muteBtn').onclick = () => {
-    muted = !muted;
-    document.getElementById('muteBtn').innerHTML = muted ? "🔇" : "🔊";
-    if(curCard) curCard.querySelector('video').muted = muted;
-};
-
-document.getElementById('catGrid').onclick = e => {
-    const chip = e.target.closest('.chip');
-    if(!chip) return;
-    document.querySelectorAll('.chip').forEach(c => c.classList.remove('on'));
-    chip.classList.add('on');
-    loadContent(chip.dataset.q);
-};
-
-// Tap top for header
-window.onclick = e => { if(e.clientY < 60) document.getElementById('hdr').classList.toggle('vis'); };
-
-loadContent();
-</script>
-</body>
-</html>
-async function loadContent(q = "all") {
-    playlist = (await fetchMedia(q)).sort(() => Math.random() - 0.5);
-    renderCard(0, "up");
-}
-
-function renderCard(idx, dir) {
-    const item = playlist[idx];
-    if(!item) return;
-
-    const card = document.createElement('div');
-    card.className = 'card';
-    card.innerHTML = `
-        <div class="skel">LOADING LOW-STIM FEED...</div>
-        <div class="card-info ${infoVisible?'vis':''}">
-            <div style="font-size:0.5rem; opacity:0.6; margin-bottom:4px">${lowStimMode ? '🌿 CALM' : 'VOID'}</div>
-            <div class="vid-ttl" style="font-weight:700;">${item.title}</div>
-        </div>
-    `;
-
-    const vid = document.createElement('video');
-    vid.loop = true; vid.muted = muted; vid.playsInline = true;
-    if(!zoomFill) vid.classList.add('contain');
     
-    resolveVideo(item).then(url => {
-        vid.src = url;
-        vid.onloadeddata = () => {
-            card.querySelector('.skel').style.display = 'none';
-            vid.classList.add('vis');
-            vid.play();
-        };
-        // If the video fails (common with old archive files), skip to next
-        vid.onerror = () => advance("up");
-    });
-
-    card.appendChild(vid);
-    if(curCard) {
-        const old = curCard;
-        old.style.transition = 'transform 0.6s cubic-bezier(0.2, 1, 0.2, 1)';
-        old.style.transform = dir === "up" ? 'translateY(-100%)' : 'translateY(100%)';
-        setTimeout(() => old.remove(), 600);
-    }
-    document.getElementById('feed').appendChild(card);
     curCard = card;
+    curVideo = vid;
 }
 
 function advance(dir) {
-    if(transitioning) return;
-    const next = dir === "up" ? curIdx + 1 : curIdx - 1;
-    if(next < 0 || next >= playlist.length) return;
-    transitioning = true; curIdx = next;
-    renderCard(curIdx, dir);
-    setTimeout(() => transitioning = false, 600);
+    if (transitioning || currentPlaylist.length === 0) return;
+    transitioning = true;
+    const next = dir === "up" ? currentIndex + 1 : currentIndex - 1;
+    if (next < 0 || next >= currentPlaylist.length) { transitioning = false; return; }
+    currentIndex = next;
+    renderCard(currentIndex, dir);
+    setTimeout(() => transitioning = false, 450);
 }
 
-// --- LOCK LOGIC ---
-const stimBtn = document.getElementById('lowStimToggle');
-const overlay = document.getElementById('pinOverlay');
-const pinInput = document.getElementById('pinInput');
+// Swipe gestures
+let startY = 0, currentY = 0;
+window.addEventListener('touchstart', e => { 
+    if (scrollLocked) return;
+    startY = e.touches[0].clientY; 
+});
+window.addEventListener('touchmove', e => {
+    if (scrollLocked || !curCard) return;
+    currentY = e.touches[0].clientY - startY;
+    curCard.style.transition = 'none';
+    curCard.style.transform = `translateY(${currentY}px)`;
+    // Blur effect based on drag distance
+    const blurAmt = Math.min(Math.abs(currentY) / 20, 10);
+    curCard.style.filter = `blur(${blurAmt}px)`;
+});
+window.addEventListener('touchend', e => {
+    if (scrollLocked || !curCard) return;
+    curCard.style.transition = 'transform 0.4s ease-out, filter 0.2s';
+    curCard.style.filter = 'blur(0px)';
+    if (Math.abs(currentY) > 100) {
+        advance(currentY < 0 ? "up" : "down");
+    } else {
+        curCard.style.transform = 'translateY(0)';
+    }
+    currentY = 0;
+});
 
-stimBtn.onclick = () => {
-    overlay.classList.add('open');
-    pinInput.focus();
-    document.getElementById('pinText').textContent = lowStimMode ? "ENTER PIN TO UNLOCK" : "SET PIN TO LOCK CALM MODE";
+// --- UI CONTROLS ---
+function resetUiTimer() {
+    uiLayer.classList.remove('faded');
+    clearTimeout(uiTimeout);
+    uiTimeout = setTimeout(() => uiLayer.classList.add('faded'), 3500);
+}
+window.addEventListener('touchstart', resetUiTimer);
+window.addEventListener('mousemove', resetUiTimer);
+
+// Scrubber
+scrubber.addEventListener('input', e => {
+    if (curVideo && curVideo.duration) curVideo.currentTime = (e.target.value / 100) * curVideo.duration;
+});
+
+// Buttons
+document.getElementById('btnCatToggle').onclick = () => document.getElementById('catList').classList.toggle('open');
+document.querySelectorAll('.cat-btn').forEach(btn => {
+    btn.onclick = (e) => {
+        document.querySelectorAll('.cat-btn').forEach(b => b.classList.remove('active'));
+        btn.classList.add('active');
+        filterCategory(btn.dataset.cat);
+        document.getElementById('catList').classList.remove('open');
+    }
+});
+
+document.getElementById('btnMute').onclick = (e) => {
+    isMuted = !isMuted;
+    if (curVideo) curVideo.muted = isMuted;
+    e.target.classList.toggle('active', !isMuted);
 };
 
-pinInput.onkeydown = (e) => {
-    if(e.key === "Enter") {
+document.getElementById('btnFit').onclick = (e) => {
+    isFit = !isFit;
+    if (curVideo) curVideo.classList.toggle('contain', isFit);
+    e.target.classList.toggle('active', isFit);
+};
+
+document.getElementById('btnLock').onclick = (e) => {
+    scrollLocked = !scrollLocked;
+    e.target.classList.toggle('warn', scrollLocked);
+};
+
+document.getElementById('btnShare').onclick = () => {
+    if (!currentPlaylist[currentIndex]) return;
+    const url = new URL(window.location.href);
+    url.searchParams.set('vid', currentPlaylist[currentIndex].id);
+    navigator.clipboard.writeText(url.toString()).then(() => {
+        const t = document.getElementById('toast');
+        t.style.opacity = 1;
+        setTimeout(() => t.style.opacity = 0, 2000);
+    });
+};
+
+// --- HOLD TO SEEK ---
+let seekInterval;
+function handleSeek(dir, indId) {
+    if(!curVideo) return;
+    const ind = document.getElementById(indId);
+    ind.style.opacity = 1;
+    seekInterval = setInterval(() => {
+        curVideo.currentTime += (dir === 'fwd' ? 2 : -2);
+    }, 100);
+}
+function stopSeek(indId) {
+    clearInterval(seekInterval);
+    document.getElementById(indId).style.opacity = 0;
+}
+
+const sRight = document.getElementById('seekRight');
+sRight.addEventListener('touchstart', () => handleSeek('fwd', 'indRight'));
+sRight.addEventListener('touchend', () => stopSeek('indRight'));
+sRight.addEventListener('mousedown', () => handleSeek('fwd', 'indRight'));
+sRight.addEventListener('mouseup', () => stopSeek('indRight'));
+sRight.addEventListener('mouseleave', () => stopSeek('indRight'));
+
+const sLeft = document.getElementById('seekLeft');
+sLeft.addEventListener('touchstart', () => handleSeek('rev', 'indLeft'));
+sLeft.addEventListener('touchend', () => stopSeek('indLeft'));
+sLeft.addEventListener('mousedown', () => handleSeek('rev', 'indLeft'));
+sLeft.addEventListener('mouseup', () => stopSeek('indLeft'));
+sLeft.addEventListener('mouseleave', () => stopSeek('indLeft'));
+
+// --- KIDS PIN LOCK ---
+const btnKids = document.getElementById('btnKids');
+const pinOverlay = document.getElementById('pinOverlay');
+const pinInput = document.getElementById('pinInput');
+
+btnKids.onclick = () => {
+    pinOverlay.classList.add('open');
+    pinInput.focus();
+    document.getElementById('pinText').textContent = isKidsMode ? "ENTER PIN TO UNLOCK" : "SET PIN FOR KIDS MODE";
+};
+
+pinInput.onkeydown = async (e) => {
+    if (e.key === "Enter") {
         const val = pinInput.value;
-        if(!lowStimMode) {
+        if (!isKidsMode) {
             savedPin = val;
-            lowStimMode = true;
-            stimBtn.classList.add('low-stim-on');
-            document.getElementById('catGrid').style.display = 'none';
-            document.getElementById('logo').textContent = "VOID CALM";
-            loadContent();
+            isKidsMode = true;
+            document.body.classList.add('kids-mode');
+            btnKids.classList.add('warn');
+            appTitle.textContent = "VOID KIDS";
+            document.getElementById('btnCatToggle').style.display = 'none'; // Hide normal categories
+            await loadData(); // Load kids json
         } else {
-            if(val === savedPin) {
-                lowStimMode = false;
-                stimBtn.classList.remove('low-stim-on');
-                document.getElementById('catGrid').style.display = 'flex';
-                document.getElementById('logo').textContent = "VOIDSCROLL";
-                loadContent("all");
+            if (val === savedPin) {
+                isKidsMode = false;
+                document.body.classList.remove('kids-mode');
+                btnKids.classList.remove('warn');
+                appTitle.textContent = "VOIDSCROLL";
+                document.getElementById('btnCatToggle').style.display = 'block';
+                await loadData(); // Load normal json
+            } else {
+                alert("Incorrect PIN");
             }
         }
-        overlay.classList.remove('open');
+        pinOverlay.classList.remove('open');
         pinInput.value = "";
     }
 };
 
-// --- TOUCH & UI ---
-let startY = 0;
-window.addEventListener('touchstart', e => { startY = e.touches[0].clientY; });
-window.addEventListener('touchmove', e => {
-    let dy = e.touches[0].clientY - startY;
-    curCard.style.transform = `translateY(${dy}px)`;
-});
-window.addEventListener('touchend', e => {
-    let dy = e.touches[0].clientY - startY;
-    if(Math.abs(dy) > 100) advance(dy < 0 ? "up" : "down");
-    else curCard.style.transform = 'translateY(0)';
-});
-
-document.getElementById('zoomToggle').onclick = () => {
-    zoomFill = !zoomFill;
-    document.querySelectorAll('video').forEach(v => v.classList.toggle('contain', !zoomFill));
-};
-
-document.getElementById('uiToggle').onclick = () => {
-    infoVisible = !infoVisible;
-    if(curCard) curCard.querySelector('.card-info').classList.toggle('vis', infoVisible);
-};
-
-document.getElementById('muteBtn').onclick = () => {
-    muted = !muted;
-    document.getElementById('muteBtn').innerHTML = muted ? "🔇" : "🔊";
-    if(curCard) curCard.querySelector('video').muted = muted;
-};
-
-document.getElementById('catGrid').onclick = e => {
-    const chip = e.target.closest('.chip');
-    if(!chip) return;
-    document.querySelectorAll('.chip').forEach(c => c.classList.remove('on'));
-    chip.classList.add('on');
-    loadContent(chip.dataset.q);
-};
-
-loadContent();
-</script>
-</body>
-</html>
-  const diff = e.changedTouches[0].clientY - startY;
-  if (diff < -50) next();
-});
-
-document.querySelectorAll("button").forEach(btn => {
-  btn.addEventListener("click", () => setCategory(btn.dataset.cat));
-});
-
-loadVideos();
+init();
 </script>
 </body>
 </html>
