@@ -1,4 +1,4 @@
-{
+[{
   "name": "VOIDSCROLL",
   "short_name": "VOID",
   "start_url": "index.html",
@@ -6,7 +6,7 @@
   "background_color": "#050505",
   "theme_color": "#050505",
   "orientation": "any"
-}"icons": [
+},"icons": 
   {
     "src": "/VoidScroll/icon-192.png",
     "sizes": "192x192",
