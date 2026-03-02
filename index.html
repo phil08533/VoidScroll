@@ -1,432 +1,1123 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-    <link rel="manifest" href="manifest.json">
-    <meta name="theme-color" content="#050505">
-    
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover">
-    <title>VOIDSCROLL</title>
-    
-    <meta name="mobile-web-app-capable" content="yes">
-    <meta name="theme-color" content="#050505">
-    
-    <meta name="apple-mobile-web-app-capable" content="yes">
-    <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
-    
-    <link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@400;700&display=swap" rel="stylesheet">
-    <style>
-/* --- THEMES & CORE --- */
+  <link rel="manifest" href="manifest.json">
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover">
+  <meta name="theme-color" content="#050505">
+  <meta name="mobile-web-app-capable" content="yes">
+  <meta name="apple-mobile-web-app-capable" content="yes">
+  <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+  <title>VOIDSCROLL</title>
+  <link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@400;700&display=swap" rel="stylesheet">
+
+  <style>
+/* ══ THEMES ══════════════════════════════════════════════════════════════ */
 :root {
-    --bg: #050505;
-    --tx: #f0f0f0;
-    --ui-bg: rgba(20, 20, 20, 0.6);
-    --ui-border: rgba(255, 255, 255, 0.1);
-    --accent: #ffffff;
-    --radius: 16px;
+  --bg: #050505;
+  --tx: #f0f0f0;
+  --ui-bg: rgba(18, 18, 18, 0.65);
+  --ui-border: rgba(255, 255, 255, 0.12);
+  --accent: #ffffff;
+  --radius: 16px;
 }
-
 body.kids-mode {
-    --bg: #141414; /* Tan */
-    --tx: #050505; /* Black */
-    --ui-bg: rgba(34, 34, 34, 0.8);
-    --ui-border: rgba(5, 5, 5, 0.2);
-    --accent: #050505;
+  --bg: #0b0b0b;
+  --tx: #f5e6c4;
+  --ui-bg: rgba(25, 18, 8, 0.75);
+  --ui-border: rgba(255, 190, 80, 0.2);
+  --accent: #ff9933;
 }
 
+/* ══ RESET & BASE ════════════════════════════════════════════════════════ */
 *, *::before, *::after { margin: 0; padding: 0; box-sizing: border-box; }
-html, body { width: 100%; height: 100%; overflow: hidden; background: var(--bg); color: var(--tx); font-family: "Space Grotesk", sans-serif; touch-action: none; user-select: none; -webkit-user-select: none; transition: background 0.5s, color 0.5s; }
-
-/* --- CRT ANIMATION --- */
-.crt-overlay { position: fixed; inset: 0; background: #fff; z-index: 9999; pointer-events: none; animation: crtOff 0.8s cubic-bezier(0.23, 1, 0.32, 1) forwards; }
-@keyframes crtOff {
-    0% { opacity: 1; transform: scale(1, 1); }
-    20% { opacity: 1; transform: scale(1, 0.01); }
-    50% { opacity: 1; transform: scale(0, 0.01); }
-    100% { opacity: 0; transform: scale(0, 0); }
-}
 html, body {
-  margin: 0;
-  padding: 0;
-  width: 100%;
-  height: 100%;
-  overflow: hidden;
-  background-color: #050505;
+  width: 100%; height: 100%; overflow: hidden;
+  background: var(--bg); color: var(--tx);
+  font-family: "Space Grotesk", sans-serif;
+  touch-action: none; user-select: none; -webkit-user-select: none;
+  transition: background 0.5s, color 0.5s;
 }
-/* --- VIDEO FEED --- */
-#feed { position: fixed; inset: 8px; border-radius: var(--radius); overflow: hidden; background: var(--bg); }
-.card { position: absolute; inset: 0; will-change: transform; transition: filter 0.2s ease-out; }
-.card video { width: 100%; height: 100%; object-fit: cover; border-radius: var(--radius); transition: object-fit 0.3s; opacity: 0; }
+
+/* ══ CRT BOOT ════════════════════════════════════════════════════════════ */
+.crt-overlay {
+  position: fixed; inset: 0; background: #fff; z-index: 9999;
+  pointer-events: none;
+  animation: crtOff 0.75s cubic-bezier(0.23, 1, 0.32, 1) forwards;
+}
+@keyframes crtOff {
+  0%   { opacity: 1; transform: scale(1, 1); }
+  20%  { opacity: 1; transform: scale(1, 0.01); }
+  50%  { opacity: 1; transform: scale(0, 0.01); }
+  100% { opacity: 0; transform: scale(0, 0); }
+}
+
+/* ══ VIDEO FEED ══════════════════════════════════════════════════════════ */
+#feed {
+  position: fixed; inset: 8px; border-radius: var(--radius);
+  overflow: hidden; background: #000;
+  transform-origin: center center;
+}
+.card {
+  position: absolute; inset: 0;
+  will-change: transform, opacity;
+  background: #000;
+}
+.card video {
+  width: 100%; height: 100%; object-fit: cover;
+  border-radius: var(--radius);
+  opacity: 0; transition: opacity 0.5s ease;
+}
 .card video.ready { opacity: 1; }
 .card video.contain { object-fit: contain; }
 
-/* --- UI LAYER (Fades out) --- */
-.ui-layer { position: fixed; inset: 0; z-index: 10; pointer-events: none; transition: opacity 0.5s; display: flex; flex-direction: column; justify-content: space-between; padding: 16px; }
+/* Loading shimmer */
+.card.loading::after {
+  content: '';
+  position: absolute; inset: 0;
+  background: linear-gradient(90deg, transparent 0%, rgba(255,255,255,0.04) 50%, transparent 100%);
+  background-size: 200% 100%;
+  animation: shimmer 1.8s ease-in-out infinite;
+  border-radius: var(--radius);
+  pointer-events: none;
+}
+@keyframes shimmer {
+  0%   { background-position: -200% 0; }
+  100% { background-position:  200% 0; }
+}
+
+/* ══ VOID MODE ═══════════════════════════════════════════════════════════ */
+#feed.void-mode {
+  animation: voidHue 5s linear infinite, voidWobble 3.8s ease-in-out infinite;
+}
+@keyframes voidHue {
+  0%   { filter: hue-rotate(0deg)   saturate(3.2) contrast(1.45) brightness(0.85); }
+  100% { filter: hue-rotate(360deg) saturate(3.2) contrast(1.45) brightness(0.85); }
+}
+@keyframes voidWobble {
+  0%,100% { transform: scale(1) rotate(0deg); }
+  20%     { transform: scale(1.03) rotate(2.2deg); }
+  50%     { transform: scale(0.975) rotate(-1.8deg); }
+  75%     { transform: scale(1.02) rotate(2.8deg); }
+}
+
+/* Rainbow slime overlay */
+#voidRainbow {
+  position: fixed; inset: 4px;
+  border-radius: var(--radius);
+  pointer-events: none; z-index: 8;
+  display: none;
+  animation: rainbowSpin 2.8s linear infinite;
+  background: conic-gradient(
+    from 0deg at 50% 50%,
+    rgba(255,  0, 140, 0.22),
+    rgba( 60,  0, 255, 0.22),
+    rgba(  0, 220, 120, 0.22),
+    rgba(255, 210,   0, 0.22),
+    rgba(255,  60, 220, 0.22),
+    rgba(140,   0, 255, 0.22),
+    rgba(255,   0, 140, 0.22)
+  );
+  mix-blend-mode: color-dodge;
+}
+@keyframes rainbowSpin {
+  from { transform: rotate(0deg) scale(1.4); }
+  to   { transform: rotate(360deg) scale(1.4); }
+}
+/* Glitch slices */
+#voidRainbow::before, #voidRainbow::after {
+  content: ''; position: absolute; inset: 0;
+  border-radius: var(--radius);
+  animation: glitchA 6s infinite, glitchOpA 6s infinite;
+}
+#voidRainbow::after {
+  animation: glitchB 6s 0.5s infinite, glitchOpB 6s 0.5s infinite;
+}
+@keyframes glitchA {
+  0%,86%,100% { clip-path: none; transform: none; }
+  87% { clip-path: polygon(0 18%, 100% 18%, 100% 32%, 0 32%); transform: translateX(-10px); background: rgba(0,255,200,0.25); }
+  89% { clip-path: polygon(0 55%, 100% 55%, 100% 68%, 0 68%); transform: translateX(8px);  background: rgba(255,0,100,0.25); }
+  91% { clip-path: none; transform: none; }
+}
+@keyframes glitchOpA {
+  0%,86%,100% { opacity: 0; }
+  87%,90% { opacity: 1; }
+  91% { opacity: 0; }
+}
+@keyframes glitchB {
+  0%,82%,100% { clip-path: none; transform: none; }
+  83% { clip-path: polygon(0 72%, 100% 72%, 100% 82%, 0 82%); transform: translateX(12px); background: rgba(150,0,255,0.3); }
+  85% { clip-path: none; transform: none; }
+}
+@keyframes glitchOpB {
+  0%,82%,100% { opacity: 0; }
+  83%,84% { opacity: 1; }
+  85% { opacity: 0; }
+}
+
+/* ══ UI LAYER ════════════════════════════════════════════════════════════ */
+.ui-layer {
+  position: fixed; inset: 0; z-index: 10;
+  pointer-events: none; transition: opacity 0.45s;
+  display: flex; flex-direction: column; justify-content: space-between;
+  padding: 16px;
+  padding-bottom: calc(16px + env(safe-area-inset-bottom, 0px));
+}
 .ui-layer.faded { opacity: 0; }
 .ui-layer > * { pointer-events: auto; }
 
-/* --- HEADER & CATEGORIES --- */
-.header { display: flex; justify-content: space-between; align-items: flex-start; }
-.title { font-weight: 700; font-size: 1.2rem; letter-spacing: 2px; }
-.cat-container { display: flex; flex-direction: column; align-items: flex-end; gap: 8px; }
-.cat-list { display: flex; gap: 8px; flex-wrap: wrap; justify-content: flex-end; max-width: 70vw; opacity: 0; pointer-events: none; transition: opacity 0.3s; }
-.cat-list.open { opacity: 1; pointer-events: auto; }
+/* ══ HEADER ══════════════════════════════════════════════════════════════ */
+.header {
+  display: flex; justify-content: space-between; align-items: flex-start;
+  pointer-events: auto;
+}
+.title {
+  font-weight: 700; font-size: 1.2rem; letter-spacing: 3px;
+  transition: color 0.4s;
+  pointer-events: none;
+}
+.title.kids-title  { color: #ff9933; }
+.title.void-title  { color: #cc44ff; }
 
-/* --- BUTTONS --- */
-button { background: var(--ui-bg); color: var(--tx); border: 1px solid var(--ui-border); padding: 8px 12px; border-radius: 8px; font-family: inherit; font-size: 0.75rem; font-weight: 700; cursor: pointer; backdrop-filter: blur(5px); text-transform: uppercase; transition: all 0.2s; }
-button:active { transform: scale(0.95); }
-button.active { background: var(--accent); color: var(--bg); }
-button.warn { border-color: #ff3333; color: #ff3333; }
+/* ══ CATEGORY PANEL ══════════════════════════════════════════════════════ */
+.cat-container { display: flex; flex-direction: column; align-items: flex-end; gap: 6px; }
+.cat-panel {
+  display: flex; flex-direction: column; align-items: flex-end; gap: 6px;
+  max-height: 0; overflow: hidden; opacity: 0; pointer-events: none;
+  transition: max-height 0.4s cubic-bezier(0.23, 1, 0.32, 1), opacity 0.3s;
+}
+.cat-panel.open { max-height: 700px; opacity: 1; pointer-events: auto; }
+.cat-group {
+  display: flex; flex-wrap: wrap; gap: 6px; justify-content: flex-end;
+}
+.cat-group.more-group {
+  max-height: 0; overflow: hidden; opacity: 0;
+  transition: max-height 0.35s ease, opacity 0.3s;
+}
+.cat-group.more-group.expanded { max-height: 200px; opacity: 1; }
 
-/* --- CONTROLS --- */
-.controls-side { position: absolute; right: 16px; top: 50%; transform: translateY(-50%); display: flex; flex-direction: column; gap: 12px; }
-.controls-bottom { display: flex; align-items: center; justify-content: space-between; gap: 16px; margin-bottom: 8px; }
-.video-title { font-size: 0.9rem; font-weight: 700; max-width: 60%; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+/* ══ BUTTONS ═════════════════════════════════════════════════════════════ */
+button {
+  background: var(--ui-bg); color: var(--tx);
+  border: 1px solid var(--ui-border);
+  padding: 8px 12px; border-radius: 8px;
+  font-family: inherit; font-size: 0.72rem; font-weight: 700;
+  cursor: pointer; backdrop-filter: blur(10px);
+  text-transform: uppercase; letter-spacing: 0.5px;
+  transition: all 0.2s; -webkit-tap-highlight-color: transparent;
+  white-space: nowrap;
+}
+button:active { transform: scale(0.93); }
 
-/* --- SCRUBBER --- */
-.scrubber-wrap { position: absolute; bottom: 0; left: 16px; right: 16px; height: 12px; }
-input[type=range] { -webkit-appearance: none; width: 100%; background: transparent; }
+/* Generic active = white */
+button.active { color: #fff; border-color: rgba(255,255,255,0.6); }
+
+/* VOID active = purple */
+.cat-btn.void-btn.void-active   { color: #cc44ff; border-color: #cc44ff; }
+/* KIDS active = orange */
+.cat-btn.kids-btn.kids-active   { color: #ff9933; border-color: #ff9933; }
+/* AMBIENT button active = teal */
+button#btnAmbient.ambient-active { color: #00e5b0; border-color: #00e5b0; }
+/* NATURE category active = green */
+.cat-btn[data-cat="nature"].active { color: #44ff88; border-color: #44ff88; }
+/* SLEEP category active = soft blue */
+.cat-btn[data-cat="sleep"].active  { color: #8899ff; border-color: #8899ff; }
+
+.cat-divider {
+  width: 100%; height: 1px;
+  background: rgba(255,255,255,0.1);
+  margin: 2px 0;
+  pointer-events: none;
+}
+.kids-btn { font-size: 0.8rem !important; padding: 10px 16px !important; }
+
+/* ══ SIDE CONTROLS ═══════════════════════════════════════════════════════ */
+.controls-side {
+  position: absolute; right: 16px; top: 50%;
+  transform: translateY(-50%);
+  display: flex; flex-direction: column; gap: 10px;
+  pointer-events: auto;
+}
+
+/* ══ BOTTOM WRAP (slide-hide) ════════════════════════════════════════════ */
+.bottom-wrap {
+  transition: transform 0.42s cubic-bezier(0.23, 1, 0.32, 1), opacity 0.42s;
+}
+.bottom-wrap.hidden {
+  transform: translateY(calc(100% + 40px));
+  opacity: 0;
+}
+.controls-bottom {
+  display: flex; align-items: center; justify-content: space-between; gap: 12px;
+  margin-bottom: 10px;
+}
+.video-title {
+  font-size: 0.82rem; font-weight: 700;
+  max-width: 62%; white-space: nowrap;
+  overflow: hidden; text-overflow: ellipsis;
+}
+
+/* ══ SCRUBBER (tall touch area) ══════════════════════════════════════════ */
+.scrubber-wrap {
+  position: relative; height: 44px;
+  display: flex; align-items: flex-end; padding-bottom: 2px;
+}
+input[type=range] {
+  -webkit-appearance: none; width: 100%; height: 44px;
+  background: transparent; cursor: pointer;
+}
 input[type=range]:focus { outline: none; }
-input[type=range]::-webkit-slider-runnable-track { width: 100%; height: 4px; cursor: pointer; background: var(--ui-border); border-radius: 2px; }
-input[type=range]::-webkit-slider-thumb { height: 12px; width: 12px; border-radius: 50%; background: var(--accent); cursor: pointer; -webkit-appearance: none; margin-top: -4px; }
+input[type=range]::-webkit-slider-runnable-track {
+  width: 100%; height: 3px;
+  background: var(--ui-border); border-radius: 2px;
+}
+input[type=range]::-webkit-slider-thumb {
+  -webkit-appearance: none;
+  height: 14px; width: 14px; border-radius: 50%;
+  background: var(--accent); cursor: pointer;
+  margin-top: -5.5px;
+}
 
-/* --- SEEK ZONES --- */
-.seek-zone { position: absolute; top: 20%; bottom: 20%; width: 30%; z-index: 5; pointer-events: auto; }
-.seek-left { left: 0; }
+/* ══ SEEK ZONES ══════════════════════════════════════════════════════════ */
+.seek-zone {
+  position: fixed; top: 12%; bottom: 24%; width: 28%; z-index: 5;
+  pointer-events: auto;
+}
+.seek-left  { left: 0; }
 .seek-right { right: 0; }
-.seek-indicator { position: absolute; top: 50%; left: 50%; transform: translate(-50%, -50%); font-weight: bold; background: rgba(0,0,0,0.5); color: #fff; padding: 10px 20px; border-radius: 20px; opacity: 0; transition: opacity 0.2s; pointer-events: none;}
+.seek-indicator {
+  position: absolute; top: 50%; left: 50%;
+  transform: translate(-50%, -50%);
+  font-weight: 700; font-size: 0.8rem;
+  background: rgba(0,0,0,0.55); color: #fff;
+  padding: 10px 18px; border-radius: 20px;
+  opacity: 0; transition: opacity 0.18s; pointer-events: none;
+}
 
-/* --- OVERLAYS --- */
-.overlay { position: fixed; inset: 0; background: rgba(0,0,0,0.9); z-index: 100; display: flex; flex-direction: column; align-items: center; justify-content: center; opacity: 0; pointer-events: none; transition: opacity 0.3s; color: #fff; }
+/* ══ PLAY/PAUSE INDICATOR ════════════════════════════════════════════════ */
+#ppIndicator {
+  position: fixed; top: 50%; left: 50%;
+  transform: translate(-50%, -50%);
+  width: 68px; height: 68px; border-radius: 50%;
+  display: flex; align-items: center; justify-content: center;
+  font-size: 2rem;
+  background: rgba(0,0,0,0.5); color: #fff;
+  z-index: 50; pointer-events: none;
+  opacity: 0; transition: opacity 0.3s;
+}
+
+/* ══ OVERLAYS ════════════════════════════════════════════════════════════ */
+.overlay {
+  position: fixed; inset: 0;
+  background: rgba(0,0,0,0.93); z-index: 100;
+  display: flex; flex-direction: column;
+  align-items: center; justify-content: center;
+  opacity: 0; pointer-events: none;
+  transition: opacity 0.3s; color: #fff;
+  gap: 8px; padding: 24px;
+}
 .overlay.open { opacity: 1; pointer-events: auto; }
-.pin-input { background: transparent; border: none; border-bottom: 2px solid #fff; color: #fff; font-family: inherit; font-size: 2rem; text-align: center; width: 150px; outline: none; margin: 20px 0; }
-.toast { position: fixed; top: 20px; left: 50%; transform: translateX(-50%); background: var(--accent); color: var(--bg); padding: 10px 20px; border-radius: 20px; font-weight: bold; z-index: 200; opacity: 0; transition: opacity 0.3s; pointer-events: none; }
-</style>
+
+.pin-input {
+  background: transparent; border: none;
+  border-bottom: 2px solid rgba(255,255,255,0.6);
+  color: #fff; font-family: inherit;
+  font-size: 2.4rem; text-align: center;
+  width: 160px; outline: none;
+  margin: 14px 0; letter-spacing: 10px;
+  caret-color: #fff;
+}
+.settings-grid {
+  display: flex; flex-direction: column; gap: 14px;
+  width: min(320px, 85vw); margin: 16px 0;
+}
+.setting-row {
+  display: flex; justify-content: space-between; align-items: center;
+  padding: 12px 16px; border: 1px solid rgba(255,255,255,0.14);
+  border-radius: 10px; font-size: 0.8rem; letter-spacing: 1px;
+}
+.overlay h2 { font-size: 1rem; letter-spacing: 3px; }
+.overlay p  { font-size: 0.75rem; opacity: 0.55; }
+
+/* ══ AMBIENT PANEL ═══════════════════════════════════════════════════════ */
+.ambient-panel {
+  position: fixed; bottom: 0; left: 0; right: 0; z-index: 60;
+  background: rgba(6, 6, 10, 0.98);
+  border-top: 1px solid rgba(255,255,255,0.08);
+  border-radius: 22px 22px 0 0;
+  padding: 14px 14px calc(14px + env(safe-area-inset-bottom, 0px));
+  transform: translateY(100%);
+  transition: transform 0.45s cubic-bezier(0.23, 1, 0.32, 1);
+  max-height: 62vh; overflow-y: auto;
+  backdrop-filter: blur(24px);
+}
+.ambient-panel.open { transform: translateY(0); }
+.ambient-header {
+  display: flex; align-items: center; justify-content: space-between;
+  margin-bottom: 14px; font-weight: 700;
+  font-size: 0.75rem; letter-spacing: 2px;
+}
+.ambient-vol {
+  display: flex; align-items: center; gap: 8px;
+  font-size: 0.65rem; opacity: 0.6;
+}
+.ambient-vol input { width: 90px; cursor: pointer; height: 20px; }
+#btnCloseAmbient {
+  padding: 6px 10px; font-size: 0.8rem;
+}
+.ambient-grid {
+  display: grid; grid-template-columns: repeat(auto-fill, minmax(88px, 1fr));
+  gap: 10px;
+}
+.ambient-btn {
+  display: flex; flex-direction: column; align-items: center;
+  gap: 6px; padding: 12px 8px; border-radius: 12px;
+  font-size: 0.62rem; letter-spacing: 0.5px;
+  text-align: center; min-height: 74px;
+  transition: all 0.2s;
+}
+.ambient-btn .amb-icon { font-size: 1.75rem; line-height: 1; }
+.ambient-btn.active {
+  color: #00e5b0; border-color: #00e5b0;
+  background: rgba(0, 229, 176, 0.1);
+}
+.ambient-empty {
+  text-align: center; opacity: 0.4;
+  font-size: 0.75rem; padding: 20px;
+}
+
+/* ══ TOAST ═══════════════════════════════════════════════════════════════ */
+.toast {
+  position: fixed; top: 20px; left: 50%; transform: translateX(-50%);
+  background: var(--accent); color: var(--bg);
+  padding: 10px 20px; border-radius: 20px; font-weight: bold;
+  z-index: 300; opacity: 0; transition: opacity 0.3s; pointer-events: none;
+  font-size: 0.78rem; letter-spacing: 1px; white-space: nowrap;
+}
+
+/* ══ CATEGORY FILTER TRANSITION ══════════════════════════════════════════ */
+.feed-fade-out { animation: feedFadeOut 0.3s ease forwards; }
+.feed-fade-in  { animation: feedFadeIn  0.3s ease forwards; }
+@keyframes feedFadeOut { to { opacity: 0; } }
+@keyframes feedFadeIn  { from { opacity: 0; } to { opacity: 1; } }
+  </style>
 </head>
 <body>
 
 <div class="crt-overlay"></div>
 <div id="feed"></div>
+<div id="voidRainbow"></div>
 
-<div class="seek-zone seek-left" id="seekLeft"><div class="seek-indicator" id="indLeft">&laquo; REV</div></div>
-<div class="seek-zone seek-right" id="seekRight"><div class="seek-indicator" id="indRight">FWD &raquo;</div></div>
+<!-- Seek zones -->
+<div class="seek-zone seek-left"  id="seekLeft">  <div class="seek-indicator" id="indLeft">&laquo; REV</div></div>
+<div class="seek-zone seek-right" id="seekRight"> <div class="seek-indicator" id="indRight">FWD &raquo;</div></div>
 
+<!-- Play/pause flash -->
+<div id="ppIndicator"></div>
+
+<!-- ═══ MAIN UI LAYER ══════════════════════════════════════════════════ -->
 <div class="ui-layer" id="uiLayer">
-    <div class="header">
-        <div class="title" id="appTitle">VOIDSCROLL</div>
-        <div class="cat-container">
-            <button id="btnCatToggle">[ CATEGORIES ]</button>
-            <div class="cat-list" id="catList">
-                <button class="cat-btn active" data-cat="all">ALL</button>
-                <button class="cat-btn" data-cat="space">SPACE</button>
-                <button class="cat-btn" data-cat="science">SCIENCE</button>
-                <button class="cat-btn" data-cat="animals">ANIMALS</button>
-            </div>
-        </div>
-    </div>
 
-    <div class="controls-side">
-        <button id="btnMute">[ MUTE ]</button>
-        <button id="btnFit">[ FIT ]</button>
-        <button id="btnLock">[ SCROLL ]</button>
-        <button id="btnKids">[ KIDS ]</button>
+  <!-- Header -->
+  <div class="header">
+    <div class="title" id="appTitle">VOIDSCROLL</div>
+    <div class="cat-container">
+      <button id="btnCatToggle">[ CATEGORIES ]</button>
+      <div class="cat-panel" id="catPanel"><!-- built by JS --></div>
     </div>
+  </div>
 
-    <div>
-        <div class="controls-bottom">
-            <div class="video-title" id="vidTitle">Loading...</div>
-            <button id="btnShare">[ SHARE ]</button>
-        </div>
-        <div class="scrubber-wrap">
-            <input type="range" id="scrubber" value="0" min="0" max="100">
-        </div>
+  <!-- Side controls -->
+  <div class="controls-side">
+    <button id="btnMute">[ MUTE ]</button>
+    <button id="btnFit">[ FIT ]</button>
+    <button id="btnLock">[ SCROLL ]</button>
+    <button id="btnAmbient">[ AMBIENT ]</button>
+    <button id="btnSettings">[ &#9881; ]</button>
+  </div>
+
+  <!-- Bottom (slides down on inactivity) -->
+  <div class="bottom-wrap" id="bottomWrap">
+    <div class="controls-bottom">
+      <div class="video-title" id="vidTitle">Loading...</div>
+      <button id="btnShare">[ SHARE ]</button>
     </div>
+    <div class="scrubber-wrap">
+      <input type="range" id="scrubber" value="0" min="0" max="100">
+    </div>
+  </div>
 </div>
 
+<!-- ═══ AMBIENT PANEL ═════════════════════════════════════════════════ -->
+<div class="ambient-panel" id="ambientPanel">
+  <div class="ambient-header">
+    <span>AMBIENT SOUNDS</span>
+    <div class="ambient-vol">
+      <span>VOL</span>
+      <input type="range" id="ambientVol" min="0" max="100" value="70">
+    </div>
+    <button id="btnCloseAmbient">&#10005;</button>
+  </div>
+  <div class="ambient-grid" id="ambientGrid"></div>
+</div>
+
+<!-- ═══ PIN OVERLAY ════════════════════════════════════════════════════ -->
 <div class="overlay" id="pinOverlay">
-    <h2 id="pinText">ENTER PIN</h2>
-    <input type="password" class="pin-input" id="pinInput" inputmode="numeric" maxlength="4">
-    <p style="font-size: 0.8rem; opacity: 0.7;">Press Enter to confirm</p>
+  <h2 id="pinText">SET PIN FOR KIDS MODE</h2>
+  <input type="password" class="pin-input" id="pinInput" inputmode="numeric" maxlength="4" placeholder="••••">
+  <p>4 digits · press Enter</p>
+  <button id="btnPinCancel" style="margin-top:20px; padding:10px 24px;">CANCEL</button>
 </div>
 
-<div class="toast" id="toast">Copied to clipboard!</div>
+<!-- ═══ SETTINGS OVERLAY ══════════════════════════════════════════════ -->
+<div class="overlay" id="settingsOverlay">
+  <h2>SETTINGS</h2>
+  <div class="settings-grid">
+    <div class="setting-row">
+      <span>AUTO SCROLL</span>
+      <button id="btnAutoScroll">ON</button>
+    </div>
+    <div class="setting-row">
+      <span>BACKGROUND PLAY</span>
+      <button id="btnBgPlay">OFF</button>
+    </div>
+  </div>
+  <button id="btnSettingsClose" style="padding:10px 28px; margin-top:8px;">CLOSE</button>
+</div>
+
+<!-- Toast -->
+<div class="toast" id="toast"></div>
 
 <script>
-// --- STATE ---
+/* ═══════════════════════════════════════════════════════════════════════
+   VOIDSCROLL — Full-stack TikTok-style infinite scroll video feed
+   Pure HTML/JS/CSS — Static, no backend required
+═══════════════════════════════════════════════════════════════════════ */
+
+// ── CATEGORY DEFINITIONS (ordered) ────────────────────────────────────
+const CATS = [
+  { id: 'all',         label: 'ALL',    group: 'main' },
+  { id: 'nature',      label: 'NATURE', group: 'main' },
+  { id: 'sleep',       label: 'SLEEP',  group: 'main' },
+  { id: 'space',       label: 'SPACE',  group: 'main' },
+  { id: 'science',     label: 'SCIENCE',group: 'main' },
+  { id: 'animals',     label: 'ANIMALS',group: 'more' },
+  { id: 'history',     label: 'HISTORY',group: 'more' },
+  { id: 'technology',  label: 'TECH',   group: 'more' },
+  { id: 'documentary', label: 'DOCS',   group: 'more' },
+];
+
+// ── STATE ──────────────────────────────────────────────────────────────
 let allVideos = [], currentPlaylist = [], currentIndex = 0;
-let isKidsMode = false, savedPin = null, scrollLocked = false, isMuted = true, isFit = false;
+let isKidsMode = false, savedPin = null;
+let scrollLocked = false, isMuted = true, isFit = false;
+let isVoidMode = false, autoScroll = true, backgroundPlay = false;
 let curCard = null, curVideo = null;
 let uiTimeout, transitioning = false;
+let currentCategory = 'all';
+let ambientData = [], activeSounds = {}, masterVolume = 0.7;
+let preloadedVids = {};   // { idx: HTMLVideoElement }
+let catExpanded = false;
+let isDragging = false, startY = 0, startX = 0, currentY = 0, touchTime = 0;
 
-// Elements
-const feed = document.getElementById('feed');
-const uiLayer = document.getElementById('uiLayer');
-const scrubber = document.getElementById('scrubber');
-const vidTitle = document.getElementById('vidTitle');
-const appTitle = document.getElementById('appTitle');
+// ── ELEMENTS ───────────────────────────────────────────────────────────
+const feed       = document.getElementById('feed');
+const uiLayer    = document.getElementById('uiLayer');
+const scrubber   = document.getElementById('scrubber');
+const vidTitle   = document.getElementById('vidTitle');
+const appTitle   = document.getElementById('appTitle');
+const bottomWrap = document.getElementById('bottomWrap');
+const catPanel   = document.getElementById('catPanel');
 
+// ── STATE PERSISTENCE ──────────────────────────────────────────────────
+function saveState() {
+  try {
+    localStorage.setItem('vs3', JSON.stringify({
+      isKidsMode, savedPin, currentCategory,
+      autoScroll, backgroundPlay, isMuted, isFit, isVoidMode
+    }));
+  } catch(e) {}
+}
+function loadState() {
+  try {
+    const s = JSON.parse(localStorage.getItem('vs3') || '{}');
+    isKidsMode       = s.isKidsMode       || false;
+    savedPin         = s.savedPin         || null;
+    currentCategory  = s.currentCategory  || 'all';
+    autoScroll       = s.autoScroll       !== undefined ? s.autoScroll       : true;
+    backgroundPlay   = s.backgroundPlay   || false;
+    isMuted          = s.isMuted          !== undefined ? s.isMuted          : true;
+    isFit            = s.isFit            || false;
+    isVoidMode       = s.isVoidMode       || false;
+  } catch(e) {}
+}
+
+// ── INIT ───────────────────────────────────────────────────────────────
 async function init() {
-    await loadData();
-    const params = new URLSearchParams(window.location.search);
-    const sharedId = params.get('vid');
-    if (sharedId) {
-        const idx = currentPlaylist.findIndex(v => v.id === sharedId);
-        if (idx !== -1) currentIndex = idx;
-    }
-    renderCard(currentIndex, "none");
-    resetUiTimer();
+  loadState();
+  buildCategoryPanel();
+  syncButtonStates();
+  await Promise.all([loadVideoData(), loadAmbientData()]);
+
+  // Honor shared link
+  const shared = new URLSearchParams(window.location.search).get('vid');
+  if (shared) {
+    const idx = currentPlaylist.findIndex(v => v.id === shared);
+    if (idx !== -1) currentIndex = idx;
+  }
+
+  renderCard(currentIndex, 'none');
+  resetUiTimer();
+  applyVoidUI();
+  applyKidsModeUI();
 }
 
-async function loadData() {
-    // Decide which JSON file to fetch
-    const file = isKidsMode ? 'kids_videos.json' : 'videos.json';
-    console.log("Loading file:", file); // Debug: make sure correct file is fetched
-
-    try {
-        const res = await fetch(file);
-        if (!res.ok) throw new Error(`HTTP error! status: ${res.status}`);
-        allVideos = await res.json();
-
-        // Ensure we have at least one video
-        if (!Array.isArray(allVideos) || allVideos.length === 0) {
-            throw new Error("JSON is empty or invalid format");
-        }
-
-    } catch (e) {
-        console.error("Failed to load JSON:", e);
-        // Fallback dummy video
-        allVideos = [{
-            id: "dummy",
-            title: "Run scraper to get videos",
-            url: "https://www.w3schools.com/html/mov_bbb.mp4",
-            category: "all"
-        }];
-    }
-
-    // After loading, reset the playlist to "all"
-    filterCategory('all');
+// ── DATA LOADING ───────────────────────────────────────────────────────
+async function loadVideoData() {
+  const file = isKidsMode ? 'kids_videos.json' : 'videos.json';
+  try {
+    const res = await fetch(file);
+    if (!res.ok) throw new Error('HTTP ' + res.status);
+    allVideos = await res.json();
+    if (!Array.isArray(allVideos) || !allVideos.length) throw new Error('Empty');
+  } catch(e) {
+    allVideos = [{
+      id: 'dummy', title: 'Run scraper to get videos',
+      url: 'https://www.w3schools.com/html/mov_bbb.mp4', category: 'all'
+    }];
+  }
+  filterCategory(currentCategory, false, false);
+}
+async function loadAmbientData() {
+  try {
+    const res = await fetch('ambient.json');
+    if (!res.ok) throw new Error();
+    ambientData = await res.json();
+    buildAmbientGrid();
+  } catch(e) {
+    // Ambient optional — no panel content if not found
+  }
 }
 
-function filterCategory(cat) {
-    currentPlaylist = cat === 'all' ? [...allVideos] : allVideos.filter(v => v.category === cat);
-    currentPlaylist.sort(() => Math.random() - 0.5);
-    currentIndex = 0;
-    if (currentPlaylist.length > 0) renderCard(0, "none");
+// ── CATEGORY PANEL ─────────────────────────────────────────────────────
+function buildCategoryPanel() {
+  catPanel.innerHTML = '';
+
+  if (isKidsMode) {
+    // Minimal in kids mode
+    const g = document.createElement('div');
+    g.className = 'cat-group';
+    g.appendChild(makeCatBtn('all', 'ALL'));
+    catPanel.appendChild(g);
+    const unlock = makeCatBtn('__kids__', '⊙ UNLOCK KIDS');
+    unlock.classList.add('kids-btn', 'kids-active');
+    unlock.onclick = e => { e.stopPropagation(); closeCatPanel(); openPinOverlay(); };
+    catPanel.appendChild(unlock);
+    return;
+  }
+
+  // Primary group
+  const mainGrp = document.createElement('div');
+  mainGrp.className = 'cat-group';
+  CATS.filter(c => c.group === 'main').forEach(c => mainGrp.appendChild(makeCatBtn(c.id, c.label)));
+  catPanel.appendChild(mainGrp);
+
+  // More toggle
+  const moreToggle = document.createElement('button');
+  moreToggle.id = 'btnCatMore';
+  moreToggle.className = 'cat-btn';
+  moreToggle.style.cssText = 'font-size:0.6rem;opacity:0.6;';
+  moreToggle.textContent = catExpanded ? '– LESS' : '+ MORE';
+  moreToggle.onclick = e => {
+    e.stopPropagation();
+    catExpanded = !catExpanded;
+    moreToggle.textContent = catExpanded ? '– LESS' : '+ MORE';
+    moreGrp.classList.toggle('expanded', catExpanded);
+  };
+  catPanel.appendChild(moreToggle);
+
+  const moreGrp = document.createElement('div');
+  moreGrp.className = 'cat-group more-group' + (catExpanded ? ' expanded' : '');
+  CATS.filter(c => c.group === 'more').forEach(c => moreGrp.appendChild(makeCatBtn(c.id, c.label)));
+  catPanel.appendChild(moreGrp);
+
+  // Divider
+  const div = document.createElement('div');
+  div.className = 'cat-divider';
+  catPanel.appendChild(div);
+
+  // VOID special button
+  const voidBtn = makeCatBtn('__void__', '✦ VOID MODE');
+  voidBtn.classList.add('void-btn');
+  if (isVoidMode) voidBtn.classList.add('void-active');
+  voidBtn.onclick = e => { e.stopPropagation(); toggleVoidMode(); closeCatPanel(); };
+  catPanel.appendChild(voidBtn);
+
+  // KIDS button (prominent)
+  const kidsBtn = makeCatBtn('__kids__', '⊙ KIDS MODE');
+  kidsBtn.classList.add('kids-btn');
+  kidsBtn.onclick = e => { e.stopPropagation(); closeCatPanel(); openPinOverlay(); };
+  catPanel.appendChild(kidsBtn);
+
+  updateCatActive();
 }
 
-// --- INSTANT POOL RENDER ---
+function makeCatBtn(id, label) {
+  const btn = document.createElement('button');
+  btn.className = 'cat-btn';
+  btn.dataset.cat = id;
+  btn.textContent = label;
+  if (!id.startsWith('__')) {
+    btn.onclick = e => { e.stopPropagation(); filterCategory(id); closeCatPanel(); };
+  }
+  return btn;
+}
+function closeCatPanel() { catPanel.classList.remove('open'); }
+function updateCatActive() {
+  catPanel.querySelectorAll('.cat-btn[data-cat]').forEach(btn => {
+    const id = btn.dataset.cat;
+    if      (id === '__void__') btn.classList.toggle('void-active', isVoidMode);
+    else if (id === '__kids__') { /* handled separately */ }
+    else                         btn.classList.toggle('active', id === currentCategory);
+  });
+}
+
+// ── FILTER / SHUFFLE ───────────────────────────────────────────────────
+function filterCategory(cat, resetIdx = true, animate = true) {
+  const changed = cat !== currentCategory;
+  currentCategory = cat;
+
+  let pool = cat === 'all' ? [...allVideos] : allVideos.filter(v => v.category === cat);
+  if (!pool.length) pool = [...allVideos];
+
+  // Fisher-Yates shuffle
+  for (let i = pool.length - 1; i > 0; i--) {
+    const j = Math.floor(Math.random() * (i + 1));
+    [pool[i], pool[j]] = [pool[j], pool[i]];
+  }
+  currentPlaylist = pool;
+  if (resetIdx) currentIndex = 0;
+  clearPreloadPool();
+
+  if (currentPlaylist.length > 0) {
+    renderCard(currentIndex, animate && changed ? 'fade' : 'none');
+  }
+  saveState();
+  updateCatActive();
+}
+function clearPreloadPool() {
+  Object.values(preloadedVids).forEach(v => { v.src = ''; v.load(); });
+  preloadedVids = {};
+}
+
+// ── RENDER CARD ────────────────────────────────────────────────────────
 function renderCard(idx, dir) {
-    if (!currentPlaylist[idx]) return;
-    const item = currentPlaylist[idx];
-    vidTitle.textContent = item.title;
+  if (!currentPlaylist[idx]) return;
+  const item = currentPlaylist[idx];
+  vidTitle.textContent = item.title;
 
-    const card = document.createElement('div');
-    card.className = 'card';
-    
-    // Animation positioning
-    if (dir === "up") card.style.transform = 'translateY(100%)';
-    else if (dir === "down") card.style.transform = 'translateY(-100%)';
-    else card.style.transform = 'translateY(0)';
+  const card = document.createElement('div');
+  card.className = 'card loading';
 
-    const vid = document.createElement('video');
+  // Reuse preloaded video element if available
+  const vid = preloadedVids[idx] || document.createElement('video');
+  if (!preloadedVids[idx]) {
     vid.src = item.url;
-    vid.loop = true; 
-    vid.muted = isMuted; 
+    vid.preload = 'auto';
     vid.playsInline = true;
-    vid.preload = "auto"; // The magic: pre-buffer
-    
-    if (isFit) vid.classList.add('contain');
-    
-    vid.onloadeddata = () => { 
-        vid.classList.add('ready'); 
-        if (card === curCard) vid.play(); 
-    };
-    
-    vid.ontimeupdate = () => { 
-        if(card === curCard && vid.duration) scrubber.value = (vid.currentTime / vid.duration) * 100;
-    };
-    
-    vid.onerror = () => advance("up");
+  }
+  delete preloadedVids[idx];
 
-    card.appendChild(vid);
-    feed.appendChild(card);
+  vid.muted = isMuted;
+  vid.loop = false;  // handled by onended
+  if (isFit) vid.classList.add('contain'); else vid.classList.remove('contain');
 
-    setTimeout(() => { 
-        card.style.transition = 'transform 0.4s cubic-bezier(0.23, 1, 0.32, 1)'; 
-        card.style.transform = 'translateY(0)'; 
-    }, 50);
+  card.appendChild(vid);
 
-    if (curCard) {
-        const old = curCard;
-        const oldVid = old.querySelector('video');
-        old.style.transition = 'transform 0.4s cubic-bezier(0.23, 1, 0.32, 1)';
-        old.style.transform = dir === "up" ? 'translateY(-100%)' : 'translateY(100%)';
-        setTimeout(() => {
-            oldVid.pause();
-            oldVid.src = ""; 
-            oldVid.load();
-            old.remove();
-        }, 400);
-    }
-    
-    curCard = card;
-    curVideo = vid;
+  // Set start position before inserting
+  if      (dir === 'up')   card.style.transform = 'translateY(100%)';
+  else if (dir === 'down') card.style.transform = 'translateY(-100%)';
+  else if (dir === 'fade') { card.style.opacity = '0'; card.style.transform = 'translateY(0)'; }
+  else                      card.style.transform = 'translateY(0)';
 
-    // PRELOAD NEIGHBORS (The Pool)
-    preload(idx + 1); // Preload Next
-    preload(idx - 1); // Preload Previous
+  // ── Video events ──
+  vid.onloadeddata = () => {
+    vid.classList.add('ready');
+    card.classList.remove('loading');
+    if (card === curCard) vid.play().catch(() => {});
+  };
+  vid.ontimeupdate = () => {
+    if (card === curCard && vid.duration)
+      scrubber.value = (vid.currentTime / vid.duration) * 100;
+  };
+  vid.onended = () => {
+    if (card !== curCard) return;
+    if (autoScroll) advance('up');
+    else { vid.currentTime = 0; vid.play().catch(() => {}); }
+  };
+  vid.onerror = () => { if (card === curCard) advance('up'); };
+
+  feed.appendChild(card);
+
+  // Animate IN (double rAF ensures initial paint before transition)
+  requestAnimationFrame(() => requestAnimationFrame(() => {
+    const ease = 'cubic-bezier(0.23, 1, 0.32, 1)';
+    card.style.transition = dir === 'fade'
+      ? 'opacity 0.55s ease, transform 0.55s ' + ease
+      : 'transform 0.45s ' + ease;
+    card.style.transform = 'translateY(0)';
+    card.style.opacity = '1';
+  }));
+
+  // Animate OUT old card
+  if (curCard) {
+    const old = curCard, oldVid = curVideo;
+    old.style.transition = dir === 'fade'
+      ? 'opacity 0.55s ease'
+      : 'transform 0.45s cubic-bezier(0.23, 1, 0.32, 1)';
+    if (dir === 'fade') old.style.opacity = '0';
+    else old.style.transform = dir === 'up' ? 'translateY(-100%)' : 'translateY(100%)';
+    setTimeout(() => {
+      if (oldVid) { oldVid.pause(); oldVid.src = ''; oldVid.load(); }
+      old.remove();
+    }, 560);
+  }
+
+  curCard = card;
+  curVideo = vid;
+  vid.play().catch(() => {});
+
+  // Preload next 3 videos
+  preloadAhead(idx, 3);
 }
 
-function preload(targetIdx) {
-    if (!currentPlaylist[targetIdx]) return;
-    const link = document.createElement('link');
-    link.rel = "preload";
-    link.as = "video";
-    link.href = currentPlaylist[targetIdx].url;
-    document.head.appendChild(link);
-    // Cleanup old preloads
-    const preloads = document.head.querySelectorAll('link[rel="preload"]');
-    if (preloads.length > 5) preloads[0].remove();
+function preloadAhead(fromIdx, count) {
+  for (let i = 1; i <= count; i++) {
+    const ti = fromIdx + i;
+    if (!currentPlaylist[ti] || preloadedVids[ti]) continue;
+    const pv = document.createElement('video');
+    pv.src = currentPlaylist[ti].url;
+    pv.preload = 'auto'; pv.muted = true; pv.playsInline = true;
+    preloadedVids[ti] = pv;
+  }
+  // Cleanup distant preloads
+  Object.keys(preloadedVids).forEach(k => {
+    const ki = Number(k);
+    if (ki < fromIdx - 1 || ki > fromIdx + count + 1) {
+      preloadedVids[k].src = ''; preloadedVids[k].load();
+      delete preloadedVids[k];
+    }
+  });
 }
 
 function advance(dir) {
-    if (transitioning || currentPlaylist.length === 0) return;
-    const next = dir === "up" ? currentIndex + 1 : currentIndex - 1;
-    if (next < 0 || next >= currentPlaylist.length) return;
-    transitioning = true;
-    currentIndex = next;
-    renderCard(currentIndex, dir);
-    setTimeout(() => transitioning = false, 450);
+  if (transitioning || !currentPlaylist.length) return;
+  let next = dir === 'up' ? currentIndex + 1 : currentIndex - 1;
+  if (next < 0) return;
+  if (next >= currentPlaylist.length) {
+    // Re-shuffle and loop from beginning
+    filterCategory(currentCategory, false, false);
+    next = 0;
+  }
+  transitioning = true;
+  currentIndex = next;
+  renderCard(currentIndex, dir);
+  setTimeout(() => { transitioning = false; }, 500);
 }
 
-// UI & Gestures (Same as your provided code, just kept clean)
-let startY = 0, currentY = 0;
-window.addEventListener('touchstart', e => { if (!scrollLocked) startY = e.touches[0].clientY; });
-window.addEventListener('touchmove', e => {
-    if (scrollLocked || !curCard) return;
-    currentY = e.touches[0].clientY - startY;
-    curCard.style.transition = 'none';
-    curCard.style.transform = `translateY(${currentY}px)`;
-    curCard.style.filter = `blur(${Math.min(Math.abs(currentY)/20, 10)}px)`;
-});
-window.addEventListener('touchend', () => {
-    if (scrollLocked || !curCard) return;
-    curCard.style.transition = 'transform 0.4s cubic-bezier(0.23, 1, 0.32, 1), filter 0.2s';
-    curCard.style.filter = 'blur(0px)';
-    if (Math.abs(currentY) > 100) advance(currentY < 0 ? "up" : "down");
-    else curCard.style.transform = 'translateY(0)';
-    currentY = 0;
-});
+// ── VOID MODE ──────────────────────────────────────────────────────────
+function toggleVoidMode() {
+  isVoidMode = !isVoidMode;
+  applyVoidUI();
+  updateCatActive();
+  saveState();
 
-function resetUiTimer() {
-    uiLayer.classList.remove('faded');
-    clearTimeout(uiTimeout);
-    uiTimeout = setTimeout(() => uiLayer.classList.add('faded'), 3500);
+  // Switch to void category when activating
+  if (isVoidMode) filterCategory('void', true, true);
 }
-window.addEventListener('touchstart', resetUiTimer);
-window.addEventListener('mousemove', resetUiTimer);
+function applyVoidUI() {
+  feed.classList.toggle('void-mode', isVoidMode);
+  document.getElementById('voidRainbow').style.display = isVoidMode ? 'block' : 'none';
+  appTitle.className = 'title' + (isVoidMode ? ' void-title' : (isKidsMode ? ' kids-title' : ''));
+}
 
-scrubber.addEventListener('input', e => {
-    if (curVideo && curVideo.duration) curVideo.currentTime = (e.target.value / 100) * curVideo.duration;
-});
-
-document.getElementById('btnCatToggle').onclick = () => document.getElementById('catList').classList.toggle('open');
-document.querySelectorAll('.cat-btn').forEach(btn => {
-    btn.onclick = () => {
-        document.querySelectorAll('.cat-btn').forEach(b => b.classList.remove('active'));
-        btn.classList.add('active');
-        filterCategory(btn.dataset.cat);
-        document.getElementById('catList').classList.remove('open');
+// ── AMBIENT ────────────────────────────────────────────────────────────
+function buildAmbientGrid() {
+  const grid = document.getElementById('ambientGrid');
+  if (!grid) return;
+  if (!ambientData.length) {
+    grid.innerHTML = '<div class="ambient-empty">No ambient sounds found.<br>Check ambient.json</div>';
+    return;
+  }
+  grid.innerHTML = '';
+  ambientData.forEach(s => {
+    const btn = document.createElement('button');
+    btn.className = 'ambient-btn';
+    btn.id = 'amb_' + s.id;
+    btn.innerHTML = `<span class="amb-icon">${s.icon}</span><span>${s.title}</span>`;
+    btn.onclick = () => toggleAmbientSound(s);
+    grid.appendChild(btn);
+  });
+}
+function toggleAmbientSound(sound) {
+  const id = sound.id;
+  const btn = document.getElementById('amb_' + id);
+  if (activeSounds[id]) {
+    activeSounds[id].pause(); activeSounds[id].src = '';
+    delete activeSounds[id];
+    if (btn) btn.classList.remove('active');
+  } else {
+    const audio = new Audio(sound.url);
+    audio.loop = true; audio.volume = masterVolume;
+    audio.play().catch(() => {});
+    activeSounds[id] = audio;
+    if (btn) btn.classList.add('active');
+    // Register with OS media controls so it survives screen lock
+    if ('mediaSession' in navigator) {
+      navigator.mediaSession.metadata = new MediaMetadata({
+        title: sound.title, artist: 'VOIDSCROLL AMBIENT'
+      });
     }
+  }
+  const anyActive = Object.keys(activeSounds).length > 0;
+  document.getElementById('btnAmbient').classList.toggle('ambient-active', anyActive);
+}
+document.getElementById('ambientVol').addEventListener('input', e => {
+  masterVolume = e.target.value / 100;
+  Object.values(activeSounds).forEach(a => { a.volume = masterVolume; });
+});
+document.getElementById('btnCloseAmbient').onclick = () => {
+  document.getElementById('ambientPanel').classList.remove('open');
+};
+
+// ── KIDS MODE ──────────────────────────────────────────────────────────
+function openPinOverlay() {
+  document.getElementById('pinText').textContent =
+    isKidsMode ? 'ENTER PIN TO UNLOCK' : 'SET PIN FOR KIDS MODE';
+  document.getElementById('pinOverlay').classList.add('open');
+  setTimeout(() => document.getElementById('pinInput').focus(), 80);
+}
+document.getElementById('btnPinCancel').onclick = () => {
+  document.getElementById('pinOverlay').classList.remove('open');
+  document.getElementById('pinInput').value = '';
+};
+document.getElementById('pinInput').onkeydown = async e => {
+  if (e.key !== 'Enter') return;
+  const val = document.getElementById('pinInput').value.trim();
+  if (val.length < 4) { showToast('ENTER 4 DIGITS'); return; }
+  if (!isKidsMode) {
+    savedPin = val; isKidsMode = true;
+    await loadVideoData();
+  } else {
+    if (val === savedPin) { isKidsMode = false; await loadVideoData(); }
+    else { showToast('WRONG PIN'); document.getElementById('pinInput').value = ''; return; }
+  }
+  applyKidsModeUI(); saveState();
+  document.getElementById('pinOverlay').classList.remove('open');
+  document.getElementById('pinInput').value = '';
+};
+function applyKidsModeUI() {
+  document.body.classList.toggle('kids-mode', isKidsMode);
+  appTitle.textContent = isKidsMode ? 'VOID KIDS' : 'VOIDSCROLL';
+  appTitle.className   = 'title' + (isKidsMode ? ' kids-title' : (isVoidMode ? ' void-title' : ''));
+  document.getElementById('btnShare').style.display   = isKidsMode ? 'none' : '';
+  document.getElementById('btnAmbient').style.display = isKidsMode ? 'none' : '';
+  buildCategoryPanel();
+}
+
+// ── SETTINGS ───────────────────────────────────────────────────────────
+function updateSettingsUI() {
+  const aBtn = document.getElementById('btnAutoScroll');
+  const bBtn = document.getElementById('btnBgPlay');
+  aBtn.textContent = autoScroll    ? 'ON' : 'OFF';
+  bBtn.textContent = backgroundPlay ? 'ON' : 'OFF';
+  aBtn.classList.toggle('active', autoScroll);
+  bBtn.classList.toggle('active', backgroundPlay);
+}
+document.getElementById('btnAutoScroll').onclick = () => {
+  autoScroll = !autoScroll; updateSettingsUI(); saveState();
+};
+document.getElementById('btnBgPlay').onclick = () => {
+  backgroundPlay = !backgroundPlay; updateSettingsUI(); saveState();
+  if (backgroundPlay && 'mediaSession' in navigator) {
+    navigator.mediaSession.setActionHandler('play',      () => curVideo?.play());
+    navigator.mediaSession.setActionHandler('pause',     () => curVideo?.pause());
+    navigator.mediaSession.setActionHandler('nexttrack', () => advance('up'));
+    navigator.mediaSession.setActionHandler('previoustrack', () => advance('down'));
+  }
+};
+document.getElementById('btnSettingsClose').onclick = () => {
+  document.getElementById('settingsOverlay').classList.remove('open');
+};
+
+// ── MAIN BUTTON HANDLERS ───────────────────────────────────────────────
+document.getElementById('btnCatToggle').onclick = () => catPanel.classList.toggle('open');
+
+document.getElementById('btnMute').onclick = e => {
+  isMuted = !isMuted;
+  if (curVideo) curVideo.muted = isMuted;
+  Object.values(preloadedVids).forEach(v => { v.muted = isMuted; });
+  e.target.classList.toggle('active', !isMuted);
+  saveState();
+};
+document.getElementById('btnFit').onclick = e => {
+  isFit = !isFit;
+  if (curVideo) curVideo.classList.toggle('contain', isFit);
+  e.target.classList.toggle('active', isFit);
+  saveState();
+};
+document.getElementById('btnLock').onclick = e => {
+  scrollLocked = !scrollLocked;
+  e.target.classList.toggle('active', scrollLocked);
+};
+document.getElementById('btnAmbient').onclick = () => {
+  document.getElementById('ambientPanel').classList.toggle('open');
+};
+document.getElementById('btnSettings').onclick = () => {
+  updateSettingsUI();
+  document.getElementById('settingsOverlay').classList.add('open');
+};
+document.getElementById('btnShare').onclick = () => {
+  if (isKidsMode || !currentPlaylist[currentIndex]) return;
+  const url = new URL(window.location.href);
+  url.searchParams.set('vid', currentPlaylist[currentIndex].id);
+  (navigator.clipboard?.writeText(url.toString()) || Promise.reject())
+    .then(() => showToast('LINK COPIED!'))
+    .catch(() => showToast('COPY FAILED'));
+};
+
+// Close cat panel on outside tap
+document.addEventListener('touchstart', e => {
+  if (!e.target.closest('.cat-container')) closeCatPanel();
+}, { passive: true });
+
+// ── SYNC INITIAL BUTTON STATES ────────────────────────────────────────
+function syncButtonStates() {
+  document.getElementById('btnMute').classList.toggle('active', !isMuted);
+  document.getElementById('btnFit').classList.toggle('active', isFit);
+}
+
+// ── TOUCH GESTURES ─────────────────────────────────────────────────────
+window.addEventListener('touchstart', e => {
+  if (e.target.closest('button, input, .ambient-panel, .overlay, .seek-zone')) return;
+  startY = e.touches[0].clientY;
+  startX = e.touches[0].clientX;
+  touchTime = Date.now();
+  currentY = 0; isDragging = false;
+  resetUiTimer();
+}, { passive: true });
+
+window.addEventListener('touchmove', e => {
+  if (scrollLocked || !curCard) return;
+  if (e.target.closest('button, input, .ambient-panel, .overlay')) return;
+  const dy = e.touches[0].clientY - startY;
+  const dx = e.touches[0].clientX - startX;
+  if (!isDragging && Math.abs(dy) < 8 && Math.abs(dx) < 8) return;
+  isDragging = true;
+  if (Math.abs(dy) >= Math.abs(dx)) {
+    e.preventDefault();
+    currentY = dy;
+    curCard.style.transition = 'none';
+    curCard.style.transform  = `translateY(${currentY}px)`;
+    curCard.style.filter     = `blur(${Math.min(Math.abs(currentY) / 18, 10)}px)`;
+  }
+}, { passive: false });
+
+window.addEventListener('touchend', e => {
+  if (e.target.closest('.ambient-panel, .overlay')) return;
+  const elapsed = Date.now() - touchTime;
+
+  if (!isDragging && elapsed < 300) {
+    // TAP — check if center zone
+    const tx   = e.changedTouches[0].clientX;
+    const rect = feed.getBoundingClientRect();
+    const relX = tx - rect.left;
+    const inCenter = relX > rect.width * 0.32 && relX < rect.width * 0.68;
+    if (inCenter && !e.target.closest('.seek-zone')) togglePlayPause();
+
+  } else if (isDragging && curCard) {
+    curCard.style.filter = 'blur(0)';
+    if (Math.abs(currentY) > 100) {
+      advance(currentY < 0 ? 'up' : 'down');
+    } else {
+      curCard.style.transition = 'transform 0.4s cubic-bezier(0.23,1,0.32,1), filter 0.2s';
+      curCard.style.transform  = 'translateY(0)';
+    }
+  }
+  currentY = 0; isDragging = false;
 });
 
-document.getElementById('btnMute').onclick = (e) => {
-    isMuted = !isMuted;
-    if (curVideo) curVideo.muted = isMuted;
-    e.target.classList.toggle('active', !isMuted);
-};
+// ── PLAY / PAUSE ───────────────────────────────────────────────────────
+function togglePlayPause() {
+  if (!curVideo) return;
+  const ind = document.getElementById('ppIndicator');
+  if (curVideo.paused) {
+    curVideo.play().catch(() => {});
+    ind.textContent = '▶';
+  } else {
+    curVideo.pause();
+    ind.textContent = '⏸';
+  }
+  ind.style.opacity = '1';
+  clearTimeout(ind._t);
+  ind._t = setTimeout(() => { ind.style.opacity = '0'; }, 750);
+}
 
-document.getElementById('btnFit').onclick = (e) => {
-    isFit = !isFit;
-    if (curVideo) curVideo.classList.toggle('contain', isFit);
-    e.target.classList.toggle('active', isFit);
-};
+// ── UI INACTIVITY TIMER ────────────────────────────────────────────────
+function resetUiTimer() {
+  uiLayer.classList.remove('faded');
+  bottomWrap.classList.remove('hidden');
+  clearTimeout(uiTimeout);
+  uiTimeout = setTimeout(() => {
+    uiLayer.classList.add('faded');
+    bottomWrap.classList.add('hidden');
+  }, 3500);
+}
+window.addEventListener('touchstart', e => {
+  if (!e.target.closest('.ambient-panel, .overlay')) resetUiTimer();
+}, { passive: true });
+window.addEventListener('mousemove', resetUiTimer, { passive: true });
 
-document.getElementById('btnLock').onclick = (e) => {
-    scrollLocked = !scrollLocked;
-    e.target.classList.toggle('warn', scrollLocked);
-};
+// ── SCRUBBER ───────────────────────────────────────────────────────────
+scrubber.addEventListener('input', e => {
+  if (curVideo && curVideo.duration)
+    curVideo.currentTime = (e.target.value / 100) * curVideo.duration;
+});
 
-document.getElementById('btnShare').onclick = () => {
-    const url = new URL(window.location.href);
-    url.searchParams.set('vid', currentPlaylist[currentIndex].id);
-    navigator.clipboard.writeText(url.toString()).then(() => {
-        const t = document.getElementById('toast');
-        t.style.opacity = 1;
-        setTimeout(() => t.style.opacity = 0, 2000);
-    });
-};
-
-// Seek Zones
+// ── SEEK ZONES ─────────────────────────────────────────────────────────
 let seekInterval;
 function handleSeek(dir, indId) {
-    if(!curVideo) return;
-    document.getElementById(indId).style.opacity = 1;
-    seekInterval = setInterval(() => { curVideo.currentTime += (dir === 'fwd' ? 2 : -2); }, 100);
+  if (!curVideo) return;
+  document.getElementById(indId).style.opacity = 1;
+  seekInterval = setInterval(() => { curVideo.currentTime += dir === 'fwd' ? 2 : -2; }, 100);
 }
 function stopSeek(indId) {
-    clearInterval(seekInterval);
-    document.getElementById(indId).style.opacity = 0;
+  clearInterval(seekInterval);
+  document.getElementById(indId).style.opacity = 0;
+}
+const sR = document.getElementById('seekRight'), sL = document.getElementById('seekLeft');
+sR.addEventListener('touchstart', e => { e.stopPropagation(); handleSeek('fwd', 'indRight'); }, { passive: true });
+sR.addEventListener('touchend',   () => stopSeek('indRight'));
+sL.addEventListener('touchstart', e => { e.stopPropagation(); handleSeek('rev', 'indLeft'); }, { passive: true });
+sL.addEventListener('touchend',   () => stopSeek('indLeft'));
+
+// ── BACKGROUND PLAY ────────────────────────────────────────────────────
+document.addEventListener('visibilitychange', () => {
+  if (document.hidden && !backgroundPlay && curVideo) curVideo.pause();
+  else if (!document.hidden && curVideo)              curVideo.play().catch(() => {});
+  // Ambient sounds continue regardless of screen state
+});
+
+// ── TOAST ──────────────────────────────────────────────────────────────
+let toastTimer;
+function showToast(msg) {
+  const t = document.getElementById('toast');
+  t.textContent = msg; t.style.opacity = 1;
+  clearTimeout(toastTimer);
+  toastTimer = setTimeout(() => { t.style.opacity = 0; }, 2200);
 }
 
-const sRight = document.getElementById('seekRight'), sLeft = document.getElementById('seekLeft');
-sRight.addEventListener('touchstart', () => handleSeek('fwd', 'indRight'));
-sRight.addEventListener('touchend', () => stopSeek('indRight'));
-sLeft.addEventListener('touchstart', () => handleSeek('rev', 'indLeft'));
-sLeft.addEventListener('touchend', () => stopSeek('indLeft'));
-
-// Kids Mode
-const btnKids = document.getElementById('btnKids'), pinOverlay = document.getElementById('pinOverlay'), pinInput = document.getElementById('pinInput');
-btnKids.onclick = () => { pinOverlay.classList.add('open'); pinInput.focus(); document.getElementById('pinText').textContent = isKidsMode ? "ENTER PIN TO UNLOCK" : "SET PIN FOR KIDS MODE"; };
-
-pinInput.onkeydown = async (e) => {
-    if (e.key === "Enter") {
-        const val = pinInput.value.trim();
-        if (!val) return;
-
-        if (!isKidsMode) {
-            // Setting Kids Mode
-            savedPin = val;
-            isKidsMode = true;
-            document.body.classList.add('kids-mode');
-            btnKids.classList.add('warn');
-            appTitle.textContent = "VOID KIDS";
-            document.getElementById('btnCatToggle').style.display = 'none';
-
-            console.log("Switching to Kids Mode");
-            await loadData(); // <-- Load kids_videos.json
-
-        } else {
-            // Unlocking back to normal mode
-            if (val === savedPin) {
-                isKidsMode = false;
-                document.body.classList.remove('kids-mode');
-                btnKids.classList.remove('warn');
-                appTitle.textContent = "VOIDSCROLL";
-                document.getElementById('btnCatToggle').style.display = 'block';
-
-                console.log("Switching to Normal Mode");
-                await loadData(); // <-- Load videos.json
-            } else {
-                alert("Incorrect PIN");
-            }
-        }
-
-        pinOverlay.classList.remove('open');
-        pinInput.value = "";
-    }
-};
-
+// ── GO ─────────────────────────────────────────────────────────────────
 init();
 </script>
 </body>

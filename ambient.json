@@ -1,0 +1,128 @@
+[
+  {
+    "id": "rain-window",
+    "title": "Rain on Window",
+    "icon": "🌧",
+    "url": "https://archive.org/download/rain_on_window_ambience/rain_window_loop.mp3",
+    "category": "rain"
+  },
+  {
+    "id": "thunderstorm",
+    "title": "Thunderstorm",
+    "icon": "⛈",
+    "url": "https://archive.org/download/thunder-and-rain-ambience-sound/thunderstorm_ambience.mp3",
+    "category": "storm"
+  },
+  {
+    "id": "ocean-waves",
+    "title": "Ocean Waves",
+    "icon": "🌊",
+    "url": "https://archive.org/download/ocean-waves-sounds-nature/ocean_waves_loop.mp3",
+    "category": "ocean"
+  },
+  {
+    "id": "forest-birds",
+    "title": "Forest & Birds",
+    "icon": "🌲",
+    "url": "https://archive.org/download/forest-birds-ambience-nature/forest_birds_morning.mp3",
+    "category": "forest"
+  },
+  {
+    "id": "campfire",
+    "title": "Campfire",
+    "icon": "🔥",
+    "url": "https://archive.org/download/campfire-crackling-ambience/campfire_crackling.mp3",
+    "category": "fire"
+  },
+  {
+    "id": "mountain-stream",
+    "title": "Mountain Stream",
+    "icon": "🏔",
+    "url": "https://archive.org/download/river-stream-nature-sounds/mountain_stream_loop.mp3",
+    "category": "water"
+  },
+  {
+    "id": "wind-outside",
+    "title": "Wind",
+    "icon": "💨",
+    "url": "https://archive.org/download/wind-ambience-nature/wind_outside_loop.mp3",
+    "category": "wind"
+  },
+  {
+    "id": "night-insects",
+    "title": "Night Insects",
+    "icon": "🦗",
+    "url": "https://archive.org/download/night-insects-crickets-ambience/crickets_night_loop.mp3",
+    "category": "night"
+  },
+  {
+    "id": "white-noise",
+    "title": "White Noise",
+    "icon": "〰",
+    "url": "https://archive.org/download/white-noise-sleep-sounds/white_noise_loop.mp3",
+    "category": "noise"
+  },
+  {
+    "id": "heavy-rain",
+    "title": "Heavy Rain",
+    "icon": "🌨",
+    "url": "https://archive.org/download/heavy-rain-downpour-ambience/heavy_rain_loop.mp3",
+    "category": "rain"
+  },
+  {
+    "id": "underwater",
+    "title": "Underwater",
+    "icon": "🐟",
+    "url": "https://archive.org/download/underwater-ambience-sounds/underwater_loop.mp3",
+    "category": "ocean"
+  },
+  {
+    "id": "blizzard",
+    "title": "Blizzard",
+    "icon": "❄",
+    "url": "https://archive.org/download/blizzard-winter-wind-ambience/blizzard_loop.mp3",
+    "category": "wind"
+  },
+  {
+    "id": "tropical-jungle",
+    "title": "Tropical Jungle",
+    "icon": "🌴",
+    "url": "https://archive.org/download/jungle-tropical-ambience-sounds/tropical_jungle_loop.mp3",
+    "category": "forest"
+  },
+  {
+    "id": "dawn-chorus",
+    "title": "Dawn Chorus",
+    "icon": "🌅",
+    "url": "https://archive.org/download/bird-dawn-chorus-nature/dawn_chorus_loop.mp3",
+    "category": "forest"
+  },
+  {
+    "id": "cave-drips",
+    "title": "Cave",
+    "icon": "🪨",
+    "url": "https://archive.org/download/cave-dripping-water-ambience/cave_drips_loop.mp3",
+    "category": "water"
+  },
+  {
+    "id": "brown-noise",
+    "title": "Brown Noise",
+    "icon": "🟫",
+    "url": "https://archive.org/download/brown-noise-sleep-focus/brown_noise_loop.mp3",
+    "category": "noise"
+  },
+  {
+    "id": "gentle-stream",
+    "title": "Babbling Brook",
+    "icon": "🏞",
+    "url": "https://archive.org/download/gentle-brook-stream-nature/babbling_brook_loop.mp3",
+    "category": "water"
+  },
+  {
+    "id": "wind-chimes",
+    "title": "Wind Chimes",
+    "icon": "🎐",
+    "url": "https://archive.org/download/wind-chimes-gentle-ambience/wind_chimes_loop.mp3",
+    "category": "wind"
+  }
+]

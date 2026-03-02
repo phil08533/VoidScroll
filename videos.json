@@ -2371,5 +2371,341 @@
     "url": "https://archive.org/download/space-x-crew-10-dragon-falcon-9-rocket-launch-3-12-25/SpaceX Crew 10 Dragon Falcon 9 Rocket Launch 3-12-25.ia.mp4",
     "category": "space",
     "source": "archive"
+  },
+  {
+    "id": "nature-iss-earth-timelapse-01",
+    "title": "Earth from the ISS — Day to Night Time-lapse",
+    "url": "https://archive.org/download/youtube-DuHPFsImgMA/DuHPFsImgMA.mp4",
+    "category": "nature",
+    "source": "nasa"
+  },
+  {
+    "id": "nature-coral-reef-01",
+    "title": "Coral Reef — Silent Underwater World",
+    "url": "https://archive.org/download/youtube-SsNNqOvBxpI/SsNNqOvBxpI.mp4",
+    "category": "nature",
+    "source": "archive"
+  },
+  {
+    "id": "nature-jellyfish-01",
+    "title": "Jellyfish — Slow Ocean Drift",
+    "url": "https://archive.org/download/youtube-G9OGGgLhsxo/G9OGGgLhsxo.mp4",
+    "category": "nature",
+    "source": "archive"
+  },
+  {
+    "id": "nature-aurora-01",
+    "title": "Northern Lights — Aurora Borealis Time-lapse",
+    "url": "https://archive.org/download/youtube-RttGFR5YkRA/RttGFR5YkRA.mp4",
+    "category": "nature",
+    "source": "archive"
+  },
+  {
+    "id": "nature-waterfall-01",
+    "title": "Waterfall — Slow River and Cascade",
+    "url": "https://archive.org/download/youtube-V5VPsIiAuWU/V5VPsIiAuWU.mp4",
+    "category": "nature",
+    "source": "archive"
+  },
+  {
+    "id": "nature-clouds-timelapse-01",
+    "title": "Storm Clouds Time-lapse — No People",
+    "url": "https://archive.org/download/youtube-RNNJpqY8DWo/RNNJpqY8DWo.mp4",
+    "category": "nature",
+    "source": "archive"
+  },
+  {
+    "id": "nature-deep-ocean-01",
+    "title": "Deep Sea Creatures — Bioluminescence",
+    "url": "https://archive.org/download/youtube-RnkHTPqvUH0/RnkHTPqvUH0.mp4",
+    "category": "nature",
+    "source": "archive"
+  },
+  {
+    "id": "nature-flowers-macro-01",
+    "title": "Flowers in the Wind — Macro",
+    "url": "https://archive.org/download/youtube-Dh4lGHnNMis/Dh4lGHnNMis.mp4",
+    "category": "nature",
+    "source": "archive"
+  },
+  {
+    "id": "nature-rainforest-01",
+    "title": "Amazon Rainforest Canopy — Aerial",
+    "url": "https://archive.org/download/youtube-O1yudEJFHAI/O1yudEJFHAI.mp4",
+    "category": "nature",
+    "source": "archive"
+  },
+  {
+    "id": "nature-desert-sunset-01",
+    "title": "Desert Sunset Time-lapse",
+    "url": "https://archive.org/download/youtube-FG0fTKAqZ5g/FG0fTKAqZ5g.mp4",
+    "category": "nature",
+    "source": "archive"
+  },
+  {
+    "id": "nature-mushroom-growth-01",
+    "title": "Mushroom Growth — Time-lapse Macro",
+    "url": "https://archive.org/download/youtube-FTpmDfO-WOU/FTpmDfO-WOU.mp4",
+    "category": "nature",
+    "source": "archive"
+  },
+  {
+    "id": "nature-glacier-01",
+    "title": "Glacier and Arctic Ice — Aerial",
+    "url": "https://archive.org/download/youtube-cTtn6ieHIKU/cTtn6ieHIKU.mp4",
+    "category": "nature",
+    "source": "archive"
+  },
+  {
+    "id": "nature-undersea-kelp-01",
+    "title": "Kelp Forest — Underwater Sanctuary",
+    "url": "https://archive.org/download/youtube-CDi6dQcyPas/CDi6dQcyPas.mp4",
+    "category": "nature",
+    "source": "archive"
+  },
+  {
+    "id": "nature-lightning-01",
+    "title": "Lightning Storm Time-lapse",
+    "url": "https://archive.org/download/youtube-4M2aOkdcZLQ/4M2aOkdcZLQ.mp4",
+    "category": "nature",
+    "source": "archive"
+  },
+  {
+    "id": "nature-volcano-01",
+    "title": "Volcano Lava Flow — Hawaii",
+    "url": "https://archive.org/download/youtube-vGBFe5oUNjs/vGBFe5oUNjs.mp4",
+    "category": "nature",
+    "source": "archive"
+  },
+  {
+    "id": "nature-ocean-surface-01",
+    "title": "Ocean Surface — Slow Waves at Sunrise",
+    "url": "https://archive.org/download/youtube-3bKsqBiUHUY/3bKsqBiUHUY.mp4",
+    "category": "nature",
+    "source": "archive"
+  },
+  {
+    "id": "nature-nasa-earth-blues-01",
+    "title": "The Blue Marble — Earth from Space",
+    "url": "https://archive.org/download/youtube-wzhqCPjFVSk/wzhqCPjFVSk.mp4",
+    "category": "nature",
+    "source": "nasa"
+  },
+  {
+    "id": "sleep-fireplace-01",
+    "title": "Crackling Fireplace — 4K",
+    "url": "https://archive.org/download/youtube-L_LUpnjgPso/L_LUpnjgPso.mp4",
+    "category": "sleep",
+    "source": "archive"
+  },
+  {
+    "id": "sleep-rain-window-01",
+    "title": "Rain on Window — Cozy Night",
+    "url": "https://archive.org/download/youtube-mPZkdNFkNps/mPZkdNFkNps.mp4",
+    "category": "sleep",
+    "source": "archive"
+  },
+  {
+    "id": "sleep-starfield-01",
+    "title": "Milky Way Time-lapse — Star Field",
+    "url": "https://archive.org/download/youtube-v6RMOdXXLgg/v6RMOdXXLgg.mp4",
+    "category": "sleep",
+    "source": "archive"
+  },
+  {
+    "id": "sleep-aquarium-01",
+    "title": "Aquarium Fish — Slow Peaceful Swim",
+    "url": "https://archive.org/download/youtube-nrnFPQdXzLk/nrnFPQdXzLk.mp4",
+    "category": "sleep",
+    "source": "archive"
+  },
+  {
+    "id": "sleep-snowfall-01",
+    "title": "Gentle Snowfall — Winter Forest",
+    "url": "https://archive.org/download/youtube-3d4D1QGCmL0/3d4D1QGCmL0.mp4",
+    "category": "sleep",
+    "source": "archive"
+  },
+  {
+    "id": "sleep-bamboo-01",
+    "title": "Bamboo Forest — Gentle Breeze",
+    "url": "https://archive.org/download/youtube-wnlqWHVNWtM/wnlqWHVNWtM.mp4",
+    "category": "sleep",
+    "source": "archive"
+  },
+  {
+    "id": "sleep-night-ocean-01",
+    "title": "Ocean Waves at Night — Moonlit Beach",
+    "url": "https://archive.org/download/youtube-bn9F19Hi1Lk/bn9F19Hi1Lk.mp4",
+    "category": "sleep",
+    "source": "archive"
+  },
+  {
+    "id": "sleep-foggy-forest-01",
+    "title": "Foggy Morning Forest — Slow Drift",
+    "url": "https://archive.org/download/youtube-o2j5rLN2PeE/o2j5rLN2PeE.mp4",
+    "category": "sleep",
+    "source": "archive"
+  },
+  {
+    "id": "sleep-candlelight-01",
+    "title": "Single Candle Flame — Close-up",
+    "url": "https://archive.org/download/youtube-1rPxnEIIkSk/1rPxnEIIkSk.mp4",
+    "category": "sleep",
+    "source": "archive"
+  },
+  {
+    "id": "sleep-gentle-lake-01",
+    "title": "Still Lake at Dawn — Morning Mist",
+    "url": "https://archive.org/download/youtube-CwoKFUGWZqU/CwoKFUGWZqU.mp4",
+    "category": "sleep",
+    "source": "archive"
+  },
+  {
+    "id": "sleep-northern-lights-slow-01",
+    "title": "Aurora Borealis — Slow and Silent",
+    "url": "https://archive.org/download/youtube-UM_LUmpk75o/UM_LUmpk75o.mp4",
+    "category": "sleep",
+    "source": "archive"
+  },
+  {
+    "id": "sleep-rain-forest-01",
+    "title": "Rain in a Dark Forest — Loop",
+    "url": "https://archive.org/download/youtube-q76bMs-NwRk/q76bMs-NwRk.mp4",
+    "category": "sleep",
+    "source": "archive"
+  },
+  {
+    "id": "sleep-slow-clouds-01",
+    "title": "Slow Moving Clouds — Dusk",
+    "url": "https://archive.org/download/youtube-oAI9dDj7ues/oAI9dDj7ues.mp4",
+    "category": "sleep",
+    "source": "archive"
+  },
+  {
+    "id": "void-ballet-mecanique-01",
+    "title": "Ballet Mécanique (1924) — Léger Abstract Film",
+    "url": "https://archive.org/download/BalletMecanique/BalletMecanique.mp4",
+    "category": "void",
+    "source": "archive"
+  },
+  {
+    "id": "void-abstract-film-01",
+    "title": "An Optical Poem (1938) — Abstract Animation",
+    "url": "https://archive.org/download/AnOpticalPoem/AnOpticalPoem.mp4",
+    "category": "void",
+    "source": "archive"
+  },
+  {
+    "id": "void-experimental-01",
+    "title": "Rhythmus 21 (1921) — Hans Richter Abstract",
+    "url": "https://archive.org/download/Rhythmus21/Rhythmus21.mp4",
+    "category": "void",
+    "source": "archive"
+  },
+  {
+    "id": "void-psychedelic-01",
+    "title": "Color Studies — Psychedelic Light Abstract",
+    "url": "https://archive.org/download/youtube-Wv0oZ_fYZrQ/Wv0oZ_fYZrQ.mp4",
+    "category": "void",
+    "source": "archive"
+  },
+  {
+    "id": "void-trip-moon-01",
+    "title": "A Trip to the Moon (1902) — Méliès",
+    "url": "https://archive.org/download/TripToTheMoon/TripToTheMoon.mp4",
+    "category": "void",
+    "source": "archive"
+  },
+  {
+    "id": "void-old-weird-01",
+    "title": "Spook Sport (1939) — Norman McLaren Phantoms",
+    "url": "https://archive.org/download/spook_sport_1939/spook_sport_1939.mp4",
+    "category": "void",
+    "source": "archive"
+  },
+  {
+    "id": "void-abstract-color-01",
+    "title": "Color Box (1935) — Len Lye Abstract",
+    "url": "https://archive.org/download/youtube-LXjAkjjMqUI/LXjAkjjMqUI.mp4",
+    "category": "void",
+    "source": "archive"
+  },
+  {
+    "id": "void-surreal-01",
+    "title": "Un Chien Andalou (1929) — Buñuel Dali Surrealism",
+    "url": "https://archive.org/download/UnChienAndalou/UnChienAndalou.mp4",
+    "category": "void",
+    "source": "archive"
+  },
+  {
+    "id": "void-old-tv-01",
+    "title": "Early Television Test Patterns — Strange Signal",
+    "url": "https://archive.org/download/youtube-KHO4S8DJAHY/KHO4S8DJAHY.mp4",
+    "category": "void",
+    "source": "archive"
+  },
+  {
+    "id": "void-abstract-02",
+    "title": "Visual Music — Abstract Light Painting",
+    "url": "https://archive.org/download/youtube-KALRfYJMl7U/KALRfYJMl7U.mp4",
+    "category": "void",
+    "source": "archive"
+  },
+  {
+    "id": "history-berlin-1930s-01",
+    "title": "Berlin 1936 — Pre-War Germany Home Movie",
+    "url": "https://archive.org/download/youtube-Xbf3MicmGBk/Xbf3MicmGBk.mp4",
+    "category": "history",
+    "source": "archive"
+  },
+  {
+    "id": "history-old-films-01",
+    "title": "New York City 1911 — Early Street Film",
+    "url": "https://archive.org/download/youtube-uu3FiPqSLys/uu3FiPqSLys.mp4",
+    "category": "history",
+    "source": "archive"
+  },
+  {
+    "id": "history-wwii-01",
+    "title": "1940s Documentary — Public Domain Archive",
+    "url": "https://archive.org/download/youtube-v8VCpZPM0vc/v8VCpZPM0vc.mp4",
+    "category": "history",
+    "source": "archive"
+  },
+  {
+    "id": "technology-future-01",
+    "title": "The Future of Computing — 1960s IBM Film",
+    "url": "https://archive.org/download/youtube-9xKqVgaduUs/9xKqVgaduUs.mp4",
+    "category": "technology",
+    "source": "archive"
+  },
+  {
+    "id": "technology-internet-01",
+    "title": "How The Internet Works — Classic Explainer",
+    "url": "https://archive.org/download/youtube-7_LPdttKXPc/7_LPdttKXPc.mp4",
+    "category": "technology",
+    "source": "archive"
+  },
+  {
+    "id": "documentary-ocean-01",
+    "title": "The Silent World (1956) — Cousteau Ocean Doc",
+    "url": "https://archive.org/download/youtube-cABKXEUDI2E/cABKXEUDI2E.mp4",
+    "category": "documentary",
+    "source": "archive"
+  },
+  {
+    "id": "documentary-space-01",
+    "title": "Destination Moon (1950) — Space Documentary",
+    "url": "https://archive.org/download/youtube-fK6mSPRTRTA/fK6mSPRTRTA.mp4",
+    "category": "documentary",
+    "source": "archive"
+  },
+  {
+    "id": "documentary-city-01",
+    "title": "Cities of Tomorrow (1954) — Urban Planning Doc",
+    "url": "https://archive.org/download/youtube-vN8GjBxFZLc/vN8GjBxFZLc.mp4",
+    "category": "documentary",
+    "source": "archive"
   }
 ]
