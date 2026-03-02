@@ -258,28 +258,47 @@ def expand_pool(filename, kids_only=False):
     save_videos(filename, existing)
     print(f"Added {added} new videos. Total: {len(existing)}")
 
-if __name__ == "__main__":
-    # --- CONFIG ---
-    N = 10000  # Change this to however many times you want it to run
-    WAIT_MINUTES = 16 # How long to wait between each successful scrape
-    # --------------
-
-    print(f"--- STARTING {N} SCRAPE CYCLES FOR KIDS CONTENT ---")
-
-    for i in range(1, N + 1):
-        print(f"\n[Cycle {i} of {N}] Started at: {time.strftime('%H:%M:%S')}")
+def expand_pool_persistent(filename, kids_only=True, cycles=5):
+    """Runs the scraper N times, ensuring it finds content."""
+    existing = load_existing(filename)
+    existing_ids = {v["id"] for v in existing}
+    
+    for i in range(1, cycles + 1):
+        print(f"\n--- Cycle {i} of {cycles} ---")
+        found_new_in_this_cycle = False
         
-        try:
-            # Runs the specific kids scraping function
-            expand_pool(VIDEO_FILE_KIDS, kids_only=True)
-            print(f"Cycle {i} complete.")
-        except Exception as e:
-            print(f"Error in cycle {i}: {e}")
+        # Try up to 3 different random search terms if the first one fails
+        for attempt in range(3):
+            new_videos = random_fetch(kids_only=kids_only)
+            
+            if not new_videos:
+                print(f"Attempt {attempt + 1}: No results. Retrying with different term...")
+                time.sleep(2) # Short gap to avoid lockout
+                continue
+            
+            added_this_time = 0
+            for vid in new_videos:
+                if vid["id"] not in existing_ids:
+                    existing.append(vid)
+                    existing_ids.add(vid["id"])
+                    added_this_time += 1
+            
+            if added_this_time > 0:
+                print(f"Success! Added {added_this_time} new videos.")
+                save_videos(filename, existing)
+                found_new_in_this_cycle = True
+                break # Move to next cycle
+            else:
+                print("Found videos, but they were all duplicates. Retrying...")
 
-        if i < N:
-            # Randomize the wait slightly so it looks more "human" to the servers
-            sleep_sec = (WAIT_MINUTES * 60) + random.randint(1, 15)
-            print(f"Waiting {WAIT_MINUTES} minutes before next run...")
-            time.sleep(sleep_sec)
+        # Wait between major cycles so the screen stays filled with "internet junk" free content
+        if i < cycles:
+            wait = random.randint(30, 60)
+            print(f"Waiting {wait} seconds before next major cycle...")
+            time.sleep(wait)
 
-    print("\n--- ALL CYCLES FINISHED ---")
+if __name__ == "__main__":
+    # Example: Run 10 times to bulk up the library
+    expand_pool_persistent(VIDEO_FILE_NORMAL, kids_only=False, cycles=10)
+    expand_pool_persistent(VIDEO_FILE_KIDS, kids_only=True, cycles=10)
+    print("\n[FINISH] Library updated.")
