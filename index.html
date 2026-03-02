@@ -1,0 +1,115 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>VOIDSCROLL</title>
+
+<link href="https://fonts.googleapis.com/css2?family=Bebas+Neue&family=Space+Grotesk:wght@400;700&display=swap" rel="stylesheet">
+
+<style>
+body { margin:0; background:#000; color:#fff; font-family:"Space Grotesk", sans-serif; overflow:hidden;}
+#feed { position:fixed; inset:0; }
+.card { position:absolute; inset:0; }
+video { width:100%; height:100%; object-fit:cover; }
+.header {
+  position:fixed; top:10px; left:10px; z-index:10;
+  font-family:"Bebas Neue"; font-size:2rem;
+}
+.category-bar {
+  position:fixed; bottom:20px; left:50%;
+  transform:translateX(-50%);
+  display:flex; gap:10px;
+}
+button {
+  background:#111; color:#fff;
+  border:1px solid #333;
+  padding:6px 12px;
+  cursor:pointer;
+}
+button.active { background:#fff; color:#000; }
+</style>
+</head>
+<body>
+
+<div class="header">VOIDSCROLL</div>
+<div id="feed"></div>
+
+<div class="category-bar">
+  <button data-cat="all" class="active">ALL</button>
+  <button data-cat="space">SPACE</button>
+  <button data-cat="animals">ANIMALS</button>
+  <button data-cat="science">SCIENCE</button>
+  <button data-cat="movies">MOVIES</button>
+</div>
+
+<script>
+let videos = [];
+let playlist = [];
+let index = 0;
+let currentCard = null;
+
+async function loadVideos() {
+  const res = await fetch("videos.json");
+  videos = await res.json();
+  setCategory("all");
+}
+
+function setCategory(cat) {
+  document.querySelectorAll("button").forEach(b => {
+    b.classList.toggle("active", b.dataset.cat === cat);
+  });
+
+  playlist = videos
+    .filter(v => cat === "all" || v.category === cat)
+    .sort(() => Math.random() - 0.5);
+
+  index = 0;
+  render();
+}
+
+function render() {
+  if (!playlist.length) return;
+
+  const item = playlist[index];
+  const card = document.createElement("div");
+  card.className = "card";
+
+  const vid = document.createElement("video");
+  vid.src = item.url;
+  vid.autoplay = true;
+  vid.loop = true;
+  vid.muted = true;
+  vid.playsInline = true;
+
+  card.appendChild(vid);
+
+  if (currentCard) currentCard.remove();
+  document.getElementById("feed").appendChild(card);
+  currentCard = card;
+}
+
+function next() {
+  if (index < playlist.length - 1) {
+    index++;
+    render();
+  }
+}
+
+let startY = 0;
+window.addEventListener("touchstart", e => {
+  startY = e.touches[0].clientY;
+});
+window.addEventListener("touchend", e => {
+  const diff = e.changedTouches[0].clientY - startY;
+  if (diff < -50) next();
+});
+
+document.querySelectorAll("button").forEach(btn => {
+  btn.addEventListener("click", () => setCategory(btn.dataset.cat));
+});
+
+loadVideos();
+</script>
+</body>
+</html>
