@@ -10,386 +10,292 @@
   <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
   <title>VOIDSCROLL</title>
   <link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@400;700&display=swap" rel="stylesheet">
-
   <style>
 /* ══ THEMES ══════════════════════════════════════════════════════════════ */
 :root {
   --bg: #050505;
   --tx: #f0f0f0;
-  --ui-bg: rgba(18, 18, 18, 0.65);
-  --ui-border: rgba(255, 255, 255, 0.12);
+  --ui-bg: rgba(18,18,18,0.75);
+  --ui-border: rgba(255,255,255,0.12);
   --accent: #ffffff;
   --radius: 16px;
 }
 body.kids-mode {
   --bg: #0b0b0b;
   --tx: #f5e6c4;
-  --ui-bg: rgba(25, 18, 8, 0.75);
-  --ui-border: rgba(255, 190, 80, 0.2);
+  --ui-bg: rgba(25,18,8,0.85);
+  --ui-border: rgba(255,190,80,0.2);
   --accent: #ff9933;
 }
 
 /* ══ RESET ═══════════════════════════════════════════════════════════════ */
-*, *::before, *::after { margin: 0; padding: 0; box-sizing: border-box; }
-html, body {
-  width: 100%; height: 100%; overflow: hidden;
-  background: var(--bg); color: var(--tx);
-  font-family: "Space Grotesk", sans-serif;
-  touch-action: none; user-select: none; -webkit-user-select: none;
-  transition: background 0.5s, color 0.5s;
+*,*::before,*::after { margin:0; padding:0; box-sizing:border-box; }
+html,body {
+  width:100%; height:100%; overflow:hidden;
+  background:var(--bg); color:var(--tx);
+  font-family:"Space Grotesk",sans-serif;
+  touch-action:none; user-select:none; -webkit-user-select:none;
+  transition:background 0.5s,color 0.5s;
 }
 
 /* ══ CRT BOOT ════════════════════════════════════════════════════════════ */
 .crt-overlay {
-  position: fixed; inset: 0; background: #fff; z-index: 9999;
-  pointer-events: none;
-  animation: crtOff 0.75s cubic-bezier(0.23, 1, 0.32, 1) forwards;
+  position:fixed; inset:0; background:#fff; z-index:9999;
+  pointer-events:none;
+  animation:crtOff 0.75s cubic-bezier(0.23,1,0.32,1) forwards;
 }
 @keyframes crtOff {
-  0%   { opacity: 1; transform: scale(1, 1); }
-  20%  { opacity: 1; transform: scale(1, 0.01); }
-  50%  { opacity: 1; transform: scale(0, 0.01); }
-  100% { opacity: 0; transform: scale(0, 0); }
+  0%   { opacity:1; transform:scale(1,1); }
+  20%  { opacity:1; transform:scale(1,0.01); }
+  50%  { opacity:1; transform:scale(0,0.01); }
+  100% { opacity:0; transform:scale(0,0); }
 }
 
 /* ══ VIDEO FEED ══════════════════════════════════════════════════════════ */
 #feed {
-  position: fixed; inset: 8px; border-radius: var(--radius);
-  overflow: hidden; background: #000;
-  transform-origin: center center;
+  position:fixed; inset:8px; border-radius:var(--radius);
+  overflow:hidden; background:#000;
 }
 .card {
-  position: absolute; inset: 0;
-  will-change: transform, opacity;
-  background: #000;
+  position:absolute; inset:0;
+  will-change:transform,opacity; background:#000;
 }
 .card video {
-  width: 100%; height: 100%; object-fit: cover;
-  border-radius: var(--radius);
-  opacity: 0; transition: opacity 0.45s ease;
+  width:100%; height:100%; object-fit:cover;
+  border-radius:var(--radius);
+  opacity:0; transition:opacity 0.45s ease;
 }
-.card video.ready { opacity: 1; }
-.card video.contain { object-fit: contain; }
+.card video.ready   { opacity:1; }
+.card video.contain { object-fit:contain; }
 
-/* Loading shimmer */
 .card.loading::after {
-  content: '';
-  position: absolute; inset: 0;
-  background: linear-gradient(90deg, transparent 0%, rgba(255,255,255,0.04) 50%, transparent 100%);
-  background-size: 200% 100%;
-  animation: shimmer 1.8s ease-in-out infinite;
-  border-radius: var(--radius);
-  pointer-events: none;
+  content:''; position:absolute; inset:0;
+  background:linear-gradient(90deg,transparent 0%,rgba(255,255,255,0.04) 50%,transparent 100%);
+  background-size:200% 100%;
+  animation:shimmer 1.8s ease-in-out infinite;
+  border-radius:var(--radius); pointer-events:none;
 }
 @keyframes shimmer {
-  0%   { background-position: -200% 0; }
-  100% { background-position:  200% 0; }
+  0%   { background-position:-200% 0; }
+  100% { background-position: 200% 0; }
 }
-
-/* ══ VOID MODE ═══════════════════════════════════════════════════════════ */
-#feed.void-mode {
-  animation: voidHue 5s linear infinite, voidWobble 3.8s ease-in-out infinite;
-}
-@keyframes voidHue {
-  0%   { filter: hue-rotate(0deg)   saturate(3.2) contrast(1.45) brightness(0.85); }
-  100% { filter: hue-rotate(360deg) saturate(3.2) contrast(1.45) brightness(0.85); }
-}
-@keyframes voidWobble {
-  0%,100% { transform: scale(1) rotate(0deg); }
-  20%     { transform: scale(1.03) rotate(2.2deg); }
-  50%     { transform: scale(0.975) rotate(-1.8deg); }
-  75%     { transform: scale(1.02) rotate(2.8deg); }
-}
-#voidRainbow {
-  position: fixed; inset: 4px;
-  border-radius: var(--radius);
-  pointer-events: none; z-index: 8;
-  display: none;
-  animation: rainbowSpin 2.8s linear infinite;
-  background: conic-gradient(
-    from 0deg at 50% 50%,
-    rgba(255,0,140,0.22), rgba(60,0,255,0.22), rgba(0,220,120,0.22),
-    rgba(255,210,0,0.22), rgba(255,60,220,0.22), rgba(140,0,255,0.22),
-    rgba(255,0,140,0.22)
-  );
-  mix-blend-mode: color-dodge;
-}
-@keyframes rainbowSpin {
-  from { transform: rotate(0deg) scale(1.4); }
-  to   { transform: rotate(360deg) scale(1.4); }
-}
-#voidRainbow::before, #voidRainbow::after {
-  content: ''; position: absolute; inset: 0; border-radius: var(--radius);
-  animation: glitchA 6s infinite, glitchOpA 6s infinite;
-}
-#voidRainbow::after { animation: glitchB 6s 0.5s infinite, glitchOpB 6s 0.5s infinite; }
-@keyframes glitchA {
-  0%,86%,100% { clip-path:none; transform:none; }
-  87% { clip-path: polygon(0 18%,100% 18%,100% 32%,0 32%); transform:translateX(-10px); background:rgba(0,255,200,0.25); }
-  89% { clip-path: polygon(0 55%,100% 55%,100% 68%,0 68%); transform:translateX(8px); background:rgba(255,0,100,0.25); }
-  91% { clip-path:none; transform:none; }
-}
-@keyframes glitchOpA { 0%,86%,100%{opacity:0} 87%,90%{opacity:1} 91%{opacity:0} }
-@keyframes glitchB {
-  0%,82%,100% { clip-path:none; transform:none; }
-  83% { clip-path: polygon(0 72%,100% 72%,100% 82%,0 82%); transform:translateX(12px); background:rgba(150,0,255,0.3); }
-  85% { clip-path:none; transform:none; }
-}
-@keyframes glitchOpB { 0%,82%,100%{opacity:0} 83%,84%{opacity:1} 85%{opacity:0} }
 
 /* ══ UI LAYER ════════════════════════════════════════════════════════════ */
 .ui-layer {
-  position: fixed; inset: 0; z-index: 10;
-  pointer-events: none; transition: opacity 0.45s;
-  display: flex; flex-direction: column; justify-content: space-between;
-  padding: 16px;
-  padding-bottom: calc(16px + env(safe-area-inset-bottom, 0px));
+  position:fixed; inset:0; z-index:10;
+  pointer-events:none; transition:opacity 0.45s;
+  display:flex; flex-direction:column; justify-content:space-between;
+  padding:16px;
+  padding-bottom:calc(16px + env(safe-area-inset-bottom,0px));
+  /* CRITICAL: overflow visible so cat dropdown can escape this container */
+  overflow:visible;
 }
-.ui-layer.faded { opacity: 0; }
-.ui-layer > * { pointer-events: auto; }
+.ui-layer.faded { opacity:0; }
+.ui-layer > * { pointer-events:auto; }
 
 /* ══ HEADER ══════════════════════════════════════════════════════════════ */
-.header { display: flex; justify-content: space-between; align-items: flex-start; }
+/* Everything lives in the top-right corner */
+.header {
+  display:flex; justify-content:flex-end; align-items:flex-start;
+  overflow:visible;
+}
+.header-right {
+  display:flex; flex-direction:column; align-items:flex-end; gap:6px;
+  position:relative; z-index:500;
+}
+.header-btns { display:flex; gap:6px; flex-wrap:wrap; justify-content:flex-end; align-items:center; }
+
 .title {
-  font-weight: 700; font-size: 1.2rem; letter-spacing: 3px;
-  transition: color 0.4s; pointer-events: none;
+  font-weight:700; font-size:1.2rem; letter-spacing:3px;
+  transition:color 0.4s; pointer-events:none; text-align:right;
 }
-
-.header > div {
-  display: flex;
-  gap: 6px;
-  align-items: center;
-}
-#btnSettings {
-  padding: 6px 12px;
-  font-size: 0.72rem;
-}
-
-.title.kids-title { color: #ff9933; }
-.title.void-title { color: #cc44ff; }
+.title.kids-title { color:#ff9933; }
 
 /* ══ CATEGORY PANEL ══════════════════════════════════════════════════════ */
-.cat-container { display: flex; flex-direction: column; align-items: flex-end; gap: 6px; }
+.cat-container {
+  position:relative; width:100%;
+  z-index:500;
+}
 .cat-panel {
-  display: flex; flex-direction: column; align-items: flex-end; gap: 6px;
-  max-height: 0; overflow: hidden; opacity: 0; pointer-events: none;
-  transition: max-height 0.4s cubic-bezier(0.23,1,0.32,1), opacity 0.3s;
+  /* FIX: absolute so it doesn't push layout; floats on top */
+  position:absolute;
+  top:0; right:0;
+  display:flex; flex-direction:column; align-items:flex-end; gap:6px;
+  /* hidden state */
+  visibility:hidden; opacity:0; pointer-events:none;
+  transform:translateY(-6px);
+  transition:opacity 0.22s ease, transform 0.22s ease, visibility 0s linear 0.22s;
+  max-height:72vh; overflow-y:auto; padding:4px 2px;
+  -webkit-overflow-scrolling:touch;
+  /* background so it doesn't bleed into video behind it */
+  background:rgba(10,10,10,0.85);
+  backdrop-filter:blur(14px);
+  border:1px solid rgba(255,255,255,0.08);
+  border-radius:12px; padding:10px;
+  min-width:220px;
 }
-.cat-panel.open { max-height: 800px; opacity: 1; pointer-events: auto; }
-.cat-group { display: flex; flex-wrap: wrap; gap: 6px; justify-content: flex-end; }
-.cat-group.more-group {
-  max-height: 0; overflow: hidden; opacity: 0;
-  transition: max-height 0.35s ease, opacity 0.3s;
+.cat-panel.open {
+  visibility:visible; opacity:1; pointer-events:auto;
+  transform:translateY(4px);                /* small offset below the toggle button */
+  transition:opacity 0.22s ease, transform 0.22s ease, visibility 0s linear 0s;
 }
-.cat-group.more-group.expanded { max-height: 200px; opacity: 1; }
+.cat-group { display:flex; flex-wrap:wrap; gap:6px; justify-content:flex-end; }
 .cat-divider {
-  width: 100%; height: 1px;
-  background: rgba(255,255,255,0.1); margin: 2px 0;
-  pointer-events: none;
+  width:100%; height:1px;
+  background:rgba(255,255,255,0.1); margin:4px 0; pointer-events:none;
 }
 
 /* ══ BUTTONS ═════════════════════════════════════════════════════════════ */
 button {
-  background: var(--ui-bg); color: var(--tx);
-  border: 1px solid var(--ui-border);
-  padding: 8px 12px; border-radius: 8px;
-  font-family: inherit; font-size: 0.72rem; font-weight: 700;
-  cursor: pointer; backdrop-filter: blur(10px);
-  text-transform: uppercase; letter-spacing: 0.5px;
-  transition: all 0.2s; -webkit-tap-highlight-color: transparent;
-  white-space: nowrap;
+  background:var(--ui-bg); color:var(--tx);
+  border:1px solid var(--ui-border);
+  padding:8px 12px; border-radius:8px;
+  font-family:inherit; font-size:0.72rem; font-weight:700;
+  cursor:pointer; backdrop-filter:blur(12px);
+  text-transform:uppercase; letter-spacing:0.5px;
+  transition:all 0.2s; -webkit-tap-highlight-color:transparent;
+  white-space:nowrap;
 }
-button:active { transform: scale(0.93); }
-button.active { color: #fff; border-color: rgba(255,255,255,0.6); }
+button:active { transform:scale(0.93); }
+button.active { color:#fff; border-color:rgba(255,255,255,0.6); }
 
-/* Special button colors */
-.cat-btn.kids-btn.kids-active  { color: #5d9eff; border-color: #7af795; }
-.cat-btn.amb-btn.amb-active    { color: #00e5b0; border-color: #00e5b0; }
-button#btnAmbient.ambient-active { color: #00e5b0; border-color: #00e5b0; }
-.cat-btn[data-cat="nature"].active { color: #44ff88; border-color: #44ff88; }
-.cat-btn[data-cat="sleep"].active  { color: #8899ff; border-color: #8899ff; }
+/* Per-category active colours */
+.cat-btn[data-cat="all"].active         { color:#fff;    border-color:rgba(255,255,255,0.6); }
+.cat-btn[data-cat="nature"].active      { color:#44ff88; border-color:#44ff88; }
+.cat-btn[data-cat="sleep"].active       { color:#8899ff; border-color:#8899ff; }
+.cat-btn[data-cat="space"].active       { color:#66ccff; border-color:#66ccff; }
+.cat-btn[data-cat="animals"].active     { color:#ffcc44; border-color:#ffcc44; }
+.cat-btn[data-cat="science"].active     { color:#44ffee; border-color:#44ffee; }
+.cat-btn[data-cat="technology"].active  { color:#aa88ff; border-color:#aa88ff; }
+.cat-btn[data-cat="history"].active     { color:#ffaa66; border-color:#ffaa66; }
+.cat-btn[data-cat="environment"].active { color:#66ff99; border-color:#66ff99; }
+.cat-btn[data-cat="travel"].active      { color:#ff88cc; border-color:#ff88cc; }
+.cat-btn[data-cat="engineering"].active { color:#ffdd44; border-color:#ffdd44; }
+.cat-btn[data-cat="vehicles"].active    { color:#ff7744; border-color:#ff7744; }
+.cat-btn[data-cat="math"].active        { color:#44ddff; border-color:#44ddff; }
+.cat-btn[data-cat="gaming"].active      { color:#ff44aa; border-color:#ff44aa; }
+.cat-btn[data-cat="documentary"].active { color:#ccccff; border-color:#ccccff; }
+.cat-btn[data-cat="diy"].active         { color:#ffbb33; border-color:#ffbb33; }
 
-.kids-btn { font-size: 0.8rem !important; padding: 10px 16px !important; }
-
-/* Special header buttons */
-#btnAmbientToggle { font-size: 0.72rem; padding: 6px 10px; }
-#btnKidsMode     { font-size: 0.72rem; padding: 6px 10px; }
+/* FIX: was 'btnAmbient' which didn't exist — correct id is 'btnAmbientToggle' */
+#btnAmbientToggle.ambient-active { color:#00e5b0; border-color:#00e5b0; }
+.kids-btn { font-size:0.8rem !important; padding:10px 16px !important; }
 
 /* ══ SIDE CONTROLS ═══════════════════════════════════════════════════════ */
 .controls-side {
-  position: absolute; right: 16px; top: 50%;
-  transform: translateY(-50%);
-  display: flex; flex-direction: column; gap: 10px;
-  pointer-events: auto;
+  position:absolute; right:16px; top:50%;
+  transform:translateY(-50%);
+  display:flex; flex-direction:column; gap:10px;
+  pointer-events:auto;
 }
 
 /* ══ BOTTOM WRAP ═════════════════════════════════════════════════════════ */
-.bottom-wrap {
-  transition: transform 0.42s cubic-bezier(0.23,1,0.32,1), opacity 0.42s;
-}
-.bottom-wrap.hidden {
-  transform: translateY(calc(100% + 40px)); opacity: 0;
-}
+.bottom-wrap { transition:transform 0.42s cubic-bezier(0.23,1,0.32,1),opacity 0.42s; }
+.bottom-wrap.hidden { transform:translateY(calc(100% + 40px)); opacity:0; }
 .controls-bottom {
-  display: flex; align-items: center; justify-content: space-between; gap: 12px;
-  margin-bottom: 10px;
+  display:flex; align-items:center; justify-content:space-between; gap:12px;
+  margin-bottom:10px;
 }
 .video-title {
-  font-size: 0.82rem; font-weight: 700; max-width: 62%;
-  white-space: nowrap; overflow: hidden; text-overflow: ellipsis;
+  font-size:0.82rem; font-weight:700; max-width:62%;
+  white-space:nowrap; overflow:hidden; text-overflow:ellipsis;
 }
 
 /* ══ SCRUBBER ════════════════════════════════════════════════════════════ */
-.scrubber-wrap {
-  position: relative; height: 44px;
-  display: flex; align-items: flex-end; padding-bottom: 2px;
-}
-input[type=range] {
-  -webkit-appearance: none; width: 100%; height: 44px;
-  background: transparent; cursor: pointer;
-}
-input[type=range]:focus { outline: none; }
-input[type=range]::-webkit-slider-runnable-track {
-  width: 100%; height: 3px;
-  background: var(--ui-border); border-radius: 2px;
-}
+.scrubber-wrap { position:relative; height:44px; display:flex; align-items:flex-end; padding-bottom:2px; }
+input[type=range] { -webkit-appearance:none; width:100%; height:44px; background:transparent; cursor:pointer; }
+input[type=range]:focus { outline:none; }
+input[type=range]::-webkit-slider-runnable-track { width:100%; height:3px; background:var(--ui-border); border-radius:2px; }
 input[type=range]::-webkit-slider-thumb {
-  -webkit-appearance: none;
-  height: 14px; width: 14px; border-radius: 50%;
-  background: var(--accent); cursor: pointer; margin-top: -5.5px;
+  -webkit-appearance:none; height:14px; width:14px; border-radius:50%;
+  background:var(--accent); cursor:pointer; margin-top:-5.5px;
 }
 
 /* ══ SEEK ZONES ══════════════════════════════════════════════════════════ */
-.seek-zone {
-  position: fixed; top: 12%; bottom: 24%; width: 28%; z-index: 5;
-  pointer-events: auto;
-}
-.seek-left { left: 0; }
-.seek-right { right: 0; }
+.seek-zone { position:fixed; top:12%; bottom:24%; width:28%; z-index:5; pointer-events:auto; }
+.seek-left  { left:0; }
+.seek-right { right:0; }
 .seek-indicator {
-  position: absolute; top: 50%; left: 50%;
-  transform: translate(-50%, -50%);
-  font-weight: 700; font-size: 0.8rem;
-  background: rgba(0,0,0,0.55); color: #fff;
-  padding: 10px 18px; border-radius: 20px;
-  opacity: 0; transition: opacity 0.18s; pointer-events: none;
+  position:absolute; top:50%; left:50%; transform:translate(-50%,-50%);
+  font-weight:700; font-size:0.8rem;
+  background:rgba(0,0,0,0.55); color:#fff;
+  padding:10px 18px; border-radius:20px;
+  opacity:0; transition:opacity 0.18s; pointer-events:none;
 }
 
 /* ══ PLAY/PAUSE INDICATOR ════════════════════════════════════════════════ */
 #ppIndicator {
-  position: fixed; top: 50%; left: 50%;
-  transform: translate(-50%, -50%);
-  width: 68px; height: 68px; border-radius: 50%;
-  display: flex; align-items: center; justify-content: center;
-  font-size: 2rem;
-  background: rgba(0,0,0,0.5); color: #fff;
-  z-index: 50; pointer-events: none;
-  opacity: 0; transition: opacity 0.3s;
+  position:fixed; top:50%; left:50%; transform:translate(-50%,-50%);
+  width:68px; height:68px; border-radius:50%;
+  display:flex; align-items:center; justify-content:center;
+  font-size:2rem; background:rgba(0,0,0,0.5); color:#fff;
+  z-index:50; pointer-events:none; opacity:0; transition:opacity 0.3s;
 }
 
 /* ══ OVERLAYS ════════════════════════════════════════════════════════════ */
 .overlay {
-  position: fixed; inset: 0;
-  background: rgba(0,0,0,0.93); z-index: 100;
-  display: flex; flex-direction: column;
-  align-items: center; justify-content: center;
-  opacity: 0; pointer-events: none;
-  transition: opacity 0.3s; color: #fff;
-  gap: 8px; padding: 24px;
+  position:fixed; inset:0; background:rgba(0,0,0,0.93); z-index:100;
+  display:flex; flex-direction:column; align-items:center; justify-content:center;
+  opacity:0; pointer-events:none; transition:opacity 0.3s; color:#fff; gap:8px; padding:24px;
 }
-.overlay.open { opacity: 1; pointer-events: auto; }
+.overlay.open { opacity:1; pointer-events:auto; }
 .pin-input {
-  background: transparent; border: none;
-  border-bottom: 2px solid rgba(255,255,255,0.6);
-  color: #fff; font-family: inherit;
-  font-size: 2.4rem; text-align: center;
-  width: 160px; outline: none;
-  margin: 14px 0; letter-spacing: 10px;
-  caret-color: #fff;
+  background:transparent; border:none; border-bottom:2px solid rgba(255,255,255,0.6);
+  color:#fff; font-family:inherit; font-size:2.4rem; text-align:center;
+  width:160px; outline:none; margin:14px 0; letter-spacing:10px; caret-color:#fff;
 }
-.settings-grid {
-  display: flex; flex-direction: column; gap: 14px;
-  width: min(320px, 85vw); margin: 16px 0;
-}
+.settings-grid { display:flex; flex-direction:column; gap:14px; width:min(320px,85vw); margin:16px 0; }
 .setting-row {
-  display: flex; justify-content: space-between; align-items: center;
-  padding: 12px 16px; border: 1px solid rgba(255,255,255,0.14);
-  border-radius: 10px; font-size: 0.8rem; letter-spacing: 1px;
+  display:flex; justify-content:space-between; align-items:center;
+  padding:12px 16px; border:1px solid rgba(255,255,255,0.14);
+  border-radius:10px; font-size:0.8rem; letter-spacing:1px;
 }
-.overlay h2 { font-size: 1rem; letter-spacing: 3px; }
-.overlay p  { font-size: 0.75rem; opacity: 0.55; }
+.overlay h2 { font-size:1rem; letter-spacing:3px; }
+.overlay p  { font-size:0.75rem; opacity:0.55; }
 
-/* ══ AMBIENT PAGE (full-screen slide-in) ═════════════════════════════════ */
+/* ══ AMBIENT PAGE ════════════════════════════════════════════════════════ */
 .ambient-page {
-  position: fixed; inset: 0; z-index: 80;
-  background: var(--bg);
-  transform: translateX(100%);
-  transition: transform 0.42s cubic-bezier(0.23, 1, 0.32, 1);
-  display: flex; flex-direction: column;
-  padding: 20px 16px;
-  padding-top: max(52px, calc(env(safe-area-inset-top, 0px) + 20px));
-  padding-bottom: calc(20px + env(safe-area-inset-bottom, 0px));
-  overflow-y: auto;
-  touch-action: pan-y;    /* allow scroll within this page */
-  overscroll-behavior: contain;
+  position:fixed; inset:0; z-index:80; background:var(--bg);
+  transform:translateX(100%);
+  transition:transform 0.42s cubic-bezier(0.23,1,0.32,1);
+  display:flex; flex-direction:column;
+  padding:20px 16px;
+  padding-top:max(52px,calc(env(safe-area-inset-top,0px) + 20px));
+  padding-bottom:calc(20px + env(safe-area-inset-bottom,0px));
+  overflow-y:auto; touch-action:pan-y; overscroll-behavior:contain;
 }
-.ambient-page.open { transform: translateX(0); }
-
-.amb-page-header {
-  display: flex; justify-content: space-between; align-items: flex-start;
-  margin-bottom: 6px;
-}
-.amb-page-title { font-size: 1.3rem; font-weight: 700; letter-spacing: 3px; }
-.amb-page-sub   { font-size: 0.7rem; opacity: 0.38; margin-bottom: 22px; }
-
-.amb-sound-grid {
-  display: grid;
-  grid-template-columns: repeat(auto-fill, minmax(140px, 1fr));
-  gap: 12px;
-}
+.ambient-page.open { transform:translateX(0); }
+.amb-page-header { display:flex; justify-content:space-between; align-items:flex-start; margin-bottom:6px; }
+.amb-page-title  { font-size:1.3rem; font-weight:700; letter-spacing:3px; }
+.amb-page-sub    { font-size:0.7rem; opacity:0.38; margin-bottom:22px; }
+.amb-sound-grid  { display:grid; grid-template-columns:repeat(auto-fill,minmax(140px,1fr)); gap:12px; }
 .amb-sound-card {
-  display: flex; flex-direction: column; align-items: center; gap: 8px;
-  padding: 16px 10px 12px; border-radius: 14px;
-  border: 1px solid var(--ui-border);
-  background: var(--ui-bg);
-  cursor: pointer; transition: border-color 0.2s, background 0.2s, color 0.2s;
-  touch-action: manipulation;
-  text-align: center; min-height: 90px;
+  display:flex; flex-direction:column; align-items:center; gap:8px;
+  padding:16px 10px 12px; border-radius:14px;
+  border:1px solid var(--ui-border); background:var(--ui-bg);
+  cursor:pointer; transition:border-color 0.2s,background 0.2s,color 0.2s;
+  touch-action:manipulation; text-align:center; min-height:90px;
 }
-.amb-sound-card.active {
-  border-color: #00e5b0; color: #00e5b0;
-  background: rgba(0,229,176,0.08);
-}
-.amb-icon-lg { font-size: 2.2rem; line-height: 1; pointer-events: none; }
-.amb-name    { font-size: 0.7rem; font-weight: 700; letter-spacing: 0.5px; pointer-events: none; }
-.amb-vol-row {
-  width: 100%; display: none; align-items: center; gap: 6px;
-  margin-top: 4px; padding: 0 2px;
-}
-.amb-sound-card.active .amb-vol-row { display: flex; }
-.amb-vol-slider {
-  -webkit-appearance: none; flex: 1; height: 24px;
-  background: transparent; cursor: pointer;
-}
-.amb-vol-slider::-webkit-slider-runnable-track {
-  height: 3px; background: rgba(0,229,176,0.4); border-radius: 2px;
-}
+.amb-sound-card.active { border-color:#00e5b0; color:#00e5b0; background:rgba(0,229,176,0.08); }
+.amb-icon-lg { font-size:2.2rem; line-height:1; pointer-events:none; }
+.amb-name    { font-size:0.7rem; font-weight:700; letter-spacing:0.5px; pointer-events:none; }
+.amb-vol-row { width:100%; display:none; align-items:center; gap:6px; margin-top:4px; padding:0 2px; }
+.amb-sound-card.active .amb-vol-row { display:flex; }
+.amb-vol-slider { -webkit-appearance:none; flex:1; height:24px; background:transparent; cursor:pointer; }
+.amb-vol-slider::-webkit-slider-runnable-track { height:3px; background:rgba(0,229,176,0.4); border-radius:2px; }
 .amb-vol-slider::-webkit-slider-thumb {
-  -webkit-appearance: none;
-  width: 14px; height: 14px; border-radius: 50%;
-  background: #00e5b0; cursor: pointer; margin-top: -5.5px;
+  -webkit-appearance:none; width:14px; height:14px; border-radius:50%;
+  background:#00e5b0; cursor:pointer; margin-top:-5.5px;
 }
-.amb-vol-pct {
-  font-size: 0.6rem; opacity: 0.7; min-width: 28px; text-align: right;
-}
+.amb-vol-pct { font-size:0.6rem; opacity:0.7; min-width:28px; text-align:right; }
 
 /* ══ TOAST ═══════════════════════════════════════════════════════════════ */
 .toast {
-  position: fixed; top: 20px; left: 50%; transform: translateX(-50%);
-  background: var(--accent); color: var(--bg);
-  padding: 10px 20px; border-radius: 20px; font-weight: bold;
-  z-index: 300; opacity: 0; transition: opacity 0.3s; pointer-events: none;
-  font-size: 0.78rem; letter-spacing: 1px; white-space: nowrap;
+  position:fixed; top:20px; left:50%; transform:translateX(-50%);
+  background:var(--accent); color:var(--bg);
+  padding:10px 20px; border-radius:20px; font-weight:bold;
+  z-index:300; opacity:0; transition:opacity 0.3s; pointer-events:none;
+  font-size:0.78rem; letter-spacing:1px; white-space:nowrap;
 }
   </style>
 </head>
@@ -397,28 +303,30 @@ input[type=range]::-webkit-slider-thumb {
 
 <div class="crt-overlay"></div>
 <div id="feed"></div>
-<div id="voidRainbow"></div>
 
 <!-- Seek zones -->
-<div class="seek-zone seek-left"  id="seekLeft">  <div class="seek-indicator" id="indLeft">&laquo; REV</div></div>
-<div class="seek-zone seek-right" id="seekRight"> <div class="seek-indicator" id="indRight">FWD &raquo;</div></div>
+<div class="seek-zone seek-left"  id="seekLeft"><div class="seek-indicator" id="indLeft">&laquo; REV</div></div>
+<div class="seek-zone seek-right" id="seekRight"><div class="seek-indicator" id="indRight">FWD &raquo;</div></div>
 
-<!-- Play/pause flash -->
 <div id="ppIndicator"></div>
 
 <!-- ═══ MAIN UI LAYER ═════════════════════════════════════════════════ -->
 <div class="ui-layer" id="uiLayer">
 
   <div class="header">
-    <div style="display:flex; gap:6px; align-items:center;">
-      <button id="btnCatToggle">[ CATEGORIES ]</button>
-      <button id="btnAmbientToggle">◎ AMBIENT</button>
-      <button id="btnKidsMode">⊙ KIDS MODE</button>
-      <button id="btnSettings" style="padding:6px 12px; font-size:0.72rem;">[ ⚙ ]</button>
-    </div>
-
-    <div class="cat-container">
-      <div class="cat-panel" id="catPanel"></div>
+    <!-- All controls right-justified in one column -->
+    <div class="header-right">
+      <span class="title" id="appTitle">VOIDSCROLL</span>
+      <div class="header-btns">
+        <button id="btnCatToggle">[ CATEGORIES ]</button>
+        <button id="btnAmbientToggle">◎ AMBIENT</button>
+        <button id="btnKidsMode">⊙ KIDS</button>
+        <button id="btnSettings">[ ⚙ ]</button>
+      </div>
+      <!-- Dropdown anchored under the buttons, right-aligned -->
+      <div class="cat-container">
+        <div class="cat-panel" id="catPanel"></div>
+      </div>
     </div>
   </div>
 
@@ -426,8 +334,6 @@ input[type=range]::-webkit-slider-thumb {
     <button id="btnMute">[ MUTE ]</button>
     <button id="btnFit">[ FIT ]</button>
     <button id="btnLock">[ SCROLL ]</button>
-    
-    
   </div>
 
   <div class="bottom-wrap" id="bottomWrap">
@@ -444,9 +350,7 @@ input[type=range]::-webkit-slider-thumb {
 <!-- ═══ AMBIENT PAGE ══════════════════════════════════════════════════ -->
 <div class="ambient-page" id="ambientPage">
   <div class="amb-page-header">
-    <div>
-      <div class="amb-page-title">AMBIENT SOUNDS</div>
-    </div>
+    <div class="amb-page-title">AMBIENT SOUNDS</div>
     <button id="btnCloseAmbientPage">[ BACK ]</button>
   </div>
   <div class="amb-page-sub">Tap a sound to toggle &middot; Plays through screen lock &middot; Mix freely</div>
@@ -458,80 +362,60 @@ input[type=range]::-webkit-slider-thumb {
   <h2 id="pinText">SET PIN FOR KIDS MODE</h2>
   <input type="password" class="pin-input" id="pinInput" inputmode="numeric" maxlength="4" placeholder="••••">
   <p>4 digits &middot; press Enter</p>
-  <button id="btnPinCancel" style="margin-top:20px; padding:10px 24px;">CANCEL</button>
+  <button id="btnPinCancel" style="margin-top:20px;padding:10px 24px;">CANCEL</button>
 </div>
 
 <!-- ═══ SETTINGS OVERLAY ══════════════════════════════════════════════ -->
 <div class="overlay" id="settingsOverlay">
   <h2>SETTINGS</h2>
   <div class="settings-grid">
-    <div class="setting-row">
-      <span>AUTO SCROLL</span>
-      <button id="btnAutoScroll">ON</button>
-    </div>
-    <div class="setting-row">
-      <span>BACKGROUND PLAY</span>
-      <button id="btnBgPlay">OFF</button>
-    </div>
+    <div class="setting-row"><span>AUTO SCROLL</span><button id="btnAutoScroll">ON</button></div>
+    <div class="setting-row"><span>BACKGROUND PLAY</span><button id="btnBgPlay">OFF</button></div>
   </div>
-  <button id="btnSettingsClose" style="padding:10px 28px; margin-top:8px;">CLOSE</button>
+  <button id="btnSettingsClose" style="padding:10px 28px;margin-top:8px;">CLOSE</button>
 </div>
 
 <div class="toast" id="toast"></div>
 
-
-// HEADER BUTTONS
-document.getElementById('btnAmbientToggle').onclick = e => {
-  e.stopPropagation();
-  openAmbientPage();
-};
-
-document.getElementById('btnKidsMode').onclick = e => {
-  e.stopPropagation();
-  openPinOverlay();
-};
-
-document.getElementById('btnCatToggle').onclick = e => {
-  e.stopPropagation();
-  catPanel.classList.toggle('open');
-};
-
-document.getElementById('btnSettings').onclick = e => {
-  e.stopPropagation();
-  document.getElementById('settingsOverlay').classList.add('open');
-};
-
+<!-- ═══════════════════════════════════════════════════════════════════
+     ALL JS IN ONE SCRIPT TAG
+     FIX: Previously a block of JS was floating outside any script tag,
+     which caused it to render as visible text AND crash execution before
+     the real <script> ran — breaking all buttons and video playback.
+════════════════════════════════════════════════════════════════════ -->
 <script>
-/* ══════════════════════════════════════════════════════════════════════
-   VOIDSCROLL — Static infinite video feed. No backend.
-══════════════════════════════════════════════════════════════════════ */
 
+// ── CATEGORIES ─────────────────────────────────────────────────────────
+// Matches every category the scraper's categorize_normal() can output
 const CATS = [
-  { id: 'all', label: 'ALL', group: 'main' },
-  { id: 'nature', label: 'NATURE', group: 'main' },
-  { id: 'sleep', label: 'SLEEP', group: 'main' },
-  { id: 'space', label: 'SPACE', group: 'main' },
-  { id: 'science', label: 'SCIENCE', group: 'main' },
-  { id: 'animals', label: 'ANIMALS', group: 'more' },
-  { id: 'history', label: 'HISTORY', group: 'more' },
-  { id: 'technology', label: 'TECH', group: 'more' },
-  { id: 'documentary', label: 'DOCS', group: 'more' },
-  { id: 'math', label: 'MATH', group: 'more' },         // example extra
-  { id: 'engineering', label: 'ENGINEERING', group: 'more' },
-  { id: 'astronomy', label: 'ASTRONOMY', group: 'more' },
+  { id:'all',         label:'ALL',         group:'main' },
+  { id:'nature',      label:'NATURE',      group:'main' },
+  { id:'space',       label:'SPACE',       group:'main' },
+  { id:'animals',     label:'ANIMALS',     group:'main' },
+  { id:'science',     label:'SCIENCE',     group:'main' },
+  { id:'technology',  label:'TECH',        group:'main' },
+  { id:'history',     label:'HISTORY',     group:'main' },
+  { id:'sleep',       label:'SLEEP',       group:'more' },
+  { id:'environment', label:'ENVIRONMENT', group:'more' },
+  { id:'travel',      label:'TRAVEL',      group:'more' },
+  { id:'engineering', label:'ENGINEERING', group:'more' },
+  { id:'vehicles',    label:'VEHICLES',    group:'more' },
+  { id:'math',        label:'MATH',        group:'more' },
+  { id:'gaming',      label:'GAMING',      group:'more' },
+  { id:'documentary', label:'DOCS',        group:'more' },
+  { id:'diy',         label:'DIY',         group:'more' },
 ];
 
 // ── STATE ──────────────────────────────────────────────────────────────
 let allVideos = [], currentPlaylist = [], currentIndex = 0;
 let isKidsMode = false, savedPin = null;
 let scrollLocked = false, isMuted = true, isFit = false;
-let isVoidMode = false, autoScroll = true, backgroundPlay = false;
+let autoScroll = true, backgroundPlay = false;
 let curCard = null, curVideo = null;
 let uiTimeout, transitioning = false;
 let currentCategory = 'all';
 let ambientData = [], activeSounds = {};
 let preloadedVids = {};
-let catExpanded = false;
 let isDragging = false, startY = 0, startX = 0, currentY = 0, touchTime = 0;
 
 // ── ELEMENTS ───────────────────────────────────────────────────────────
@@ -539,7 +423,7 @@ const feed       = document.getElementById('feed');
 const uiLayer    = document.getElementById('uiLayer');
 const scrubber   = document.getElementById('scrubber');
 const vidTitle   = document.getElementById('vidTitle');
-const appTitle   = document.getElementById('appTitle');
+const appTitle   = document.getElementById('appTitle'); // FIX: now exists in DOM
 const bottomWrap = document.getElementById('bottomWrap');
 const catPanel   = document.getElementById('catPanel');
 
@@ -548,7 +432,7 @@ function saveState() {
   try {
     localStorage.setItem('vs4', JSON.stringify({
       isKidsMode, savedPin, currentCategory,
-      autoScroll, backgroundPlay, isMuted, isFit, isVoidMode
+      autoScroll, backgroundPlay, isMuted, isFit
     }));
   } catch(e) {}
 }
@@ -562,7 +446,6 @@ function loadState() {
     backgroundPlay  = s.backgroundPlay  || false;
     isMuted         = s.isMuted         !== undefined ? s.isMuted         : true;
     isFit           = s.isFit           || false;
-    isVoidMode      = s.isVoidMode      || false;
   } catch(e) {}
 }
 
@@ -581,7 +464,6 @@ async function init() {
 
   if (currentPlaylist.length) renderCard(currentIndex, 'none');
   resetUiTimer();
-  applyVoidUI();
   applyKidsModeUI();
 }
 
@@ -589,30 +471,65 @@ async function init() {
 async function loadVideoData() {
   const file = isKidsMode ? 'kids_videos.json' : 'videos.json';
   try {
-    const res = await fetch(file + '?v=' + Date.now()); // bust cache on switch
+    const res = await fetch(file + '?v=' + Date.now());
     if (!res.ok) throw new Error('HTTP ' + res.status);
     allVideos = await res.json();
     if (!Array.isArray(allVideos) || !allVideos.length) throw new Error('Empty');
   } catch(e) {
-    allVideos = [{ id: 'dummy', title: 'Run scraper to get videos',
-      url: 'https://www.w3schools.com/html/mov_bbb.mp4', category: 'all' }];
+    allVideos = [{
+      id:'dummy', title:'Run scraper to populate videos',
+      url:'https://www.w3schools.com/html/mov_bbb.mp4', category:'all'
+    }];
   }
-  // Always reset index when dataset changes
   currentIndex = 0;
   clearPreloadPool();
-  // In kids mode, only show 'all' (kids videos are already filtered in kids_videos.json)
-  const cat = isKidsMode ? 'all' : currentCategory;
-  filterCategory(cat, false, false);
+  filterCategory(isKidsMode ? 'all' : currentCategory, false, false);
 }
 
+// ── DEFAULT AMBIENT SOUNDS (always available, no ambient.json needed) ──
+const DEFAULT_AMBIENT = [
+  { id:'rain',       title:'RAIN',          icon:'🌧️', url:'https://www.soundjay.com/nature/sounds/rain-01.mp3' },
+  { id:'thunder',    title:'THUNDERSTORM',  icon:'⛈️', url:'https://www.soundjay.com/nature/sounds/thunder-01.mp3' },
+  { id:'ocean',      title:'OCEAN WAVES',   icon:'🌊', url:'https://www.soundjay.com/nature/sounds/ocean-wave-1.mp3' },
+  { id:'forest',     title:'FOREST',        icon:'🌲', url:'https://www.soundjay.com/nature/sounds/forest-01.mp3' },
+  { id:'fire',       title:'FIREPLACE',     icon:'🔥', url:'https://www.soundjay.com/nature/sounds/fire-01.mp3' },
+  { id:'wind',       title:'WIND',          icon:'💨', url:'https://www.soundjay.com/nature/sounds/wind-01.mp3' },
+  { id:'river',      title:'RIVER',         icon:'🏞️', url:'https://www.soundjay.com/nature/sounds/stream-01.mp3' },
+  { id:'crickets',   title:'CRICKETS',      icon:'🦗', url:'https://www.soundjay.com/nature/sounds/crickets-01.mp3' },
+  { id:'whitenoise', title:'WHITE NOISE',   icon:'📻', url:'https://www.soundjay.com/misc/sounds/white-noise-1.mp3' },
+  { id:'cafe',       title:'CAFÉ CHATTER',  icon:'☕', url:'https://www.soundjay.com/misc/sounds/crowd-talking-1.mp3' },
+  { id:'fan',        title:'FAN / AC',      icon:'🌬️', url:'https://www.soundjay.com/misc/sounds/fan-01.mp3' },
+  { id:'birds',      title:'BIRDSONG',      icon:'🐦', url:'https://www.soundjay.com/nature/sounds/birds-singing-01.mp3' },
+];
+
 async function loadAmbientData() {
+  // Try loading ambient.json first (user can override with their own file)
   try {
     const res = await fetch('ambient.json');
     if (!res.ok) throw new Error();
-    ambientData = await res.json();
-    buildAmbientGrid();
+    const data = await res.json();
+    if (Array.isArray(data) && data.length) {
+      ambientData = data;
+      buildAmbientGrid();
+      return;
+    }
   } catch(e) {}
+  // Fall back to embedded defaults so the page is never empty
+  ambientData = DEFAULT_AMBIENT;
+  buildAmbientGrid();
 }
+
+// ── KIDS CATEGORIES ────────────────────────────────────────────────────
+const KIDS_CATS = [
+  { id:'all',       label:'ALL' },
+  { id:'animals',   label:'🐾 ANIMALS' },
+  { id:'nature',    label:'🌿 NATURE' },
+  { id:'space',     label:'🚀 SPACE' },
+  { id:'sleep',     label:'😴 CALM' },
+  { id:'kids_cartoons', label:'🎬 CARTOONS' },
+  { id:'kids_learning', label:'📚 LEARNING' },
+  { id:'kids_music',    label:'🎵 MUSIC' },
+];
 
 // ── CATEGORY PANEL ─────────────────────────────────────────────────────
 function buildCategoryPanel() {
@@ -621,58 +538,29 @@ function buildCategoryPanel() {
   if (isKidsMode) {
     const g = document.createElement('div');
     g.className = 'cat-group';
-    g.appendChild(makeCatBtn('all', 'ALL'));
+    KIDS_CATS.forEach(c => g.appendChild(makeCatBtn(c.id, c.label)));
     catPanel.appendChild(g);
-    const unlock = makeCatBtn('__kids__', '⊙ UNLOCK KIDS');
-    unlock.classList.add('kids-btn', 'kids-active');
+    const unlock = makeCatBtn('__kids__','⊙ UNLOCK');
+    unlock.classList.add('kids-btn');
     unlock.onclick = e => { e.stopPropagation(); closeCatPanel(); openPinOverlay(); };
     catPanel.appendChild(unlock);
+    updateCatActive();
     return;
   }
 
-  // Primary group
   const mainGrp = document.createElement('div');
   mainGrp.className = 'cat-group';
-  CATS.filter(c => c.group === 'main').forEach(c => mainGrp.appendChild(makeCatBtn(c.id, c.label)));
+  CATS.filter(c => c.group === 'main').forEach(c => mainGrp.appendChild(makeCatBtn(c.id,c.label)));
   catPanel.appendChild(mainGrp);
-
-  // More toggle
-  const moreToggle = document.createElement('button');
-  moreToggle.className = 'cat-btn';
-  moreToggle.style.cssText = 'font-size:0.6rem;opacity:0.6;';
-  moreToggle.textContent = catExpanded ? '– LESS' : '+ MORE';
-  moreToggle.onclick = e => {
-    e.stopPropagation();
-    catExpanded = !catExpanded;
-    moreToggle.textContent = catExpanded ? '– LESS' : '+ MORE';
-    moreGrp.classList.toggle('expanded', catExpanded);
-  };
-  
-  catPanel.appendChild(moreToggle);
-
-  const moreGrp = document.createElement('div');
-  moreGrp.className = 'cat-group more-group' + (catExpanded ? ' expanded' : '');
-  CATS.filter(c => c.group === 'more').forEach(c => moreGrp.appendChild(makeCatBtn(c.id, c.label)));
-  catPanel.appendChild(moreGrp);
 
   const div = document.createElement('div');
   div.className = 'cat-divider';
   catPanel.appendChild(div);
 
-  // AMBIENT — opens ambient page
-  const ambBtn = makeCatBtn('__ambient__', '◎ AMBIENT');
-  ambBtn.classList.add('amb-btn');
-  if (Object.keys(activeSounds).length > 0) ambBtn.classList.add('amb-active');
-  ambBtn.onclick = e => { e.stopPropagation(); closeCatPanel(); openAmbientPage(); };
-  catPanel.appendChild(ambBtn);
-
-
-
-  // KIDS MODE (prominent)
-  const kidsBtn = makeCatBtn('__kids__', '⊙ KIDS MODE');
-  kidsBtn.classList.add('kids-btn');
-  kidsBtn.onclick = e => { e.stopPropagation(); closeCatPanel(); openPinOverlay(); };
-  catPanel.appendChild(kidsBtn);
+  const moreGrp = document.createElement('div');
+  moreGrp.className = 'cat-group';
+  CATS.filter(c => c.group === 'more').forEach(c => moreGrp.appendChild(makeCatBtn(c.id,c.label)));
+  catPanel.appendChild(moreGrp);
 
   updateCatActive();
 }
@@ -682,52 +570,70 @@ function makeCatBtn(id, label) {
   btn.className = 'cat-btn';
   btn.dataset.cat = id;
   btn.textContent = label;
-  if (!id.startsWith('__')) {
+  if (!id.startsWith('__'))
     btn.onclick = e => { e.stopPropagation(); filterCategory(id); closeCatPanel(); };
-  }
   return btn;
 }
 function closeCatPanel() { catPanel.classList.remove('open'); }
 function updateCatActive() {
   catPanel.querySelectorAll('.cat-btn[data-cat]').forEach(btn => {
-    const id = btn.dataset.cat;
-    if      (id === '__void__')    btn.classList.toggle('void-active', isVoidMode);
-    else if (id === '__ambient__') btn.classList.toggle('amb-active', Object.keys(activeSounds).length > 0);
-    else if (!id.startsWith('__')) btn.classList.toggle('active', id === currentCategory);
+    if (!btn.dataset.cat.startsWith('__'))
+      btn.classList.toggle('active', btn.dataset.cat === currentCategory);
   });
+  // FIX: correct id — was 'btnAmbient' (never existed), now 'btnAmbientToggle'
+  document.getElementById('btnAmbientToggle')
+    .classList.toggle('ambient-active', Object.keys(activeSounds).length > 0);
 }
 
-// ── FILTER / SHUFFLE ───────────────────────────────────────────────────
+// ── TRUE RANDOM SHUFFLE ────────────────────────────────────────────────
+function shuffle(arr) {
+  // Fisher-Yates
+  for (let i = arr.length - 1; i > 0; i--) {
+    const j = Math.floor(Math.random() * (i + 1));
+    [arr[i], arr[j]] = [arr[j], arr[i]];
+  }
+  return arr;
+}
+function buildRandomPlaylist(pool) {
+  // Shuffle once, then rotate by a random offset so starting position is unpredictable
+  const a = shuffle([...pool]);
+  const off = Math.floor(Math.random() * a.length);
+  const rotated = [...a.slice(off), ...a.slice(0, off)];
+  // Second shuffle pass to break any remaining order bias
+  return shuffle(rotated);
+}
+
+// ── FILTER / PLAYLIST BUILD ────────────────────────────────────────────
+// Maps kids UI category ids to what's actually stored in kids_videos.json
+const KIDS_CAT_MAP = {
+  'kids_cartoons': 'cartoons',
+  'kids_learning': 'learning',
+  'kids_music':    'music',
+};
 function filterCategory(cat, resetIdx = true, animate = true) {
   const changed = cat !== currentCategory;
   currentCategory = cat;
 
-  let pool = cat === 'all' ? [...allVideos] : allVideos.filter(v => v.category === cat);
+  // Resolve kids UI category to stored category name
+  const resolvedCat = KIDS_CAT_MAP[cat] || cat;
+  let pool = resolvedCat === 'all' ? [...allVideos] : allVideos.filter(v => v.category === resolvedCat);
   if (!pool.length) pool = [...allVideos];
 
-  // Fisher-Yates shuffle for true randomness
-  for (let i = pool.length - 1; i > 0; i--) {
-    const j = Math.floor(Math.random() * (i + 1));
-    [pool[i], pool[j]] = [pool[j], pool[i]];
-  }
-  currentPlaylist = pool;
+  currentPlaylist = buildRandomPlaylist(pool);
   if (resetIdx) currentIndex = 0;
   clearPreloadPool();
 
-  if (currentPlaylist.length > 0) {
-    renderCard(currentIndex, animate && changed ? 'fade' : 'none');
-  }
+  if (currentPlaylist.length) renderCard(currentIndex, animate && changed ? 'fade' : 'none');
   saveState();
   updateCatActive();
 }
+
 function clearPreloadPool() {
   Object.values(preloadedVids).forEach(v => { v.src = ''; v.load(); });
   preloadedVids = {};
 }
 
 // ── RENDER CARD ────────────────────────────────────────────────────────
-// BUG FIX: preloaded videos already have onloadeddata fired.
-// We must check readyState and add 'ready' immediately if already loaded.
 function renderCard(idx, dir) {
   if (!currentPlaylist[idx]) return;
   const item = currentPlaylist[idx];
@@ -745,14 +651,11 @@ function renderCard(idx, dir) {
     vid.preload = 'auto';
     vid.playsInline = true;
   }
-
   vid.muted = isMuted;
   vid.loop  = false;
-  if (isFit) vid.classList.add('contain'); else vid.classList.remove('contain');
-
+  vid.classList.toggle('contain', isFit);
   card.appendChild(vid);
 
-  // ── Events ──
   vid.onloadeddata = () => {
     vid.classList.add('ready');
     card.classList.remove('loading');
@@ -769,13 +672,11 @@ function renderCard(idx, dir) {
   };
   vid.onerror = () => { if (card === curCard) advance('up'); };
 
-  // KEY FIX: if preloaded, onloadeddata already fired — manually mark ready
   if (vid.readyState >= 2) {
     vid.classList.add('ready');
     card.classList.remove('loading');
   }
 
-  // Set initial position
   if      (dir === 'up')   card.style.transform = 'translateY(100%)';
   else if (dir === 'down') card.style.transform = 'translateY(-100%)';
   else if (dir === 'fade') { card.style.opacity = '0'; card.style.transform = 'translateY(0)'; }
@@ -783,9 +684,8 @@ function renderCard(idx, dir) {
 
   feed.appendChild(card);
 
-  // Animate IN — double rAF so initial position is painted before transition starts
   requestAnimationFrame(() => requestAnimationFrame(() => {
-    const ease = 'cubic-bezier(0.23, 1, 0.32, 1)';
+    const ease = 'cubic-bezier(0.23,1,0.32,1)';
     card.style.transition = dir === 'fade'
       ? 'opacity 0.55s ease, transform 0.55s ' + ease
       : 'transform 0.45s ' + ease;
@@ -793,12 +693,11 @@ function renderCard(idx, dir) {
     card.style.opacity   = '1';
   }));
 
-  // Animate OUT old card
   if (curCard) {
     const old = curCard, oldVid = curVideo;
     old.style.transition = dir === 'fade'
       ? 'opacity 0.55s ease'
-      : 'transform 0.45s cubic-bezier(0.23, 1, 0.32, 1)';
+      : 'transform 0.45s cubic-bezier(0.23,1,0.32,1)';
     if (dir === 'fade') old.style.opacity = '0';
     else old.style.transform = dir === 'up' ? 'translateY(-100%)' : 'translateY(100%)';
     setTimeout(() => {
@@ -810,7 +709,6 @@ function renderCard(idx, dir) {
   curCard  = card;
   curVideo = vid;
   vid.play().catch(() => {});
-
   preloadAhead(idx, 3);
 }
 
@@ -837,6 +735,7 @@ function advance(dir) {
   let next = dir === 'up' ? currentIndex + 1 : currentIndex - 1;
   if (next < 0) return;
   if (next >= currentPlaylist.length) {
+    // Re-shuffle on every loop so it never repeats the same order
     filterCategory(currentCategory, false, false);
     next = 0;
   }
@@ -846,22 +745,9 @@ function advance(dir) {
   setTimeout(() => { transitioning = false; }, 500);
 }
 
-// ── VOID MODE ──────────────────────────────────────────────────────────
-function toggleVoidMode() {
-  isVoidMode = !isVoidMode;
-  applyVoidUI(); updateCatActive(); saveState();
-  if (isVoidMode) filterCategory('void', true, true);
-}
-function applyVoidUI() {
-  feed.classList.toggle('void-mode', isVoidMode);
-  document.getElementById('voidRainbow').style.display = isVoidMode ? 'block' : 'none';
-  appTitle.className = 'title' + (isVoidMode ? ' void-title' : (isKidsMode ? ' kids-title' : ''));
-}
-
 // ── AMBIENT PAGE ───────────────────────────────────────────────────────
 function openAmbientPage()  { document.getElementById('ambientPage').classList.add('open'); }
 function closeAmbientPage() { document.getElementById('ambientPage').classList.remove('open'); }
-
 document.getElementById('btnCloseAmbientPage').onclick = closeAmbientPage;
 
 function buildAmbientGrid() {
@@ -876,24 +762,18 @@ function buildAmbientGrid() {
     const card = document.createElement('div');
     card.className = 'amb-sound-card';
     card.id = 'amb_' + s.id;
-
-    const defaultVol = 70;
+    const dv = 70;
     card.innerHTML = `
       <span class="amb-icon-lg">${s.icon}</span>
       <span class="amb-name">${s.title}</span>
       <div class="amb-vol-row">
-        <input type="range" class="amb-vol-slider" id="ambvol_${s.id}"
-               min="0" max="100" value="${defaultVol}">
-        <span class="amb-vol-pct" id="ambpct_${s.id}">${defaultVol}%</span>
+        <input type="range" class="amb-vol-slider" id="ambvol_${s.id}" min="0" max="100" value="${dv}">
+        <span class="amb-vol-pct" id="ambpct_${s.id}">${dv}%</span>
       </div>`;
-
-    // Tap card (not slider) to toggle
     card.addEventListener('click', e => {
       if (e.target.classList.contains('amb-vol-slider')) return;
       toggleAmbientSound(s);
     });
-
-    // Per-sound volume control
     const slider = card.querySelector('.amb-vol-slider');
     slider.addEventListener('input', e => {
       e.stopPropagation();
@@ -901,9 +781,8 @@ function buildAmbientGrid() {
       document.getElementById('ambpct_' + s.id).textContent = vol + '%';
       if (activeSounds[s.id]) activeSounds[s.id].volume = vol / 100;
     });
-    slider.addEventListener('touchstart', e => e.stopPropagation(), { passive: true });
-    slider.addEventListener('touchmove',  e => e.stopPropagation(), { passive: true });
-
+    slider.addEventListener('touchstart', e => e.stopPropagation(), { passive:true });
+    slider.addEventListener('touchmove',  e => e.stopPropagation(), { passive:true });
     grid.appendChild(card);
   });
 }
@@ -923,14 +802,12 @@ function toggleAmbientSound(sound) {
     audio.play().catch(() => {});
     activeSounds[id] = audio;
     if (card) card.classList.add('active');
-    if ('mediaSession' in navigator) {
-      navigator.mediaSession.metadata = new MediaMetadata({
-        title: sound.title, artist: 'VOIDSCROLL AMBIENT'
-      });
-    }
+    if ('mediaSession' in navigator)
+      navigator.mediaSession.metadata = new MediaMetadata({ title:sound.title, artist:'VOIDSCROLL AMBIENT' });
   }
-  const anyActive = Object.keys(activeSounds).length > 0;
-  document.getElementById('btnAmbient').classList.toggle('ambient-active', anyActive);
+  // FIX: was 'btnAmbient' (didn't exist), now correct id 'btnAmbientToggle'
+  document.getElementById('btnAmbientToggle')
+    .classList.toggle('ambient-active', Object.keys(activeSounds).length > 0);
   updateCatActive();
 }
 
@@ -950,8 +827,7 @@ document.getElementById('pinInput').onkeydown = async e => {
   const val = document.getElementById('pinInput').value.trim();
   if (val.length < 4) { showToast('ENTER 4 DIGITS'); return; }
   if (!isKidsMode) {
-    savedPin = val; isKidsMode = true;
-    await loadVideoData();
+    savedPin = val; isKidsMode = true; await loadVideoData();
   } else {
     if (val === savedPin) { isKidsMode = false; await loadVideoData(); }
     else { showToast('WRONG PIN'); document.getElementById('pinInput').value = ''; return; }
@@ -962,10 +838,11 @@ document.getElementById('pinInput').onkeydown = async e => {
 };
 function applyKidsModeUI() {
   document.body.classList.toggle('kids-mode', isKidsMode);
-  appTitle.textContent = isKidsMode ? 'VOID KIDS' : 'VOIDSCROLL';
-  appTitle.className   = 'title' + (isKidsMode ? ' kids-title' : (isVoidMode ? ' void-title' : ''));
-  document.getElementById('btnShare').style.display   = isKidsMode ? 'none' : '';
-  document.getElementById('btnAmbient').style.display = isKidsMode ? 'none' : '';
+  appTitle.textContent = isKidsMode ? '✦ VOID KIDS' : 'VOIDSCROLL';
+  appTitle.className   = 'title' + (isKidsMode ? ' kids-title' : '');
+  // FIX: correct button id 'btnAmbientToggle'
+  document.getElementById('btnShare').style.display         = isKidsMode ? 'none' : '';
+  document.getElementById('btnAmbientToggle').style.display = isKidsMode ? 'none' : '';
   buildCategoryPanel();
 }
 
@@ -973,11 +850,12 @@ function applyKidsModeUI() {
 function updateSettingsUI() {
   const a = document.getElementById('btnAutoScroll');
   const b = document.getElementById('btnBgPlay');
-  a.textContent = autoScroll    ? 'ON' : 'OFF'; a.classList.toggle('active', autoScroll);
+  a.textContent = autoScroll     ? 'ON' : 'OFF'; a.classList.toggle('active', autoScroll);
   b.textContent = backgroundPlay ? 'ON' : 'OFF'; b.classList.toggle('active', backgroundPlay);
 }
 document.getElementById('btnAutoScroll').onclick = () => { autoScroll    = !autoScroll;    updateSettingsUI(); saveState(); };
-document.getElementById('btnBgPlay').onclick     = () => { backgroundPlay = !backgroundPlay; updateSettingsUI(); saveState();
+document.getElementById('btnBgPlay').onclick     = () => {
+  backgroundPlay = !backgroundPlay; updateSettingsUI(); saveState();
   if (backgroundPlay && 'mediaSession' in navigator) {
     navigator.mediaSession.setActionHandler('play',          () => curVideo?.play());
     navigator.mediaSession.setActionHandler('pause',         () => curVideo?.pause());
@@ -985,30 +863,44 @@ document.getElementById('btnBgPlay').onclick     = () => { backgroundPlay = !bac
     navigator.mediaSession.setActionHandler('previoustrack', () => advance('down'));
   }
 };
-document.getElementById('btnSettingsClose').onclick = () => {
+document.getElementById('btnSettingsClose').onclick = () =>
   document.getElementById('settingsOverlay').classList.remove('open');
-};
 
 // ── BUTTON HANDLERS ────────────────────────────────────────────────────
-document.getElementById('btnCatToggle').onclick = () => catPanel.classList.toggle('open');
-
+// FIX: all handlers are now properly inside this <script> tag
+document.getElementById('btnCatToggle').onclick = e => {
+  e.stopPropagation();
+  catPanel.classList.toggle('open');
+};
+document.getElementById('btnAmbientToggle').onclick = e => {
+  e.stopPropagation();
+  openAmbientPage();
+};
+document.getElementById('btnKidsMode').onclick = e => {
+  e.stopPropagation();
+  openPinOverlay();
+};
+document.getElementById('btnSettings').onclick = e => {
+  e.stopPropagation();
+  updateSettingsUI();
+  document.getElementById('settingsOverlay').classList.add('open');
+};
 document.getElementById('btnMute').onclick = e => {
   isMuted = !isMuted;
   if (curVideo) curVideo.muted = isMuted;
   Object.values(preloadedVids).forEach(v => { v.muted = isMuted; });
-  e.target.classList.toggle('active', !isMuted); saveState();
+  e.target.classList.toggle('active', !isMuted);
+  saveState();
 };
 document.getElementById('btnFit').onclick = e => {
   isFit = !isFit;
   if (curVideo) curVideo.classList.toggle('contain', isFit);
-  e.target.classList.toggle('active', isFit); saveState();
+  e.target.classList.toggle('active', isFit);
+  saveState();
 };
 document.getElementById('btnLock').onclick = e => {
-  scrollLocked = !scrollLocked; e.target.classList.toggle('active', scrollLocked);
-};
-document.getElementById('btnAmbient').onclick = () => openAmbientPage();
-document.getElementById('btnSettings').onclick = () => {
-  updateSettingsUI(); document.getElementById('settingsOverlay').classList.add('open');
+  scrollLocked = !scrollLocked;
+  e.target.classList.toggle('active', scrollLocked);
 };
 document.getElementById('btnShare').onclick = () => {
   if (isKidsMode || !currentPlaylist[currentIndex]) return;
@@ -1016,13 +908,16 @@ document.getElementById('btnShare').onclick = () => {
   url.searchParams.set('vid', currentPlaylist[currentIndex].id);
   (navigator.clipboard?.writeText(url.toString()) || Promise.reject())
     .then(() => showToast('LINK COPIED!'))
-    .catch(() => showToast('COPY FAILED'));
+    .catch(()  => showToast('COPY FAILED'));
 };
 
-// Close category panel on outside tap
-document.addEventListener('touchstart', e => {
-  if (!e.target.closest('.cat-container')) closeCatPanel();
-}, { passive: true });
+// Close cat panel on any outside tap/click
+function handleOutsideClick(e) {
+  if (!e.target.closest('.cat-container') && !e.target.closest('#btnCatToggle'))
+    closeCatPanel();
+}
+document.addEventListener('touchstart', handleOutsideClick, { passive:true });
+document.addEventListener('click', handleOutsideClick);
 
 function syncButtonStates() {
   document.getElementById('btnMute').classList.toggle('active', !isMuted);
@@ -1031,19 +926,17 @@ function syncButtonStates() {
 
 // ── TOUCH GESTURES ─────────────────────────────────────────────────────
 window.addEventListener('touchstart', e => {
-  // Ignore touches starting inside any overlay / panel / button
-  if (e.target.closest('button, input, .overlay, .ambient-page, .seek-zone')) return;
+  if (e.target.closest('button,input,.overlay,.ambient-page,.seek-zone')) return;
   startY = e.touches[0].clientY;
   startX = e.touches[0].clientX;
   touchTime = Date.now();
   currentY = 0; isDragging = false;
   resetUiTimer();
-}, { passive: true });
+}, { passive:true });
 
 window.addEventListener('touchmove', e => {
   if (scrollLocked || !curCard) return;
-  // Never intercept moves inside the ambient page or overlays
-  if (e.target.closest('.ambient-page, .overlay, button, input')) return;
+  if (e.target.closest('.ambient-page,.overlay,button,input')) return;
   const dy = e.touches[0].clientY - startY;
   const dx = e.touches[0].clientX - startX;
   if (!isDragging && Math.abs(dy) < 8 && Math.abs(dx) < 8) return;
@@ -1053,14 +946,13 @@ window.addEventListener('touchmove', e => {
     currentY = dy;
     curCard.style.transition = 'none';
     curCard.style.transform  = `translateY(${currentY}px)`;
-    curCard.style.filter     = `blur(${Math.min(Math.abs(currentY) / 18, 10)}px)`;
+    curCard.style.filter     = `blur(${Math.min(Math.abs(currentY)/18,10)}px)`;
   }
-}, { passive: false });
+}, { passive:false });
 
 window.addEventListener('touchend', e => {
-  if (e.target.closest('.ambient-page, .overlay')) return;
+  if (e.target.closest('.ambient-page,.overlay')) return;
   const elapsed = Date.now() - touchTime;
-
   if (!isDragging && elapsed < 300) {
     const tx   = e.changedTouches[0].clientX;
     const rect = feed.getBoundingClientRect();
@@ -1069,10 +961,9 @@ window.addEventListener('touchend', e => {
       togglePlayPause();
   } else if (isDragging && curCard) {
     curCard.style.filter = 'blur(0)';
-    if (Math.abs(currentY) > 100) {
-      advance(currentY < 0 ? 'up' : 'down');
-    } else {
-      curCard.style.transition = 'transform 0.4s cubic-bezier(0.23,1,0.32,1), filter 0.2s';
+    if (Math.abs(currentY) > 100) advance(currentY < 0 ? 'up' : 'down');
+    else {
+      curCard.style.transition = 'transform 0.4s cubic-bezier(0.23,1,0.32,1),filter 0.2s';
       curCard.style.transform  = 'translateY(0)';
     }
   }
@@ -1101,9 +992,9 @@ function resetUiTimer() {
   }, 3500);
 }
 window.addEventListener('touchstart', e => {
-  if (!e.target.closest('.ambient-page, .overlay')) resetUiTimer();
-}, { passive: true });
-window.addEventListener('mousemove', resetUiTimer, { passive: true });
+  if (!e.target.closest('.ambient-page,.overlay')) resetUiTimer();
+}, { passive:true });
+window.addEventListener('mousemove', resetUiTimer, { passive:true });
 
 // ── SCRUBBER ───────────────────────────────────────────────────────────
 scrubber.addEventListener('input', e => {
@@ -1120,16 +1011,15 @@ function handleSeek(dir, id) {
 }
 function stopSeek(id) { clearInterval(seekInterval); document.getElementById(id).style.opacity = 0; }
 const sR = document.getElementById('seekRight'), sL = document.getElementById('seekLeft');
-sR.addEventListener('touchstart', e => { e.stopPropagation(); handleSeek('fwd','indRight'); }, { passive: true });
+sR.addEventListener('touchstart', e => { e.stopPropagation(); handleSeek('fwd','indRight'); }, { passive:true });
 sR.addEventListener('touchend',   () => stopSeek('indRight'));
-sL.addEventListener('touchstart', e => { e.stopPropagation(); handleSeek('rev','indLeft'); }, { passive: true });
+sL.addEventListener('touchstart', e => { e.stopPropagation(); handleSeek('rev','indLeft');  }, { passive:true });
 sL.addEventListener('touchend',   () => stopSeek('indLeft'));
 
 // ── BACKGROUND PLAY ────────────────────────────────────────────────────
 document.addEventListener('visibilitychange', () => {
   if (document.hidden && !backgroundPlay && curVideo) curVideo.pause();
   else if (!document.hidden && curVideo)              curVideo.play().catch(() => {});
-  // Ambient sounds are not paused — they keep playing through screen lock
 });
 
 // ── TOAST ──────────────────────────────────────────────────────────────
@@ -1141,7 +1031,6 @@ function showToast(msg) {
   toastTimer = setTimeout(() => { t.style.opacity = 0; }, 2200);
 }
 
-// ── GO ─────────────────────────────────────────────────────────────────
 init();
 </script>
 </body>
