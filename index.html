@@ -154,6 +154,17 @@ html, body {
   font-weight: 700; font-size: 1.2rem; letter-spacing: 3px;
   transition: color 0.4s; pointer-events: none;
 }
+
+.header > div {
+  display: flex;
+  gap: 6px;
+  align-items: center;
+}
+#btnSettings {
+  padding: 6px 12px;
+  font-size: 0.72rem;
+}
+
 .title.kids-title { color: #ff9933; }
 .title.void-title { color: #cc44ff; }
 
@@ -192,14 +203,17 @@ button:active { transform: scale(0.93); }
 button.active { color: #fff; border-color: rgba(255,255,255,0.6); }
 
 /* Special button colors */
-.cat-btn.void-btn.void-active  { color: #cc44ff; border-color: #cc44ff; }
-.cat-btn.kids-btn.kids-active  { color: #ff9933; border-color: #ff9933; }
+.cat-btn.kids-btn.kids-active  { color: #5d9eff; border-color: #7af795; }
 .cat-btn.amb-btn.amb-active    { color: #00e5b0; border-color: #00e5b0; }
 button#btnAmbient.ambient-active { color: #00e5b0; border-color: #00e5b0; }
 .cat-btn[data-cat="nature"].active { color: #44ff88; border-color: #44ff88; }
 .cat-btn[data-cat="sleep"].active  { color: #8899ff; border-color: #8899ff; }
 
 .kids-btn { font-size: 0.8rem !important; padding: 10px 16px !important; }
+
+/* Special header buttons */
+#btnAmbientToggle { font-size: 0.72rem; padding: 6px 10px; }
+#btnKidsMode     { font-size: 0.72rem; padding: 6px 10px; }
 
 /* ══ SIDE CONTROLS ═══════════════════════════════════════════════════════ */
 .controls-side {
@@ -396,9 +410,14 @@ input[type=range]::-webkit-slider-thumb {
 <div class="ui-layer" id="uiLayer">
 
   <div class="header">
-    <div class="title" id="appTitle">VOIDSCROLL</div>
-    <div class="cat-container">
+    <div style="display:flex; gap:6px; align-items:center;">
       <button id="btnCatToggle">[ CATEGORIES ]</button>
+      <button id="btnAmbientToggle">◎ AMBIENT</button>
+      <button id="btnKidsMode">⊙ KIDS MODE</button>
+      <button id="btnSettings" style="padding:6px 12px; font-size:0.72rem;">[ ⚙ ]</button>
+    </div>
+
+    <div class="cat-container">
       <div class="cat-panel" id="catPanel"></div>
     </div>
   </div>
@@ -407,8 +426,8 @@ input[type=range]::-webkit-slider-thumb {
     <button id="btnMute">[ MUTE ]</button>
     <button id="btnFit">[ FIT ]</button>
     <button id="btnLock">[ SCROLL ]</button>
-    <button id="btnAmbient">[ AMBIENT ]</button>
-    <button id="btnSettings">[ &#9881; ]</button>
+    
+    
   </div>
 
   <div class="bottom-wrap" id="bottomWrap">
@@ -460,21 +479,46 @@ input[type=range]::-webkit-slider-thumb {
 
 <div class="toast" id="toast"></div>
 
+
+// HEADER BUTTONS
+document.getElementById('btnAmbientToggle').onclick = e => {
+  e.stopPropagation();
+  openAmbientPage();
+};
+
+document.getElementById('btnKidsMode').onclick = e => {
+  e.stopPropagation();
+  openPinOverlay();
+};
+
+document.getElementById('btnCatToggle').onclick = e => {
+  e.stopPropagation();
+  catPanel.classList.toggle('open');
+};
+
+document.getElementById('btnSettings').onclick = e => {
+  e.stopPropagation();
+  document.getElementById('settingsOverlay').classList.add('open');
+};
+
 <script>
 /* ══════════════════════════════════════════════════════════════════════
    VOIDSCROLL — Static infinite video feed. No backend.
 ══════════════════════════════════════════════════════════════════════ */
 
 const CATS = [
-  { id: 'all',         label: 'ALL',    group: 'main' },
-  { id: 'nature',      label: 'NATURE', group: 'main' },
-  { id: 'sleep',       label: 'SLEEP',  group: 'main' },
-  { id: 'space',       label: 'SPACE',  group: 'main' },
-  { id: 'science',     label: 'SCIENCE',group: 'main' },
-  { id: 'animals',     label: 'ANIMALS',group: 'more' },
-  { id: 'history',     label: 'HISTORY',group: 'more' },
-  { id: 'technology',  label: 'TECH',   group: 'more' },
-  { id: 'documentary', label: 'DOCS',   group: 'more' },
+  { id: 'all', label: 'ALL', group: 'main' },
+  { id: 'nature', label: 'NATURE', group: 'main' },
+  { id: 'sleep', label: 'SLEEP', group: 'main' },
+  { id: 'space', label: 'SPACE', group: 'main' },
+  { id: 'science', label: 'SCIENCE', group: 'main' },
+  { id: 'animals', label: 'ANIMALS', group: 'more' },
+  { id: 'history', label: 'HISTORY', group: 'more' },
+  { id: 'technology', label: 'TECH', group: 'more' },
+  { id: 'documentary', label: 'DOCS', group: 'more' },
+  { id: 'math', label: 'MATH', group: 'more' },         // example extra
+  { id: 'engineering', label: 'ENGINEERING', group: 'more' },
+  { id: 'astronomy', label: 'ASTRONOMY', group: 'more' },
 ];
 
 // ── STATE ──────────────────────────────────────────────────────────────
@@ -574,66 +618,29 @@ async function loadAmbientData() {
 function buildCategoryPanel() {
   catPanel.innerHTML = '';
 
+  // In kids mode, show only the unlock button (optional)
   if (isKidsMode) {
     const g = document.createElement('div');
     g.className = 'cat-group';
     g.appendChild(makeCatBtn('all', 'ALL'));
     catPanel.appendChild(g);
+
     const unlock = makeCatBtn('__kids__', '⊙ UNLOCK KIDS');
     unlock.classList.add('kids-btn', 'kids-active');
     unlock.onclick = e => { e.stopPropagation(); closeCatPanel(); openPinOverlay(); };
     catPanel.appendChild(unlock);
+
     return;
   }
 
-  // Primary group
+  // Only main categories
   const mainGrp = document.createElement('div');
   mainGrp.className = 'cat-group';
-  CATS.filter(c => c.group === 'main').forEach(c => mainGrp.appendChild(makeCatBtn(c.id, c.label)));
+  CATS.filter(c => c.group === 'main')
+      .forEach(c => mainGrp.appendChild(makeCatBtn(c.id, c.label)));
   catPanel.appendChild(mainGrp);
 
-  // More toggle
-  const moreToggle = document.createElement('button');
-  moreToggle.className = 'cat-btn';
-  moreToggle.style.cssText = 'font-size:0.6rem;opacity:0.6;';
-  moreToggle.textContent = catExpanded ? '– LESS' : '+ MORE';
-  moreToggle.onclick = e => {
-    e.stopPropagation();
-    catExpanded = !catExpanded;
-    moreToggle.textContent = catExpanded ? '– LESS' : '+ MORE';
-    moreGrp.classList.toggle('expanded', catExpanded);
-  };
-  catPanel.appendChild(moreToggle);
-
-  const moreGrp = document.createElement('div');
-  moreGrp.className = 'cat-group more-group' + (catExpanded ? ' expanded' : '');
-  CATS.filter(c => c.group === 'more').forEach(c => moreGrp.appendChild(makeCatBtn(c.id, c.label)));
-  catPanel.appendChild(moreGrp);
-
-  const div = document.createElement('div');
-  div.className = 'cat-divider';
-  catPanel.appendChild(div);
-
-  // AMBIENT — opens ambient page
-  const ambBtn = makeCatBtn('__ambient__', '◎ AMBIENT');
-  ambBtn.classList.add('amb-btn');
-  if (Object.keys(activeSounds).length > 0) ambBtn.classList.add('amb-active');
-  ambBtn.onclick = e => { e.stopPropagation(); closeCatPanel(); openAmbientPage(); };
-  catPanel.appendChild(ambBtn);
-
-  // VOID MODE
-  const voidBtn = makeCatBtn('__void__', '✦ VOID MODE');
-  voidBtn.classList.add('void-btn');
-  if (isVoidMode) voidBtn.classList.add('void-active');
-  voidBtn.onclick = e => { e.stopPropagation(); toggleVoidMode(); closeCatPanel(); };
-  catPanel.appendChild(voidBtn);
-
-  // KIDS MODE (prominent)
-  const kidsBtn = makeCatBtn('__kids__', '⊙ KIDS MODE');
-  kidsBtn.classList.add('kids-btn');
-  kidsBtn.onclick = e => { e.stopPropagation(); closeCatPanel(); openPinOverlay(); };
-  catPanel.appendChild(kidsBtn);
-
+  // Update active states
   updateCatActive();
 }
 
