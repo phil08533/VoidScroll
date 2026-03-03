@@ -975,8 +975,8 @@ window.addEventListener('touchend', e => {
 function togglePlayPause() {
   if (!curVideo) return;
   const ind = document.getElementById('ppIndicator');
-  if (curVideo.paused) { curVideo.play().catch(() => {}); ind.textContent = '▶'; }
-  else                 { curVideo.pause();                 ind.textContent = '⏸'; }
+  if (curVideo.paused) { curVideo.play().catch(() => {}); ind.textContent = '(✖╭╮✖)'; }
+  else                 { curVideo.pause();                 ind.textContent = '(ಠ_ಠ)'; }
   ind.style.opacity = '1';
   clearTimeout(ind._t);
   ind._t = setTimeout(() => { ind.style.opacity = '0'; }, 750);
