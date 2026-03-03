@@ -648,9 +648,9 @@ def expand_pool_persistent(filename, kids_only=False, cycles=10000):
 
 if __name__ == "__main__":
     # Normal videos (all categories)
-    # expand_pool_persistent(VIDEO_FILE_NORMAL, kids_only=False, cycles=10000)
+    expand_pool_persistent(VIDEO_FILE_NORMAL, kids_only=False, cycles=10000)
 
     # Uncomment to run kids scraper instead:
-    expand_pool_persistent(VIDEO_FILE_KIDS, kids_only=True, cycles=10000)
+    #expand_pool_persistent(VIDEO_FILE_KIDS, kids_only=True, cycles=10000)
 
     print("\n[FINISH] Library updated.")
