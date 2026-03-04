@@ -10,9 +10,9 @@ import time
 # CONFIG
 # =========================
 
-MAX_RESULTS = 40
+MAX_RESULTS = 100
 MAX_DURATION_SECONDS = 999  # ~15 min max
-MAX_PAGE = 20
+MAX_PAGE = 100
 
 VIDEO_FILE_NORMAL = "videos.json"
 VIDEO_FILE_KIDS   = "kids_videos.json"
@@ -79,7 +79,7 @@ NORMAL_SEARCH_TERMS = [
     "forest walk", "starry night sky", "meditative visuals", "slow nature video",
     "relaxing forest stream", "ocean breeze", "water meditation", "chill scenery",
     "peaceful garden", "soft nature music", "calm drone footage", "serene beach",
-    "forest sunrise", "relaxing autumn forest",
+    "forest sunrise", "relaxing autumn forest", "timelapse"
 
     # Historical / Educational
     "history documentary", "ancient civilizations", "world history", "educational film",
