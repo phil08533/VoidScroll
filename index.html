@@ -645,17 +645,6 @@ const DEFAULT_AMBIENT = [
 ];
 
 async function loadAmbientData() {
-  // Try loading ambient.json first (user can override with their own file)
-  try {
-    const res = await fetch('ambient.json');
-    if (!res.ok) throw new Error();
-    const data = await res.json();
-    if (Array.isArray(data) && data.length) {
-      ambientData = data;
-      buildAmbientGrid();
-      return;
-    }
-  } catch(e) {}
   // Fall back to embedded defaults so the page is never empty
   ambientData = DEFAULT_AMBIENT;
   buildAmbientGrid();
@@ -722,7 +711,7 @@ function updateCatActive() {
     if (!btn.dataset.cat.startsWith('__'))
       btn.classList.toggle('active', btn.dataset.cat === currentCategory);
   });
-  // FIX: correct id — was 'btnAmbient' (never existed), now 'btnAmbientToggle'
+  
   document.getElementById('btnAmbientToggle')
     .classList.toggle('ambient-active', Object.keys(activeSounds).length > 0);
 }
