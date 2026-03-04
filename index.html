@@ -38,7 +38,7 @@ html,body {
   transition:background 0.5s,color 0.5s;
 }
 
-/* ══ BOOT Animation ════════════════════════════════════════════════════════════ */
+/* ══ BOOT ════════════════════════════════════════════════════════════ */
 .liquid-overlay {
   position: fixed;
   inset: 0;
@@ -118,7 +118,9 @@ html,body {
 /* ══ HEADER ══════════════════════════════════════════════════════════════ */
 /* Everything lives in the top-right corner */
 .header {
-  display:flex; justify-content:flex-end; align-items:flex-start;
+  display:flex;
+  justify-content:space-between; /* pushes title left, controls right */
+  align-items:flex-start;
   overflow:visible;
 }
 .header-right {
@@ -128,8 +130,12 @@ html,body {
 .header-btns { display:flex; gap:6px; flex-wrap:wrap; justify-content:flex-end; align-items:center; }
 
 .title {
-  font-weight:700; font-size:1.2rem; letter-spacing:3px;
-  transition:color 0.4s; pointer-events:none; text-align:right;
+  font-weight:700;
+  font-size:1.2rem;
+  letter-spacing:3px;
+  transition:color 0.4s;
+  pointer-events:none;
+  text-align:left;
 }
 .title.kids-title { color:#ff9933; }
 
@@ -168,6 +174,68 @@ html,body {
 }
 
 /* ══ BUTTONS ═════════════════════════════════════════════════════════════ */
+
+/* ══ NEW CONTROLS LAYOUT ═════════════════════════════════════ */
+
+.controls-bottom {
+  display:flex;
+  flex-direction:column;
+  gap:12px;
+}
+
+/* Top row - round buttons */
+.round-actions {
+  display:flex;
+  gap:10px;
+}
+
+/* Bottom row - title + share */
+.title-share-row {
+  display:flex;
+  justify-content:space-between;
+  align-items:center;
+  gap:12px;
+}
+
+/* Round icon buttons */
+.round-btn {
+  width:44px;
+  height:44px;
+  border-radius:50%;
+  padding:0;
+  font-size:1.1rem;
+  display:flex;
+  align-items:center;
+  justify-content:center;
+  backdrop-filter:blur(12px);
+}
+
+/* ══ GALAXY SPARKLE FOR ACTIVE BUTTONS ═════════════════════ */
+
+@keyframes glitterMove {
+  0% { background-position: 0% 0%; }
+  100% { background-position: 200% 200%; }
+}
+
+.round-btn.active {
+  border-color: #9cd3ff;
+  color: #9cd3ff;
+  background: linear-gradient(45deg, #0a0d1b, #171a2e, #0a0d1b);
+  background-size: 400% 400%;
+  box-shadow: 0 0 5px rgba(156, 211, 255, 0.7),
+              0 0 6px rgba(156, 211, 255, 0.4);
+  animation: glitterMove 2.4s linear infinite;
+}
+
+/* Optional sparkle overlay */
+.round-btn.active::after {
+  content: "";
+  position: absolute;
+  inset: 0;
+  border-radius: 50%;
+  mix-blend-mode: screen;
+  pointer-events: none;
+}
 button {
   background:var(--ui-bg); color:var(--tx);
   border:1px solid var(--ui-border);
@@ -182,41 +250,85 @@ button:active { transform:scale(0.93); }
 button.active { color:#fff; border-color:rgba(255,255,255,0.6); }
 
 /* Per-category active colours */
-.cat-btn[data-cat="all"].active         { color:#fff;    border-color:rgba(255,255,255,0.6); }
-.cat-btn[data-cat="nature"].active      { color:#44ff88; border-color:#44ff88; }
-.cat-btn[data-cat="sleep"].active       { color:#8899ff; border-color:#8899ff; }
-.cat-btn[data-cat="space"].active       { color:#66ccff; border-color:#66ccff; }
-.cat-btn[data-cat="animals"].active     { color:#ffcc44; border-color:#ffcc44; }
-.cat-btn[data-cat="science"].active     { color:#44ffee; border-color:#44ffee; }
-.cat-btn[data-cat="technology"].active  { color:#aa88ff; border-color:#aa88ff; }
-.cat-btn[data-cat="history"].active     { color:#ffaa66; border-color:#ffaa66; }
-.cat-btn[data-cat="environment"].active { color:#66ff99; border-color:#66ff99; }
-.cat-btn[data-cat="travel"].active      { color:#ff88cc; border-color:#ff88cc; }
-.cat-btn[data-cat="engineering"].active { color:#ffdd44; border-color:#ffdd44; }
-.cat-btn[data-cat="vehicles"].active    { color:#ff7744; border-color:#ff7744; }
-.cat-btn[data-cat="math"].active        { color:#44ddff; border-color:#44ddff; }
-.cat-btn[data-cat="gaming"].active      { color:#ff44aa; border-color:#ff44aa; }
-.cat-btn[data-cat="documentary"].active { color:#ccccff; border-color:#ccccff; }
-.cat-btn[data-cat="diy"].active         { color:#ffbb33; border-color:#ffbb33; }
+.cat-btn[data-cat="all"].active         { color:#fff;    border-color:rgba(255,255,255,0.6); box-shadow: 0 0 5px rgba(156, 211, 255, 0.7),
+              0 0 6px rgba(156, 211, 255, 0.4);}
+.cat-btn[data-cat="nature"].active      { color:#44ff88; border-color:#44ff88; box-shadow: 0 0 5px rgba(156, 211, 255, 0.7),
+              0 0 6px rgba(156, 211, 255, 0.4);}
+.cat-btn[data-cat="sleep"].active       { color:#8899ff; border-color:#8899ff; box-shadow: 0 0 5px rgba(156, 211, 255, 0.7),
+              0 0 6px rgba(156, 211, 255, 0.4);}
+.cat-btn[data-cat="space"].active       { color:#66ccff; border-color:#66ccff; box-shadow: 0 0 5px rgba(156, 211, 255, 0.7),
+              0 0 6px rgba(156, 211, 255, 0.4);}
+.cat-btn[data-cat="animals"].active     { color:#ffcc44; border-color:#ffcc44; box-shadow: 0 0 5px rgba(156, 211, 255, 0.7),
+              0 0 6px rgba(156, 211, 255, 0.4);}
+.cat-btn[data-cat="science"].active     { color:#44ffee; border-color:#44ffee; box-shadow: 0 0 5px rgba(156, 211, 255, 0.7),
+              0 0 6px rgba(156, 211, 255, 0.4);}
+.cat-btn[data-cat="technology"].active  { color:#aa88ff; border-color:#aa88ff; box-shadow: 0 0 5px rgba(156, 211, 255, 0.7),
+              0 0 6px rgba(156, 211, 255, 0.4);}
+.cat-btn[data-cat="history"].active     { color:#ffaa66; border-color:#ffaa66; box-shadow: 0 0 5px rgba(156, 211, 255, 0.7),
+              0 0 6px rgba(156, 211, 255, 0.4);}
+.cat-btn[data-cat="environment"].active { color:#66ff99; border-color:#66ff99; box-shadow: 0 0 5px rgba(156, 211, 255, 0.7),
+              0 0 6px rgba(156, 211, 255, 0.4);}
+.cat-btn[data-cat="travel"].active      { color:#ff88cc; border-color:#ff88cc; box-shadow: 0 0 5px rgba(156, 211, 255, 0.7),
+              0 0 6px rgba(156, 211, 255, 0.4);}
+.cat-btn[data-cat="engineering"].active { color:#ffdd44; border-color:#ffdd44; box-shadow: 0 0 5px rgba(156, 211, 255, 0.7),
+              0 0 6px rgba(156, 211, 255, 0.4);}
+.cat-btn[data-cat="vehicles"].active    { color:#ff7744; border-color:#ff7744; box-shadow: 0 0 5px rgba(156, 211, 255, 0.7),
+              0 0 6px rgba(156, 211, 255, 0.4);}
+.cat-btn[data-cat="math"].active        { color:#44ddff; border-color:#44ddff; box-shadow: 0 0 5px rgba(156, 211, 255, 0.7),
+              0 0 6px rgba(156, 211, 255, 0.4);}
+.cat-btn[data-cat="gaming"].active      { color:#ff44aa; border-color:#ff44aa; box-shadow: 0 0 5px rgba(156, 211, 255, 0.7),
+              0 0 6px rgba(156, 211, 255, 0.4);}
+.cat-btn[data-cat="documentary"].active { color:#ccccff; border-color:#ccccff; box-shadow: 0 0 5px rgba(156, 211, 255, 0.7),
+              0 0 6px rgba(156, 211, 255, 0.4);}
+.cat-btn[data-cat="diy"].active         { color:#ffbb33; border-color:#ffbb33; box-shadow: 0 0 5px rgba(156, 211, 255, 0.7),
+              0 0 6px rgba(156, 211, 255, 0.4);}
 
 /* FIX: was 'btnAmbient' which didn't exist — correct id is 'btnAmbientToggle' */
 #btnAmbientToggle.ambient-active { color:#00e5b0; border-color:#00e5b0; }
 .kids-btn { font-size:0.8rem !important; padding:10px 16px !important; }
 
-/* ══ SIDE CONTROLS ═══════════════════════════════════════════════════════ */
-.controls-side {
-  position:absolute; right:16px; top:50%;
-  transform:translateY(-50%);
-  display:flex; flex-direction:column; gap:10px;
-  pointer-events:auto;
-}
-
 /* ══ BOTTOM WRAP ═════════════════════════════════════════════════════════ */
 .bottom-wrap { transition:transform 0.42s cubic-bezier(0.23,1,0.32,1),opacity 0.42s; }
 .bottom-wrap.hidden { transform:translateY(calc(100% + 40px)); opacity:0; }
+/* ══ NEW CONTROLS LAYOUT ═════════════════════════════════════ */
+
 .controls-bottom {
-  display:flex; align-items:center; justify-content:space-between; gap:12px;
-  margin-bottom:10px;
+  display:flex;
+  flex-direction:column;
+  gap:12px;
+}
+
+/* Round button row */
+.round-actions {
+  display:flex;
+  justify-content:flex-end; /* LEFT JUSTIFIED */
+  gap:10px;
+}
+
+/* Title + Share row */
+.title-share-row {
+  display:flex;
+  justify-content:space-between;
+  align-items:center;
+  gap:12px;
+}
+
+/* Round icon buttons */
+.round-btn {
+  width:30px;
+  height:30px;
+  border-radius:50%;
+  padding:0;
+  font-size:.8rem;
+  display:flex;
+  align-items:center;
+  justify-content:center;
+  backdrop-filter:blur(12px);
+}
+
+/* Press effect */
+.round-btn:active {
+  transform:scale(0.9);
 }
 .video-title {
   font-size:0.82rem; font-weight:700; max-width:62%;
@@ -343,7 +455,7 @@ input[type=range]::-webkit-slider-thumb {
       <div class="header-btns">
         <button id="btnCatToggle">[ CATEGORIES ]</button>
         <button id="btnAmbientToggle">◎ AMBIENT</button>
-        <button id="btnKidsMode">⊙ KIDS</button>
+        <button id="btnKidsMode">⊙ KIDS</button> 
         <button id="btnSettings">[ ⚙ ]</button>
       </div>
       <!-- Dropdown anchored under the buttons, right-aligned -->
@@ -353,17 +465,25 @@ input[type=range]::-webkit-slider-thumb {
     </div>
   </div>
 
-  <div class="controls-side">
-    <button id="btnMute">[ MUTE ]</button>
-    <button id="btnFit">[ FIT ]</button>
-    <button id="btnLock">[ SCROLL ]</button>
-  </div>
+
 
   <div class="bottom-wrap" id="bottomWrap">
     <div class="controls-bottom">
-      <div class="video-title" id="vidTitle">Loading...</div>
-      <button id="btnShare">[ SHARE ]</button>
-    </div>
+
+  <!-- ROUND BUTTONS (LEFT, ABOVE SHARE) -->
+  <div class="round-actions">
+    <button id="btnMute"  class="round-btn">🔇</button>
+    <button id="btnFit"   class="round-btn">⛶</button>
+    <button id="btnLock"  class="round-btn">⇅</button>
+  </div>
+
+  <!-- TITLE + SHARE ROW -->
+  <div class="title-share-row">
+    <div class="video-title" id="vidTitle">Loading...</div>
+    <button id="btnShare">[ SHARE ]</button>
+  </div>
+
+</div>
     <div class="scrubber-wrap">
       <input type="range" id="scrubber" value="0" min="0" max="100">
     </div>
@@ -511,18 +631,17 @@ async function loadVideoData() {
 
 // ── DEFAULT AMBIENT SOUNDS (always available, no ambient.json needed) ──
 const DEFAULT_AMBIENT = [
-  { id:'rain',       title:'RAIN',          icon:'🌧️', url:'https://www.soundjay.com/nature/sounds/rain-01.mp3' },
-  { id:'thunder',    title:'THUNDERSTORM',  icon:'⛈️', url:'https://www.soundjay.com/nature/sounds/thunder-01.mp3' },
-  { id:'ocean',      title:'OCEAN WAVES',   icon:'🌊', url:'https://www.soundjay.com/nature/sounds/ocean-wave-1.mp3' },
-  { id:'forest',     title:'FOREST',        icon:'🌲', url:'https://www.soundjay.com/nature/sounds/forest-01.mp3' },
-  { id:'fire',       title:'FIREPLACE',     icon:'🔥', url:'https://www.soundjay.com/nature/sounds/fire-01.mp3' },
-  { id:'wind',       title:'WIND',          icon:'💨', url:'https://www.soundjay.com/nature/sounds/wind-01.mp3' },
-  { id:'river',      title:'RIVER',         icon:'🏞️', url:'https://www.soundjay.com/nature/sounds/stream-01.mp3' },
-  { id:'crickets',   title:'CRICKETS',      icon:'🦗', url:'https://www.soundjay.com/nature/sounds/crickets-01.mp3' },
-  { id:'whitenoise', title:'WHITE NOISE',   icon:'📻', url:'https://www.soundjay.com/misc/sounds/white-noise-1.mp3' },
-  { id:'cafe',       title:'CAFÉ CHATTER',  icon:'☕', url:'https://www.soundjay.com/misc/sounds/crowd-talking-1.mp3' },
-  { id:'fan',        title:'FAN / AC',      icon:'🌬️', url:'https://www.soundjay.com/misc/sounds/fan-01.mp3' },
-  { id:'birds',      title:'BIRDSONG',      icon:'🐦', url:'https://www.soundjay.com/nature/sounds/birds-singing-01.mp3' },
+  { id:'brownnoise', title:'BROWN NOISE',   icon:'🎵', url:'Ambient_Sound/BrownNoise.mp3' },
+  { id:'fire',       title:'FIREPLACE',     icon:'🔥', url:'Ambient_Sound/fire-1.mp3' },
+  { id:'foodcourt',  title:'FOOD COURT',    icon:'☕', url:'Ambient_Sound/food-court-1.mp3' },
+  { id:'forest',     title:'FOREST',        icon:'🌲', url:'Ambient_Sound/forest.mp3' },
+  { id:'ocean',      title:'OCEAN WAVES',   icon:'🌊', url:'Ambient_Sound/ocean-wave-2.mp3' },
+  { id:'rain',       title:'RAIN',          icon:'🌧️', url:'Ambient_Sound/rain-01.mp3' },
+  { id:'river',      title:'RIVER',         icon:'🏞️', url:'Ambient_Sound/river-2.mp3' },
+  { id:'rowboat',    title:'ROWING BOAT',   icon:'🚣', url:'Ambient_Sound/rowing-boat-rowboat.mp3' },
+  { id:'wind',       title:'WIND',          icon:'💨', url:'Ambient_Sound/wind-1.mp3' },
+  { id:'windchime',  title:'WIND CHIME',    icon:'🎐', url:'Ambient_Sound/wind-chime-2.mp3' },
+  { id:'meadow',     title:'MEADOW',        icon:'🌾', url:'Ambient_Sound/meadow.mp3' },
 ];
 
 async function loadAmbientData() {
