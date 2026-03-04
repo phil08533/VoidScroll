@@ -38,17 +38,39 @@ html,body {
   transition:background 0.5s,color 0.5s;
 }
 
-/* ══ CRT BOOT ════════════════════════════════════════════════════════════ */
-.crt-overlay {
-  position:fixed; inset:0; background:#fff; z-index:9999;
-  pointer-events:none;
-  animation:crtOff 0.75s cubic-bezier(0.23,1,0.32,1) forwards;
+/* ══ BOOT Animation ════════════════════════════════════════════════════════════ */
+.liquid-overlay {
+  position: fixed;
+  inset: 0;
+  background: linear-gradient(to bottom, #000 0%, #000 70%, transparent 100%);
+  z-index: 9999;
+  animation: meltDown 0.9s ease-in forwards;
+  transform-origin: top;
 }
-@keyframes crtOff {
-  0%   { opacity:1; transform:scale(1,1); }
-  20%  { opacity:1; transform:scale(1,0.01); }
-  50%  { opacity:1; transform:scale(0,0.01); }
-  100% { opacity:0; transform:scale(0,0); }
+
+@keyframes meltDown {
+  0% {
+    clip-path: polygon(
+      0% 0%, 
+      100% 0%, 
+      100% 100%, 
+      0% 100%
+    );
+  }
+
+  50% {
+    clip-path: polygon(
+      0% 0%, 
+      100% 0%, 
+      100% 80%, 
+      0% 90%
+    );
+  }
+
+  100% {
+    transform: translateY(100%);
+    opacity: 0;
+  }
 }
 
 /* ══ VIDEO FEED ══════════════════════════════════════════════════════════ */
