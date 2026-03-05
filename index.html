@@ -1192,15 +1192,16 @@
       resetUiTimer();
       applyKidsModeUI();
 
-      // Trigger video count popup
-      setTimeout(() => {
+      appTitle.onclick = () => {
         const popup = document.getElementById('videoCountPopup');
         popup.textContent = allVideos.length + ' VIDEOS';
         popup.classList.add('show');
-        setTimeout(() => {
-          popup.classList.remove('show');
-        }, 4000);
-      }, 1200);
+        clearTimeout(popup._t);
+        popup._t = setTimeout(() => popup.classList.remove('show'), 4000);
+      };
+
+      // Trigger initial video count popup
+      setTimeout(() => appTitle.click(), 1200);
     }
 
     // ── DATA LOADING ───────────────────────────────────────────────────────
@@ -1601,10 +1602,12 @@
       e.stopPropagation();
       openAmbientPage();
     };
+    /* 
     document.getElementById('btnKidsMode').onclick = e => {
       e.stopPropagation();
       openPinOverlay();
     };
+    */
     document.getElementById('btnSettings').onclick = e => {
       e.stopPropagation();
       updateSettingsUI();
