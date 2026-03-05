@@ -194,9 +194,85 @@
       font-weight: 700;
       font-size: 1.2rem;
       letter-spacing: 3px;
-      transition: color 0.4s;
-      pointer-events: none;
       text-align: left;
+      position: relative;
+      cursor: pointer;
+      user-select: none;
+      -webkit-user-drag: none;
+      color: #fff;
+      display: inline-block;
+      background: none;
+      border: none;
+      padding: 0;
+      margin: 0;
+    }
+
+    .title::after {
+      content: attr(data-text);
+      position: absolute;
+      top: 0;
+      left: 0;
+      width: 0%;
+      height: 100%;
+      background: linear-gradient(45deg, #010103 0%, #0c0e1e 50%, #010103 100%);
+      background-size: 200% 200%;
+      -webkit-background-clip: text;
+      background-clip: text;
+      -webkit-text-fill-color: transparent;
+      overflow: hidden;
+      white-space: nowrap;
+      transition: width 2s linear;
+      pointer-events: none;
+    }
+
+    .title.holding::after {
+      width: 100%;
+    }
+
+    @keyframes blackGalaxySparkle {
+      0% {
+        background-position: 0% 50%;
+      }
+
+      50% {
+        background-position: 100% 50%;
+      }
+
+      100% {
+        background-position: 0% 50%;
+      }
+    }
+
+    @keyframes rainbow-flow {
+      0% {
+        background-position: 0% 50%;
+      }
+
+      100% {
+        background-position: 100% 50%;
+      }
+    }
+
+    @keyframes glitch-vibrate {
+      0% {
+        transform: translate(1px, 1px) scale(1.02);
+      }
+
+      25% {
+        transform: translate(-1px, -1px) scale(1);
+      }
+
+      50% {
+        transform: translate(-1px, 1px) scale(1.05);
+      }
+
+      75% {
+        transform: translate(1px, -1px) scale(1.1);
+      }
+
+      100% {
+        transform: translate(0, 0);
+      }
     }
 
     .title.kids-title {
@@ -471,10 +547,22 @@
         0 0 6px rgba(156, 211, 255, 0.4);
     }
 
-    /* FIX: was 'btnAmbient' which didn't exist — correct id is 'btnAmbientToggle' */
+    #btnAmbientToggle,
+    #btnSettings {
+      width: 30px;
+      height: 30px;
+      border-radius: 50%;
+      padding: 0;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 1rem;
+    }
+
     #btnAmbientToggle.ambient-active {
-      color: #00e5b0;
-      border-color: #00e5b0;
+      color: #ffffff;
+      border-color: #ffffff;
+      box-shadow: 0 0 8px rgba(255, 255, 255, 0.3);
     }
 
     .kids-btn {
@@ -890,7 +978,13 @@
       overflow: hidden;
       transition: all 0.2s cubic-bezier(0.4, 0, 0.2, 1);
       min-width: 100px;
-      border-color: rgba(255, 255, 255, 0.1);
+      border: 1px solid rgba(255, 255, 255, 0.1);
+      background: rgba(255, 255, 255, 0.02);
+      border-radius: 4px;
+      color: #fff;
+      font-weight: 700;
+      letter-spacing: 2px;
+      font-size: 0.8rem;
     }
 
     #btnShare::before {
@@ -900,7 +994,6 @@
       left: 0;
       bottom: 0;
       width: 0%;
-      /* DEEP Black Galaxy Sparkle Gradient */
       background: linear-gradient(45deg, #010103 0%, #0c0e1e 50%, #010103 100%);
       background-size: 200% 200%;
       z-index: 0;
@@ -911,13 +1004,15 @@
     #btnShare.holding::before {
       width: 100%;
       animation: blackGalaxySparkle 2s linear infinite;
-      box-shadow: inset 0 0 20px rgba(0, 0, 0, 1), 0 0 10px rgba(156, 211, 255, 0.1);
+      box-shadow: inset 0 0 20px rgba(0, 0, 0, 1);
     }
 
     #btnShare span {
       position: relative;
       z-index: 1;
       transition: color 0.3s;
+      display: inline-block;
+      padding: 8px 16px;
     }
 
     /* ══ TOAST ═══════════════════════════════════════════════════════════════ */
@@ -963,7 +1058,7 @@
 
     .video-count-popup.rainbow {
       background: linear-gradient(to right,
-          #ff0000, #ff7f00, #ffff00, #00ff00, #0000ff, #4b0082, #8f00ff, #ff0000);
+          #ff0000, #ff7f00, #b8b801, #00ff00, #0000ff, #4b0082, #8f00ff, #ff0000);
       background-size: 200% auto;
       -webkit-background-clip: text;
       background-clip: text;
@@ -999,7 +1094,7 @@
 
     <div class="header">
       <div style="position:relative;">
-        <span class="title" id="appTitle">VOIDSCROLL</span>
+        <span class="title" id="appTitle" data-text="V🕳IDSCROLL">V🕳IDSCROLL</span>
         <div id="videoCountPopup" class="video-count-popup rainbow"></div>
       </div>
       <!-- All controls right-justified in one column -->
@@ -1007,9 +1102,9 @@
 
         <div class="header-btns">
           <button id="btnCatToggle">[ CATEGORIES ]</button>
-          <button id="btnAmbientToggle">◎ AMBIENT</button>
+          <button id="btnAmbientToggle" ; style="color:white">🌨</button>
           <!-- <button id="btnKidsMode">⊙ KIDS</button> -->
-          <button id="btnSettings">[ ⚙ ]</button>
+          <button id="btnSettings">⚙</button>
         </div>
         <!-- Dropdown anchored under the buttons, right-aligned -->
         <div class="cat-container">
@@ -1025,7 +1120,7 @@
 
         <!-- ROUND BUTTONS (LEFT, ABOVE SHARE) -->
         <div class="round-actions">
-          <button id="btnMute" class="round-btn">🔇</button>
+          <button id="btnMute" class="round-btn">🕩</button>
           <button id="btnFit" class="round-btn">⛶</button>
           <button id="btnLock" class="round-btn">⇅</button>
         </div>
@@ -1052,6 +1147,145 @@
     <div class="amb-page-sub">Tap a sound to toggle &middot; Plays through screen lock &middot; Mix freely</div>
     <div class="amb-sound-grid" id="ambientGrid"></div>
   </div>
+
+  <!-- ═══ THE VOID ══════════════════════════════════════════════════════ -->
+  <style>
+    .void-page {
+      position: fixed;
+      inset: 0;
+      background: #000;
+      z-index: 2000;
+      display: none;
+      flex-direction: column;
+      overflow: hidden;
+    }
+
+    .void-page.open {
+      display: flex;
+    }
+
+    /* Falling Hole Transition Animation with 3D Fold */
+    @keyframes v-fall-hole {
+      0% {
+        clip-path: circle(100% at 50% 50%);
+        transform: perspective(1000px) scale(1) rotateX(0deg);
+      }
+
+      20% {
+        clip-path: circle(65% at 50% 50%);
+        transform: perspective(1000px) scale(0.9) rotateX(10deg);
+      }
+
+      50% {
+        clip-path: circle(15% at 50% 50%);
+        transform: perspective(1000px) scale(0.4) rotateX(25deg) translateY(-20%);
+        opacity: 1;
+      }
+
+      85% {
+        clip-path: circle(4% at 50% 50%);
+        transform: perspective(1000px) scale(0.05) rotateX(70deg) translateY(-150%);
+        opacity: 1;
+      }
+
+      100% {
+        clip-path: circle(0% at 50% 50%);
+        transform: perspective(1000px) scale(0) rotateX(90deg) translateY(-400%);
+        opacity: 0;
+      }
+    }
+
+    .falling-animation {
+      animation: v-fall-hole 1.5s cubic-bezier(0.7, 0, 0.3, 1) forwards !important;
+      pointer-events: none !important;
+    }
+
+    .void-scroll-container {
+      flex: 1;
+      overflow-y: scroll;
+      scroll-snap-type: y mandatory;
+      scrollbar-width: none;
+      -ms-overflow-style: none;
+      background: #000;
+    }
+
+    .void-scroll-container::-webkit-scrollbar {
+      display: none;
+    }
+
+    .void-item {
+      height: 100vh;
+      width: 100vw;
+      scroll-snap-align: start;
+      position: relative;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      background: #000;
+    }
+
+    .void-item img {
+      width: 100%;
+      height: 100%;
+      object-fit: cover;
+    }
+
+    .void-ui {
+      position: absolute;
+      top: 0;
+      left: 0;
+      right: 0;
+      bottom: 0;
+      pointer-events: none;
+      z-index: 10;
+      padding: 40px 20px;
+      display: flex;
+      flex-direction: column;
+      justify-content: space-between;
+      background: linear-gradient(to bottom, rgba(20, 20, 20, 0.8) 0%, transparent 15%, transparent 85%, rgba(20, 20, 20, 0.8) 100%);
+    }
+
+    .void-title-label {
+      font-size: 1.8rem;
+      letter-spacing: 20px;
+      font-weight: 900;
+      color: rgba(180, 180, 180, 0.4);
+      /* Transparent grey */
+      text-align: center;
+      width: 100%;
+      text-shadow: 0 0 10px rgba(255, 255, 255, 0.1);
+      animation: glitch-text 2s linear infinite;
+    }
+
+    #btnExitVoid {
+      pointer-events: auto;
+      align-self: center;
+      background: rgba(50, 50, 50, 0.6);
+      color: #999;
+      border: 1px solid rgba(255, 255, 255, 0.1);
+      padding: 12px 24px;
+      font-weight: 700;
+      letter-spacing: 4px;
+      cursor: pointer;
+      border-radius: 4px;
+      backdrop-filter: blur(5px);
+      transition: all 0.3s;
+    }
+
+    #btnExitVoid:hover {
+      background: #fff;
+      color: #000;
+    }
+  </style>
+
+  <div class="void-page" id="voidPage">
+    <div class="void-scroll-container" id="voidScroll"></div>
+    <div class="void-ui">
+      <div class="void-title-label">THE VOID</div>
+      <button id="btnExitVoid">[ ESCAPE ]</button>
+    </div>
+  </div>
+
 
   <!-- ═══ PIN OVERLAY ═══════════════════════════════════════════════════ -->
   <div class="overlay" id="pinOverlay">
@@ -1192,16 +1426,102 @@
       resetUiTimer();
       applyKidsModeUI();
 
-      appTitle.onclick = () => {
+      // ── VOID LOGIC ────────────────────────────────────────────────────────
+      let titleHoldTimer;
+      let titleHoldStarted = 0;
+      const titleHoldDuration = 2000;
+
+      const onTitleDown = (e) => {
+        if (isKidsMode) return;
+        titleHoldStarted = Date.now();
+        appTitle.classList.add('holding');
+        titleHoldTimer = setTimeout(() => {
+          if (titleHoldStarted) enterVoid();
+        }, titleHoldDuration);
+      };
+
+      const onTitleUp = (e) => {
+        if (!titleHoldStarted) return;
+        const elapsed = Date.now() - titleHoldStarted;
+        titleHoldStarted = 0;
+        clearTimeout(titleHoldTimer);
+        appTitle.classList.remove('holding');
+
+        // Only trigger the tap if it wasn't a long hold
+        if (elapsed < 400) {
+          triggerCountPopup();
+        }
+      };
+
+      appTitle.addEventListener('mousedown', onTitleDown);
+      appTitle.addEventListener('touchstart', onTitleDown, { passive: true });
+      window.addEventListener('mouseup', onTitleUp);
+      window.addEventListener('touchend', onTitleUp);
+
+      function triggerCountPopup() {
         const popup = document.getElementById('videoCountPopup');
         popup.textContent = allVideos.length + ' VIDEOS';
         popup.classList.add('show');
         clearTimeout(popup._t);
         popup._t = setTimeout(() => popup.classList.remove('show'), 4000);
+      }
+
+      function enterVoid() {
+        const voidPage = document.getElementById('voidPage');
+        const voidScroll = document.getElementById('voidScroll');
+        const mainUi = document.body;
+
+        // Trigger Fall into Hole animation on the main app
+        mainUi.classList.add('falling-animation');
+
+        setTimeout(() => {
+          voidPage.classList.add('open');
+          mainUi.classList.remove('falling-animation');
+          appTitle.classList.remove('holding');
+          titleHoldStarted = 0;
+
+          // Populate Feed if empty
+          if (!voidScroll.children.length) {
+            loadVoidGifs();
+          }
+
+          // Mute active video
+          if (curVideo) curVideo.pause();
+        }, 1400); // Wait for transition
+      }
+
+      async function loadVoidGifs() {
+        try {
+          const res = await fetch('void_gifs.json?v=' + Date.now());
+          const gifs = await res.json();
+          const container = document.getElementById('voidScroll');
+
+          gifs.forEach(gif => {
+            const div = document.createElement('div');
+            div.className = 'void-item';
+
+            // Extract ID: https://i.giphy.com/media/ID/giphy.mp4
+            const parts = gif.url.split('/');
+            const id = parts[parts.length - 2];
+
+            // Direct GIF hotlinking for full-screen reliability
+            const img = document.createElement('img');
+            img.src = `https://media.giphy.com/media/${id}/giphy.gif`;
+            img.loading = "lazy";
+
+            div.appendChild(img);
+            container.appendChild(div);
+          });
+        } catch (e) { console.error("Void load error", e); }
+      }
+
+      document.getElementById('btnExitVoid').onclick = () => {
+        document.getElementById('voidPage').classList.remove('open');
+        if (curVideo) curVideo.play().catch(() => { });
       };
 
       // Trigger initial video count popup
-      setTimeout(() => appTitle.click(), 1200);
+      setTimeout(() => triggerCountPopup(), 1200);
     }
 
     // ── DATA LOADING ───────────────────────────────────────────────────────
@@ -1564,7 +1884,7 @@
     };
     function applyKidsModeUI() {
       document.body.classList.toggle('kids-mode', isKidsMode);
-      appTitle.textContent = isKidsMode ? '✦ VOID KIDS' : 'VOIDSCROLL';
+      appTitle.textContent = isKidsMode ? '✦ VOID KIDS' : 'V🕳IDSCROLL';
       appTitle.className = 'title' + (isKidsMode ? ' kids-title' : '');
       // FIX: correct button id 'btnAmbientToggle'
       document.getElementById('btnShare').style.display = isKidsMode ? 'none' : '';
@@ -1639,7 +1959,7 @@
       if (isKidsMode) return;
       isHolding = true;
       btnShare.classList.add('holding');
-      shareSpan.textContent = 'REPORT';
+      shareSpan.innerHTML = 'REPORT';
 
       holdTimer = setTimeout(() => {
         if (isHolding) {
@@ -1653,7 +1973,7 @@
       isHolding = false;
       clearTimeout(holdTimer);
       btnShare.classList.remove('holding');
-      shareSpan.textContent = '[ SHARE ]';
+      shareSpan.innerHTML = '[ SHARE ]';
     }
 
     function triggerReportConfirmation() {
@@ -1667,6 +1987,9 @@
     btnShare.addEventListener('touchstart', startHold, { passive: true });
     window.addEventListener('mouseup', cancelHold);
     window.addEventListener('touchend', cancelHold);
+
+    // ── ARROW GLYPH ANIMATION ──────────────────────────────────────────
+    // REMOVED: Replaced with pure CSS 3D Rotation for better performance and aesthetics
 
     // Normal click logic for share (if not held)
     btnShare.onclick = (e) => {

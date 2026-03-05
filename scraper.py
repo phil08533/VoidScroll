@@ -1,6 +1,7 @@
 
 import requests
 import json
+import re
 import os
 import random
 from hashlib import md5
@@ -186,6 +187,20 @@ NORMAL_SEARCH_TERMS = [
     "science documentary series", "nature documentary series",
 ]
 
+GIPHY_SEARCH_TERMS = [
+    "hypnotic loop", "psychedelic glitch", "abstract geometric loop", "retro vhs glitch",
+    "vaporwave aesthetic", "seamless motion art", "glitch art loop", "surreal animation",
+    "optical illusion loop", "fractal zoom", "black and white minimalist loop",
+    "cyberpunk animation loop", "trippy visuals", "liquid motion", "dreamy aesthetic loop"
+]
+
+GIPHY_KIDS_TERMS = [
+    "cute cartoon dance", "rainbow loop animation", "silly animal loop", "kawaii food loop",
+    "bouncing balls animation", "sparkly stars loop", "funny cartoon reaction", "baby shark dance",
+    "colorful shapes loop", "walking cat animation", "smiling sun loop", "happy music notes"
+]
+
+
 # =========================
 # BLACKLIST
 # =========================
@@ -246,7 +261,7 @@ KIDS_WHITELIST = [
     "kids tutorials", "beginner science for children", "storytelling for kids",
 ]
 
-PUBLIC_DOMAIN_SOURCES = ["archive.org", "wikimedia", "nasa"]
+PUBLIC_DOMAIN_SOURCES = ["archive.org", "wikimedia", "nasa", "giphy"]
 
 # =========================
 # CATEGORY MAPPING
@@ -580,7 +595,43 @@ def random_fetch(kids_only=False):
     if source == "nasa":
         return fetch_nasa(term, kids_only=kids_only)
 
+    if source == "giphy":
+        query = random.choice(GIPHY_KIDS_TERMS) if kids_only else random.choice(GIPHY_SEARCH_TERMS)
+        return fetch_giphy(query, kids_only=kids_only)
+
     return []
+
+def get_giphy_mp4(giphy_id):
+    return f"https://media.giphy.com/media/{giphy_id}/giphy.mp4"
+
+def fetch_giphy(query, kids_only=False):
+    print(f"\nSearching Giphy: '{query}' | kids_only={kids_only}")
+    url = f"https://giphy.com/search/{query}"
+    headers = {
+        "User-Agent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/122.0.0.0 Safari/537.36",
+    }
+    try:
+        r = requests.get(url, headers=headers, timeout=15)
+        r.raise_for_status()
+        html = r.text
+        
+        # Extract IDs from the page source using slugs and common patterns
+        ids = list(set(re.findall(r'/gifs/[a-zA-Z0-9-]*?([a-zA-Z0-9]{13,20})', html)))
+        
+        results = []
+        for gid in ids:
+            mp4_url = get_giphy_mp4(gid)
+            results.append({
+                "id": generate_id(mp4_url),
+                "title": f"GIPHY: {query.upper()}",
+                "url": mp4_url,
+                "category": "abstract" if not kids_only else categorize_kids(query),
+                "source": "giphy",
+            })
+        return results
+    except Exception as e:
+        print(f"Giphy Error: {e}")
+        return []
 
 
 # =========================
