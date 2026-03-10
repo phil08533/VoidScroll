@@ -2195,26 +2195,39 @@
 
     init();
   </script>
-  <script>
-  // ─── VIDEO FEED SKIP BUTTON SUPPORT ───
-  // Track the current visible video
-  let currentIndex = 0;
-  const cards = document.querySelectorAll('#feed .card');
+<script>
+  // ─── VIDEO FEED SKIP BUTTON WITH AUTO-SYNC ───
 
+  // Grab all video cards
+  const cards = document.querySelectorAll('#feed .card');
+  let currentIndex = 0; // Tracks which video is currently visible
+
+  // Function to determine which video is mostly visible
+  function updateCurrentIndex() {
+    cards.forEach((card, index) => {
+      const rect = card.getBoundingClientRect();
+      // If the top of the card is within the top half of the viewport
+      if (rect.top >= 0 && rect.top < window.innerHeight / 2) {
+        currentIndex = index;
+      }
+    });
+  }
+
+  // Function to go to the next video
   function goToNextVideo() {
     if (currentIndex < cards.length - 1) {
       const prevCard = cards[currentIndex];
       currentIndex++;
       const nextCard = cards[currentIndex];
 
-      // Scroll smoothly to the next video
+      // Scroll smoothly to the next card
       nextCard.scrollIntoView({ behavior: 'smooth', block: 'start' });
 
       // Pause previous video
       const prevVideo = prevCard.querySelector('video');
       if (prevVideo) prevVideo.pause();
 
-      // Play next video automatically
+      // Play next video
       const nextVideo = nextCard.querySelector('video');
       if (nextVideo) nextVideo.play();
     }
@@ -2223,14 +2236,16 @@
   // Listen for the skip button (MediaTrackNext) or ArrowDown for testing
   document.addEventListener('keydown', (e) => {
     if (e.code === 'MediaTrackNext' || e.key === 'MediaTrackNext' || e.key === 'ArrowDown') {
+      updateCurrentIndex(); // Keep currentIndex in sync
       goToNextVideo();
     }
   });
 
-  // Optional: Detect car button for debugging
-  // Press the skip button and check console for the keycode
-  // document.addEventListener('keydown', (e) => console.log(e.code, e.key));
-  </script>
+  // Optional: Keep currentIndex updated on manual scroll (smooth syncing)
+  window.addEventListener('scroll', () => {
+    updateCurrentIndex();
+  });
+</script>
 </body>
 
 </html>
