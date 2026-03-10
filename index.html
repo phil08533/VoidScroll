@@ -2195,6 +2195,42 @@
 
     init();
   </script>
+  <script>
+  // ─── VIDEO FEED SKIP BUTTON SUPPORT ───
+  // Track the current visible video
+  let currentIndex = 0;
+  const cards = document.querySelectorAll('#feed .card');
+
+  function goToNextVideo() {
+    if (currentIndex < cards.length - 1) {
+      const prevCard = cards[currentIndex];
+      currentIndex++;
+      const nextCard = cards[currentIndex];
+
+      // Scroll smoothly to the next video
+      nextCard.scrollIntoView({ behavior: 'smooth', block: 'start' });
+
+      // Pause previous video
+      const prevVideo = prevCard.querySelector('video');
+      if (prevVideo) prevVideo.pause();
+
+      // Play next video automatically
+      const nextVideo = nextCard.querySelector('video');
+      if (nextVideo) nextVideo.play();
+    }
+  }
+
+  // Listen for the skip button (MediaTrackNext) or ArrowDown for testing
+  document.addEventListener('keydown', (e) => {
+    if (e.code === 'MediaTrackNext' || e.key === 'MediaTrackNext' || e.key === 'ArrowDown') {
+      goToNextVideo();
+    }
+  });
+
+  // Optional: Detect car button for debugging
+  // Press the skip button and check console for the keycode
+  // document.addEventListener('keydown', (e) => console.log(e.code, e.key));
+  </script>
 </body>
 
 </html>
