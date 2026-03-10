@@ -1368,6 +1368,7 @@
 
     // ── STATE ──────────────────────────────────────────────────────────────
     let allVideos = [], currentPlaylist = [], currentIndex = 0;
+    let sessionSeenIds = new Set(); // tracks videos shown this session
     let isKidsMode = false, savedPin = null;
     let scrollLocked = false, isMuted = true, isFit = false;
     let autoScroll = true, backgroundPlay = false;
@@ -1532,6 +1533,13 @@
         if (!res.ok) throw new Error('HTTP ' + res.status);
         allVideos = await res.json();
         if (!Array.isArray(allVideos) || !allVideos.length) throw new Error('Empty');
+        // Deduplicate by URL so the same video never appears twice in the pool
+        const _seenUrls = new Set();
+        allVideos = allVideos.filter(v => {
+          if (!v.url || _seenUrls.has(v.url)) return false;
+          _seenUrls.add(v.url);
+          return true;
+        });
       } catch (e) {
         allVideos = [{
           id: 'dummy', title: 'Run scraper to populate videos',
@@ -1639,12 +1647,16 @@
       return arr;
     }
     function buildRandomPlaylist(pool) {
-      // Shuffle once, then rotate by a random offset so starting position is unpredictable
-      const a = shuffle([...pool]);
-      const off = Math.floor(Math.random() * a.length);
-      const rotated = [...a.slice(off), ...a.slice(0, off)];
-      // Second shuffle pass to break any remaining order bias
-      return shuffle(rotated);
+      // Separate videos not yet seen this session from already-seen ones
+      const unseen = pool.filter(v => !sessionSeenIds.has(v.id));
+      const seen   = pool.filter(v =>  sessionSeenIds.has(v.id));
+      // When all videos in the pool have been seen, reset so we cycle again
+      if (unseen.length === 0) {
+        sessionSeenIds = new Set();
+        return shuffle([...pool]);
+      }
+      // Play unseen videos first, then append already-seen ones (shuffled separately)
+      return [...shuffle(unseen), ...shuffle(seen)];
     }
 
     // ── FILTER / PLAYLIST BUILD ────────────────────────────────────────────
@@ -1655,6 +1667,8 @@
     };
     function filterCategory(cat, resetIdx = true, animate = true) {
       const changed = cat !== currentCategory;
+      // Reset seen tracking whenever the user actively switches category
+      if (changed) sessionSeenIds = new Set();
       currentCategory = cat;
 
       // Resolve kids UI category to stored category name
@@ -1680,6 +1694,7 @@
     function renderCard(idx, dir) {
       if (!currentPlaylist[idx]) return;
       const item = currentPlaylist[idx];
+      sessionSeenIds.add(item.id); // mark as seen so it won't repeat until all others have played
       const titleSpan = vidTitle.querySelector('span');
       if (titleSpan) titleSpan.textContent = item.title;
       else vidTitle.textContent = item.title;
