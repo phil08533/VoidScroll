@@ -1,7 +1,8 @@
 {
   "name": "VOIDSCROLL",
   "short_name": "VOID",
-  "start_url": "/VoidScroll/",
+  "start_url": "/",
+  "scope": "/",
   "display": "standalone",
   "background_color": "#050505",
   "theme_color": "#050505",
