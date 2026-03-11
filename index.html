@@ -1223,7 +1223,6 @@
            data-ad-slot="2521187989"
            data-ad-format="auto"
            data-full-width-responsive="true"></ins>
-      <script>(adsbygoogle = window.adsbygoogle || []).push({});</script>
     </div>
 
   </div>
@@ -1887,7 +1886,14 @@
     }
 
     // ── AMBIENT PAGE ───────────────────────────────────────────────────────
-    function openAmbientPage() { document.getElementById('ambientPage').classList.add('open'); }
+    let ambientAdLoaded = false;
+    function openAmbientPage() {
+      document.getElementById('ambientPage').classList.add('open');
+      if (!ambientAdLoaded) {
+        ambientAdLoaded = true;
+        try { (adsbygoogle = window.adsbygoogle || []).push({}); } catch (_) {}
+      }
+    }
     function closeAmbientPage() { document.getElementById('ambientPage').classList.remove('open'); }
     document.getElementById('btnCloseAmbientPage').onclick = closeAmbientPage;
 
