@@ -824,6 +824,50 @@
       pointer-events: none;
     }
 
+    /* ══ DESKTOP SCROLL BUTTONS ══════════════════════════════════════════════ */
+    #desktopScrollBtns {
+      display: none;
+    }
+
+    @media (hover: hover) and (pointer: fine) {
+      #desktopScrollBtns {
+        display: flex;
+        flex-direction: column;
+        gap: 10px;
+        position: fixed;
+        right: 20px;
+        top: 50%;
+        transform: translateY(-50%);
+        z-index: 20;
+      }
+
+      .desktop-scroll-btn {
+        width: 44px;
+        height: 44px;
+        border-radius: 50%;
+        background: var(--ui-bg);
+        border: 1px solid var(--ui-border);
+        color: var(--tx);
+        font-size: 1.1rem;
+        cursor: pointer;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        backdrop-filter: blur(8px);
+        transition: background 0.2s, opacity 0.2s;
+        opacity: 0.7;
+      }
+
+      .desktop-scroll-btn:hover {
+        background: rgba(255, 255, 255, 0.18);
+        opacity: 1;
+      }
+
+      .desktop-scroll-btn:active {
+        transform: scale(0.92);
+      }
+    }
+
     /* ══ PLAY/PAUSE INDICATOR ════════════════════════════════════════════════ */
     #ppIndicator {
       position: fixed;
@@ -1156,6 +1200,13 @@
   </div>
 
   <div id="ppIndicator"></div>
+
+  <!-- ═══ DESKTOP SCROLL + PAUSE BUTTONS ══════════════════════════════════ -->
+  <div id="desktopScrollBtns">
+    <button class="desktop-scroll-btn" id="btnScrollUp" title="Previous">▲</button>
+    <button class="desktop-scroll-btn" id="btnPauseDesktop" title="Play / Pause">⏸</button>
+    <button class="desktop-scroll-btn" id="btnScrollDown" title="Next">▼</button>
+  </div>
 
   <!-- ═══ MAIN UI LAYER ═════════════════════════════════════════════════ -->
   <div class="ui-layer" id="uiLayer">
@@ -1849,6 +1900,8 @@
       curCard = card;
       curVideo = vid;
       vid.play().catch(() => { });
+      const pauseBtn = document.getElementById('btnPauseDesktop');
+      if (pauseBtn) pauseBtn.textContent = '⏸';
       preloadAhead(idx, 3);
     }
 
@@ -2233,12 +2286,46 @@
       currentY = 0; isDragging = false;
     });
 
+    // ── DESKTOP CLICK TO PAUSE ─────────────────────────────────────────────
+    // Only fire on genuine mouse clicks (not touch-simulated clicks)
+    let lastTouchEnd = 0;
+    window.addEventListener('touchend', () => { lastTouchEnd = Date.now(); }, { passive: true });
+    feed.addEventListener('click', e => {
+      if (Date.now() - lastTouchEnd < 500) return; // ignore ghost clicks from touch
+      if (e.target.closest('button,input,.overlay,.ambient-page,.seek-zone,#desktopScrollBtns')) return;
+      const relX = e.clientX - feed.getBoundingClientRect().left;
+      const w = feed.getBoundingClientRect().width;
+      if (relX > w * 0.32 && relX < w * 0.68) togglePlayPause();
+    });
+
+    // ── DESKTOP SCROLL BUTTONS ─────────────────────────────────────────────
+    document.getElementById('btnScrollUp').addEventListener('click', e => {
+      e.stopPropagation();
+      advance('down');
+    });
+    document.getElementById('btnScrollDown').addEventListener('click', e => {
+      e.stopPropagation();
+      advance('up');
+    });
+    document.getElementById('btnPauseDesktop').addEventListener('click', e => {
+      e.stopPropagation();
+      togglePlayPause();
+    });
+
     // ── PLAY / PAUSE ───────────────────────────────────────────────────────
     function togglePlayPause() {
       if (!curVideo) return;
       const ind = document.getElementById('ppIndicator');
-      if (curVideo.paused) { curVideo.play().catch(() => { }); ind.textContent = '(✖╭╮✖)'; }
-      else { curVideo.pause(); ind.textContent = '(ಠ_ಠ)'; }
+      const pauseBtn = document.getElementById('btnPauseDesktop');
+      if (curVideo.paused) {
+        curVideo.play().catch(() => { });
+        ind.textContent = '(✖╭╮✖)';
+        if (pauseBtn) pauseBtn.textContent = '⏸';
+      } else {
+        curVideo.pause();
+        ind.textContent = '(ಠ_ಠ)';
+        if (pauseBtn) pauseBtn.textContent = '▶';
+      }
       ind.style.opacity = '1';
       clearTimeout(ind._t);
       ind._t = setTimeout(() => { ind.style.opacity = '0'; }, 750);
